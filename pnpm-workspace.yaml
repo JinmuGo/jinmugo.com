@@ -1,0 +1,8 @@
+packages:
+  - api
+  - blog
+
+onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - esbuild
+  - sharp

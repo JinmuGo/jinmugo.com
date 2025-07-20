@@ -1,0 +1,17 @@
+---
+// TimelineTime.astro
+interface Props {
+  class?: string;
+  datetime?: string;
+}
+
+const { class: className = "", datetime } = Astro.props;
+---
+
+<time
+  datetime={datetime}
+  class={`absolute min-w-2 max-w-2.5 left-0 top-0 text-xs sm:text-sm leading-6 text-nowrap text-gray-500 dark:text-gray-400 w-16 sm:w-24 text-right pr-2 sm:pr-4 ${className}`}
+>
+  <slot />
+</time>
+

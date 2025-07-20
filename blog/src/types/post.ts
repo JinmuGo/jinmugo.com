@@ -1,0 +1,1 @@
+export type PostLayoutType = "PostDefault" | "PostBannerX" | "PostBannerY";

@@ -1,0 +1,36 @@
+---
+import { generatePostsPageSchema, buildPageUrl, buildItemUrl } from '@/utils/structuredData';
+import { getKoreanMemos, sortMemosByDate } from '@/utils/memos';
+import PageLayout from '@/components/PageLayout.astro';
+import MemoGrid from '@/components/MemoGrid.astro';
+
+// 모든 한국어 메모 가져오기
+const memos = await getKoreanMemos();
+const sortedMemos = sortMemosByDate(memos);
+
+const title = "Memos";
+const description = "메모 모음집입니다.";
+
+// 구조화된 데이터 생성
+const jsonLd = generatePostsPageSchema({
+  title,
+  description,
+  url: buildPageUrl("", "/memos"),
+  keywords: "memos, notes, collection",
+  inLanguage: "ko",
+  itemListElements: sortedMemos.map((memo, index) => ({
+    "@type": "ListItem",
+    url: buildItemUrl(`/memo/${memo.slug}`),
+    position: index + 1,
+    item: {
+      "@type": "Article",
+      name: memo.data.title,
+      url: buildItemUrl(`/memo/${memo.slug}`),
+    },
+  })),
+});
+---
+
+<PageLayout title={title} description={description} lang="ko" jsonLd={jsonLd}>
+  <MemoGrid memos={sortedMemos} />
+</PageLayout> 

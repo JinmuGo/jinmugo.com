@@ -1,0 +1,50 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  memo: CollectionEntry<'memo'>;
+  basePath?: string;
+}
+
+const { memo, basePath = "" } = Astro.props;
+const memoUrl = `${basePath}/memo/${memo.slug}`;
+const categoryUrl = `${basePath}/archives/category/${memo.data.category}`;
+---
+
+<article class="group relative flex flex-col space-y-2">
+  <div class="space-y-1">
+    <h2 class="font-semibold leading-none tracking-tight">
+      <a 
+        href={memoUrl}
+        class="hover:underline"
+      >
+        {memo.data.title}
+      </a>
+    </h2>
+    
+    {memo.data.summary && (
+      <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+        {memo.data.summary}
+      </p>
+    )}
+    
+    <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+      {memo.data.category && (
+        <a 
+          href={categoryUrl}
+          class="hover:underline"
+        >
+          {memo.data.category}
+        </a>
+      )}
+      <span>/</span>
+      <time datetime={memo.data.date.toISOString()}>
+        {memo.data.date.toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })}
+      </time>
+    </div>
+  </div>
+</article> 

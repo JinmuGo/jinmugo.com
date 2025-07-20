@@ -1,0 +1,65 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Timeline from "./Timeline.astro";
+import TimelineItem from "./TimelineItem.astro";
+import TimelineHeader from "./TimelineHeader.astro";
+import TimelineTime from "./TimelineTime.astro";
+import TimelineTitle from "./TimelineTitle.astro";
+import TimelineDescription from "./TimelineDescription.astro";
+import TimelineDot from "./TimelineDot.astro";
+
+interface Props {
+  posts: (
+    | CollectionEntry<"post">
+    | {
+        id: string;
+        render(): Promise<any>;
+        slug: string;
+        body: string;
+        collection: "post";
+        data: {
+          title: string;
+          date: Date;
+          draft: boolean;
+          bannerOnlyText: boolean;
+          category: string;
+          summary?: string;
+          withAI?: boolean;
+        };
+        rendered?: any;
+        filePath?: string;
+      }
+  )[];
+}
+
+const { posts } = Astro.props;
+---
+
+<Timeline>
+  {
+    posts.map((post, index) => {
+      const postUrl = `/post/${post.data.category}/${post.slug.split("/")[0]}`;
+      const formattedDate = post.data.date.toISOString().split("T")[0]; // yyyy-MM-dd 형식
+      const isLatest = index === 0;
+
+      return (
+        <TimelineItem>
+          <TimelineHeader>
+            <TimelineTime datetime={post.data.date.toISOString()}>
+              {formattedDate}
+            </TimelineTime>
+            <TimelineDot isLatest={isLatest} />
+            <TimelineTitle href={postUrl}>
+              {post.data.title}
+              {post.data.summary && (
+                <TimelineDescription class="mt-1 text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
+                  {post.data.summary}
+                </TimelineDescription>
+              )}
+            </TimelineTitle>
+          </TimelineHeader>
+        </TimelineItem>
+      );
+    })
+  }
+</Timeline>

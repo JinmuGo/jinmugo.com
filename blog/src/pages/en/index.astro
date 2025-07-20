@@ -1,0 +1,17 @@
+---
+import { getEnglishPosts, sortPostsByDate } from "@/utils/posts";
+import Layout from "@/layouts/Layout.astro";
+import HeroImage from "@/components/HeroImage.astro";
+import PostTimeline from "@/components/Timeline/PostTimeline.astro";
+import Bleed from "@/components/Bleed.astro";
+
+const posts = await getEnglishPosts();
+const sortedPosts = sortPostsByDate<"post">(posts);
+---
+
+<Layout>
+  <Bleed>
+    <HeroImage src="sea-boat.webp" alt="boat" blurSrc="sea-boat-blur.webp" />
+  </Bleed>
+  <PostTimeline posts={sortedPosts} />
+</Layout>

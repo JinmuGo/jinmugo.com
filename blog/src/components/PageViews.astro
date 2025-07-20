@@ -1,0 +1,63 @@
+---
+export interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+---
+
+<div class="page-views">
+  <p class="text-xs text-gray-500">
+    <span id={`views-${slug}`}>...</span> views
+  </p>
+</div>
+
+<script define:vars={{ slug }}>
+  // 페이지 뷰 카운터 기능
+  async function updatePageViews() {
+    try {
+      const viewsElement = document.getElementById(`views-${slug}`);
+      if (!viewsElement) return;
+
+      // 개발 환경이 아닐 때만 뷰 카운트 증가
+      if (import.meta.env.DEV === false) {
+        await fetch(`/api/view/${slug}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      }
+
+      // 현재 뷰 카운트 가져오기
+      const response = await fetch(`/api/view/${slug}`);
+      const data = await response.json();
+      
+      viewsElement.textContent = data.views.toString();
+    } catch (error) {
+      console.error('Failed to update views:', error);
+      const viewsElement = document.getElementById(`views-${slug}`);
+      if (viewsElement) {
+        viewsElement.textContent = '0';
+      }
+    }
+  }
+
+  // 페이지 로드 시 뷰 카운트 업데이트
+  document.addEventListener('DOMContentLoaded', updatePageViews);
+</script>
+
+<style>
+  .page-views {
+    display: inline-block;
+  }
+  
+  .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+  
+  .text-gray-500 {
+    color: rgb(107 114 128);
+  }
+</style> 

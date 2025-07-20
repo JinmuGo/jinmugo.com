@@ -1,0 +1,38 @@
+---
+export interface Props {
+  withAI?: boolean;
+  class?: string;
+  lang?: "en" | "ko";
+}
+
+const { withAI = false, class: className, lang = "ko" } = Astro.props;
+
+const content = withAI
+  ? lang === "en"
+    ? "This post was written with AI assistance"
+    : "AI와 함께 작성한 글입니다"
+  : lang === "en"
+    ? "This post was written without AI"
+    : "AI를 사용하지 않은 글입니다";
+
+const shortContent = withAI ? "With AI" : "Without AI";
+---
+
+<div class:list={["inline-flex items-center", className]} title={content}>
+  <div class:list={[
+    "inline-flex items-center justify-center w-6 h-6 rounded-full",
+    withAI ? "text-blue-600 dark:text-blue-400" : "text-gray-600 dark:text-gray-400"
+  ]}>
+    {withAI ? (
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    ) : (
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+        <path d="m15 5 4 4"/>
+      </svg>
+    )}
+  </div>
+  <span class="text-xs text-gray-600 dark:text-gray-400">{shortContent}</span>
+</div>

@@ -1,0 +1,3 @@
+[submodule "blog/blog_obsidian"]
+	path = blog/blog_obsidian
+	url = https://github.com/jinmugo/blog_obsidian

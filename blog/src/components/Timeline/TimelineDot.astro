@@ -1,0 +1,11 @@
+---
+interface Props {
+  isLatest: boolean;
+}
+
+const { isLatest = false } = Astro.props;
+---
+
+<span
+  class={`absolute z-10 left-[4.5rem] sm:left-[6.5rem] top-2 h-2 w-2 sm:h-2 sm:w-2 rounded-full border border-gray-200 dark:border-gray-700 ${isLatest ? "bg-primary-500 dark:bg-primary-400" : "bg-gray-200 dark:bg-gray-700"} group-hover:bg-primary-500 dark:group-hover:bg-primary-400 transition-colors duration-200`}
+></span>

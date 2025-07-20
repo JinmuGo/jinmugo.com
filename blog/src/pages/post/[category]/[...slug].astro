@@ -1,0 +1,70 @@
+---
+import { type CollectionEntry } from "astro:content";
+import PostDefault from "@/layouts/PostDefault.astro";
+import PostBannerX from "@/layouts/PostBannerX.astro";
+import PostBannerY from "@/layouts/PostBannerY.astro";
+import { getBannerImage } from "@/utils/banner";
+import { getKoreanPosts } from "@/utils/posts";
+import type { PostLayoutType } from "@/types/post";
+
+export async function getStaticPaths() {
+  // .md 파일(한글)만 필터링
+  const posts = await getKoreanPosts();
+
+  return posts.map((entry: CollectionEntry<"post">) => {
+    const slugParts = entry.id.split("/");
+    const folderName = slugParts[0];
+    return {
+      params: {
+        category: entry.data.category,
+        slug: folderName,
+      },
+      props: { entry },
+    };
+  });
+}
+
+const { entry }: { entry: CollectionEntry<"post"> } = Astro.props;
+const { Content } = await entry.render();
+const frontmatterWithSlug = {
+  ...entry.data,
+  slug: entry.id.split("/")[0],
+};
+const bannerImage = await getBannerImage(
+  frontmatterWithSlug.banner,
+  frontmatterWithSlug.slug,
+);
+let layout: PostLayoutType = "PostDefault";
+if (bannerImage) {
+  const { width, height } = bannerImage;
+  if (width > height) {
+    layout = "PostBannerX";
+  } else {
+    layout = "PostBannerY";
+  }
+}
+---
+
+{
+  layout === "PostDefault" && (
+    <PostDefault frontmatter={frontmatterWithSlug}>
+      <Content />
+    </PostDefault>
+  )
+}
+
+{
+  layout === "PostBannerX" && (
+    <PostBannerX frontmatter={frontmatterWithSlug}>
+      <Content />
+    </PostBannerX>
+  )
+}
+
+{
+  layout === "PostBannerY" && (
+    <PostBannerY frontmatter={frontmatterWithSlug}>
+      <Content />
+    </PostBannerY>
+  )
+}
