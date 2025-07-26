@@ -23,11 +23,11 @@ else
 fi
 
 # 4. .md 파일들을 .mdx로 변환
-# echo "Renaming .md files to .mdx..."
-# find $target_dir -type f -name '*.md' -exec sh -c '
-#   for file; do
-#     mv -- "$file" "${file%.md}.mdx"
-#   done
-# ' sh {} +
+echo "Renaming .md files to .mdx..."
+find $target_dir -type f -name '*.md' -exec sh -c '
+  for file; do
+    mv -- "$file" "${file%.md}.mdx"
+  done
+' sh {} +
 
 echo "Prebuild script completed."

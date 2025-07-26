@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 
+import { unlinkSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { GoogleAuth } from "google-auth-library";
-import { writeFileSync, unlinkSync } from "fs";
-import { join } from "path";
+import { config } from "dotenv"
 
-const GOOGLE_APPLICATION_CREDENTIALS = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+config()
+
+const GOOGLE_APPLICATION_CREDENTIALS =
+	process.env.GOOGLE_APPLICATION_CREDENTIALS;
 const GSC_SITE_URL = process.env.GSC_SITE_URL;
 const GSC_PROPERTY_ID = process.env.GSC_PROPERTY_ID;
 
@@ -18,7 +22,9 @@ if (!GOOGLE_APPLICATION_CREDENTIALS || !GSC_SITE_URL || !GSC_PROPERTY_ID) {
 
 async function submitUrlToGSC(auth, url, urlType) {
   try {
-    console.log(`🚀 Submitting ${urlType} (${url}) to Google Search Console...`);
+    console.log(
+      `🚀 Submitting ${urlType} (${url}) to Google Search Console...`,
+    );
 
     const client = await auth.getClient();
     const accessToken = await client.getAccessToken();
@@ -37,19 +43,26 @@ async function submitUrlToGSC(auth, url, urlType) {
     );
 
     console.log(`📊 ${urlType} Response status: ${response.status}`);
-    console.log(`📊 ${urlType} Response headers:`, Object.fromEntries(response.headers.entries()));
+    console.log(
+      `📊 ${urlType} Response headers:`,
+      Object.fromEntries(response.headers.entries()),
+    );
 
     const responseText = await response.text();
     console.log(`📊 ${urlType} Response body: ${responseText}`);
 
     if (!response.ok) {
       if (response.status === 403) {
-        console.error(`❌ ${urlType} 권한 오류: 서비스 계정이 사이트에 대한 권한이 없습니다.`);
+        console.error(
+          `❌ ${urlType} 권한 오류: 서비스 계정이 사이트에 대한 권한이 없습니다.`,
+        );
         console.error("해결 방법:");
         console.error("1. Google Search Console에서 사이트 속성으로 이동");
         console.error("2. 설정 > 사용자 및 권한으로 이동");
         console.error("3. 서비스 계정 이메일을 소유자 또는 전체 사용자로 추가");
-        console.error(`4. 서비스 계정 이메일: ${JSON.parse(GOOGLE_APPLICATION_CREDENTIALS).client_email}`);
+        console.error(
+          `4. 서비스 계정 이메일: ${JSON.parse(GOOGLE_APPLICATION_CREDENTIALS).client_email}`,
+        );
         console.error("5. 또는 GSC_SITE_URL이 올바른지 확인하세요");
       }
       throw new Error(`${urlType} HTTP ${response.status}: ${responseText}`);
@@ -61,9 +74,14 @@ async function submitUrlToGSC(auth, url, urlType) {
     if (responseText.trim()) {
       try {
         const result = JSON.parse(responseText);
-        console.log(`📊 ${urlType} Response JSON:`, JSON.stringify(result, null, 2));
-      } catch (e) {
-        console.log(`📊 ${urlType} Response is not JSON (this is normal for successful submission)`);
+        console.log(
+          `📊 ${urlType} Response JSON:`,
+          JSON.stringify(result, null, 2),
+        );
+      } catch {
+        console.log(
+          `📊 ${urlType} Response is not JSON (this is normal for successful submission)`,
+        );
       }
     }
 
@@ -117,7 +135,7 @@ async function submitAllToGSC() {
     // 임시 파일 삭제
     try {
       unlinkSync(tempKeyPath);
-    } catch (e) {
+    } catch {
       // 무시
     }
 
@@ -128,13 +146,18 @@ async function submitAllToGSC() {
     console.log(`📈 Total attempted: ${urlsToSubmit.length}`);
 
     if (failureCount > 0) {
-      console.log("\n⚠️  Some submissions failed. Check the logs above for details.");
+      console.log(
+        "\n⚠️  Some submissions failed. Check the logs above for details.",
+      );
       process.exit(1);
     } else {
       console.log("\n🎉 All submissions completed successfully!");
     }
   } catch (error) {
-    console.error("❌ Failed to submit to Google Search Console:", error.message);
+    console.error(
+      "❌ Failed to submit to Google Search Console:",
+      error.message,
+    );
     process.exit(1);
   }
 }

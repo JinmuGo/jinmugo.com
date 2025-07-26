@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 
+import { existsSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { GoogleAuth } from "google-auth-library";
-import { readFileSync, existsSync, writeFileSync, unlinkSync } from "fs";
-import { join } from "path";
+import { config } from "dotenv"
 
-const GOOGLE_APPLICATION_CREDENTIALS = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+config()
+
+const GOOGLE_APPLICATION_CREDENTIALS =
+	process.env.GOOGLE_APPLICATION_CREDENTIALS;
 const GSC_SITE_URL = process.env.GSC_SITE_URL;
 
 if (!GOOGLE_APPLICATION_CREDENTIALS || !GSC_SITE_URL) {
@@ -17,7 +21,13 @@ if (!GOOGLE_APPLICATION_CREDENTIALS || !GSC_SITE_URL) {
 async function getNewUrls() {
   try {
     // sitemap.xml 파일을 읽어서 URL 목록을 추출
-    const sitemapPath = join(process.cwd(), ".next", "server", "app", "sitemap.xml.body");
+    const sitemapPath = join(
+      process.cwd(),
+      ".next",
+      "server",
+      "app",
+      "sitemap.xml.body",
+    );
 
     if (!existsSync(sitemapPath)) {
       console.log("⚠️  Sitemap not found, skipping URL submission");
@@ -84,33 +94,47 @@ async function submitUrlsToGSC(urls) {
 
     for (let i = 0; i < batches.length; i++) {
       const batch = batches[i];
-      console.log(`📤 Submitting batch ${i + 1}/${batches.length} (${batch.length} URLs)...`);
+      console.log(
+        `📤 Submitting batch ${i + 1}/${batches.length} (${batch.length} URLs)...`,
+      );
 
       // 각 URL을 개별적으로 제출 (Indexing API는 개별 URL 제출만 지원)
       for (const url of batch) {
         const fullUrl = `${GSC_SITE_URL}${url}`;
 
         try {
-          const response = await fetch(`https://indexing.googleapis.com/v3/urlNotifications:publish`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${accessToken.token}`,
-              "Content-Type": "application/json",
+          const response = await fetch(
+            `https://indexing.googleapis.com/v3/urlNotifications:publish`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${accessToken.token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                url: fullUrl,
+                type: "URL_UPDATED",
+              }),
             },
-            body: JSON.stringify({
-              url: fullUrl,
-              type: "URL_UPDATED",
-            }),
-          });
+          );
 
           if (!response.ok) {
             const errorText = await response.text();
             const errorData = JSON.parse(errorText);
 
-            if (errorData.error?.code === 403 && errorData.error?.message?.includes("URL ownership")) {
-              console.warn(`⚠️  URL ownership verification failed for ${fullUrl}`);
-              console.warn(`   This usually means the service account doesn't have permission for this site`);
-              console.warn(`   Please ensure the service account is added as owner/full user in Google Search Console`);
+            if (
+              errorData.error?.code === 403 &&
+              errorData.error?.message?.includes("URL ownership")
+            ) {
+              console.warn(
+                `⚠️  URL ownership verification failed for ${fullUrl}`,
+              );
+              console.warn(
+                `   This usually means the service account doesn't have permission for this site`,
+              );
+              console.warn(
+                `   Please ensure the service account is added as owner/full user in Google Search Console`,
+              );
             } else {
               console.warn(`⚠️  Failed to submit ${fullUrl}: ${errorText}`);
             }
@@ -118,7 +142,7 @@ async function submitUrlsToGSC(urls) {
             continue;
           }
 
-          const result = await response.json();
+          await response.json();
           console.log(`✅ Submitted: ${fullUrl}`);
           successCount++;
 
@@ -136,7 +160,9 @@ async function submitUrlsToGSC(urls) {
     if (errorCount > 0) {
       console.log(`❌ Failed to submit: ${errorCount} URLs`);
       console.log(`💡 To fix URL ownership issues:`);
-      console.log(`   1. Go to Google Search Console: https://search.google.com/search-console`);
+      console.log(
+        `   1. Go to Google Search Console: https://search.google.com/search-console`,
+      );
       console.log(`   2. Add your service account email as owner/full user`);
       console.log(`   3. Verify site ownership is complete`);
     }
@@ -144,7 +170,7 @@ async function submitUrlsToGSC(urls) {
     // 임시 파일 삭제
     try {
       unlinkSync(tempKeyPath);
-    } catch (e) {
+    } catch {
       // 무시
     }
   } catch (error) {
