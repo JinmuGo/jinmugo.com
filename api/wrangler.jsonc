@@ -29,12 +29,18 @@
 			"database_name": "blog-db",
 			"database_id": "c7c68825-86da-4853-9f86-9f5a575bcf3d"
 		}
-	]
+	],
 
 	/**
-	 * Smart Placement
-	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
+	 * Custom Domains
+	 * https://developers.cloudflare.com/workers/configuration/routing/custom-domains/
 	 */
+	"routes": [
+		{
+			"pattern": "api.jinmu.me/*",
+			"zone_name": "jinmu.me"
+		}
+	]
 	// "placement": { "mode": "smart" },
 
 	/**

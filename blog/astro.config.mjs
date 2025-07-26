@@ -17,7 +17,7 @@ import { transformerNotationDiff, transformerNotationHighlight } from "@shikijs/
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://jinmu.me",
+  site: pkg.homepage,
   output: "static",
   experimental: {
     fonts: [
@@ -33,8 +33,6 @@ export default defineConfig({
       },
     ],
   },
-
-  site: pkg.homepage,
   devToolbar: {
     enabled: process.env.NODE_ENV === "development",
   },
