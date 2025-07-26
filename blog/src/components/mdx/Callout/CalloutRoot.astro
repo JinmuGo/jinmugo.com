@@ -1,0 +1,29 @@
+---
+import { callouts } from "./callout.astro";
+
+export interface Props {
+  type: string;
+  isFoldable: boolean;
+  defaultFolded?: boolean;
+  className?: string;
+}
+const { type, isFoldable, defaultFolded, className } = Astro.props;
+const callout = callouts[type as keyof typeof callouts] ?? callouts.note;
+---
+
+{
+  isFoldable ? (
+    <details
+      open={defaultFolded}
+      class={`group/root my-6 space-y-2 rounded-lg border bg-card p-4 ${callout.className.root} ${className ?? ""}`}
+    >
+      <slot />
+    </details>
+  ) : (
+    <div
+      class={`group/root my-6 space-y-2 rounded-lg border bg-card p-4 ${callout.className.root} ${className ?? ""}`}
+    >
+      <slot />
+    </div>
+  )
+}

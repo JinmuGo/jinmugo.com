@@ -1,0 +1,34 @@
+---
+import { callouts } from "./callout.astro";
+import { Icon } from "astro-icon/components";
+
+export interface Props {
+  type: string;
+  isFoldable: boolean;
+  className?: string;
+}
+const { type, isFoldable, className } = Astro.props;
+const callout = callouts[type as keyof typeof callouts] ?? callouts.note;
+---
+
+{
+  isFoldable ? (
+    <summary
+      class={`flex flex-row items-center gap-2 font-bold ${callout.className.title} ${className ?? ""}`}
+    >
+      <Icon name={callout.iconName} class="size-5 shrink-0" />
+      <slot />
+      <Icon
+        name="lucide:chevron-down"
+        class="size-5 shrink-0 group-open/root:rotate-180 transition-transform"
+      />
+    </summary>
+  ) : (
+    <div
+      class={`flex flex-row items-center gap-2 font-bold ${callout.className.title} ${className ?? ""}`}
+    >
+      <Icon name={callout.iconName} class="size-5 shrink-0" />
+      <slot />
+    </div>
+  )
+}
