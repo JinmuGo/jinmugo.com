@@ -1,0 +1,34 @@
+diff --git a/dist/plugin.js b/dist/plugin.js
+index 919ad0eaf91e36035e9929d8b98255180ee32b0c..c209e5189338e693c92b0c8be4422138f61fd9c0 100644
+--- a/dist/plugin.js
++++ b/dist/plugin.js
+@@ -55,9 +55,9 @@ export const remarkCallout = (_options) => {
+             if (paragraphNode == null || paragraphNode.type !== "paragraph")
+                 return;
+             // Skip if the first line is empty
+-            if (node.position?.start.line !== paragraphNode.position?.start.line) {
+-                return;
+-            }
++            // if (node.position?.start.line !== paragraphNode.position?.start.line) {
++            //     return;
++            // }
+             const calloutTypeTextNode = paragraphNode.children.at(0);
+             if (calloutTypeTextNode == null || calloutTypeTextNode.type !== "text") {
+                 return;
+diff --git a/src/plugin.ts b/src/plugin.ts
+index 994fb12ba9df4468decf8e5de7bd9871e57484c7..bcdb5a0ecafced6a51fca53130a773b7dc567f0b 100644
+--- a/src/plugin.ts
++++ b/src/plugin.ts
+@@ -314,9 +314,9 @@ export const remarkCallout: Plugin<[Options?], mdast.Root> = (_options) => {
+       if (paragraphNode == null || paragraphNode.type !== "paragraph") return;
+ 
+       // Skip if the first line is empty
+-      if (node.position?.start.line !== paragraphNode.position?.start.line) {
+-        return;
+-      }
++      // if (node.position?.start.line !== paragraphNode.position?.start.line) {
++      //   return;
++      // }
+ 
+       const calloutTypeTextNode = paragraphNode.children.at(0);
+       if (calloutTypeTextNode == null || calloutTypeTextNode.type !== "text") {
