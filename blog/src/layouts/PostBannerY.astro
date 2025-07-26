@@ -1,35 +1,51 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import BaseHead from "@/components/BaseHead.astro";
-import Header from "@/components/Header.astro";
-import Footer from "@/components/Footer.astro";
-import FormattedDate from "@/components/FormattedDate.astro";
 import { Image } from "astro:assets";
-import { getBannerImage } from "@/utils/banner";
-import Prose from "@/components/Prose.astro";
-import PageViews from "@/components/PageViews.astro";
 import AICollaborationBadge from "@/components/AICollaborationBadge.astro";
-import Container from "@/components/Container.astro";
+import BaseHead from "@/components/BaseHead.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
+import PageView from "@/components/PageView.astro";
+import Prose from "@/components/Prose.astro";
+import Container from "@/layouts/Container.astro";
+import type { PostMetadata } from "@/types/post";
+import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData";
+import StructuredData from "@/utils/structuredData.astro";
+import Header from "@/widget/Header/Header.tsx";
 
 interface Props {
-  frontmatter: CollectionEntry<"post">["data"] & { slug: string };
+  frontmatter: PostMetadata;
+  bannerImage: ImageMetadata;
 }
 
-const { frontmatter } = Astro.props;
-const { title, date, lastmod, banner, summary, withAI, category, slug } =
+const { frontmatter, bannerImage } = Astro.props;
+const { title, date, summary, withAI, category, slug, tags } =
   frontmatter;
+const pathname = Astro.url.pathname;
+const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL;
 
-// banner 이미지 가져오기
-const bannerSrc = await getBannerImage(banner, frontmatter.slug);
-const { width, height } = bannerSrc;
+const { width, height } = bannerImage;
+const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
+
+const jsonLd = generatePostsPageSchema({
+  title: title,
+  description: summary || title,
+  url: buildPageUrl("", `/${category}/${slug}`),
+  keywords: tags?.join(", ") || "",
+  inLanguage: lang,
+});
 ---
 
-<html lang="ko">
+<html lang={lang}>
   <head>
-    <BaseHead title={title} description={summary || title} />
+    <BaseHead
+      title={title}
+      description={summary || title}
+      tags={tags}
+      ogImage={`/posts/${category}/${slug}/og.png`}
+    />
   </head>
   <body>
-    <Header />
+    <StructuredData schema={jsonLd} />
+    <Header frontmatter={frontmatter} pathname={pathname} client:load />
     <Container>
       <main>
         <article>
@@ -39,28 +55,27 @@ const { width, height } = bannerSrc;
             <Image
               width={width}
               height={height}
-              src={bannerSrc}
+              src={bannerImage}
               alt={`${title} 배너`}
             />
+            <div id="post-title" class="pt-10">
+              <div class="flex items-center gap-2">
+                <PageView slug={slug} apiBaseUrl={apiBaseUrl} />
+                <AICollaborationBadge withAI={withAI} lang={lang} />
+              </div>
+              <h1 class="font-bold text-xl md:text-2xl">{title}</h1>
+              <p>{summary}</p>
+              <div class="text-sm text-gray-500 dark:text-gray-300">
+                <a href={`/archives/category/${category}`} class="underline">
+                  {category}
+                </a> / <FormattedDate date={date} />
+              </div>
+            </div>
           </header>
-          <div id="post-title" class="pt-10">
-            <div class="flex items-center gap-2">
-              <PageViews slug={slug} />
-              <AICollaborationBadge withAI={withAI} lang="ko" />
-            </div>
-            <h1 class="font-bold text-xl md:text-2xl">{title}</h1>
-            <p>{summary}</p>
-            <div class="text-sm text-gray-500 dark:text-gray-300">
-              <a class="underline" href={`/archives/category/${category}`}>
-                {category}
-              </a>{" "}
-              / <FormattedDate date={date} />
-            </div>
-          </div>
-          <Prose>
-            <slot />
-          </Prose>
         </article>
+        <Prose>
+          <slot />
+        </Prose>
       </main>
     </Container>
   </body>

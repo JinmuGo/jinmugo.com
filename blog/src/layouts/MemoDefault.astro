@@ -1,0 +1,59 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseHead from "@/components/BaseHead.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
+import Prose from "@/components/Prose.astro";
+import Container from "@/layouts/Container.astro";
+import Header from "@/widget/Header/Header.tsx";
+
+interface Props {
+  frontmatter: CollectionEntry<"memo">["data"] & { slug: string };
+}
+
+const { frontmatter } = Astro.props;
+const { title, date, summary, category, slug, tags } = frontmatter;
+const pathname = Astro.url.pathname;
+const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
+---
+
+<html lang={lang}>
+  <head>
+    <BaseHead
+      title={title}
+      description={summary || title}
+      ogImage={`/memos/${slug}/og.png`}
+    />
+  </head>
+
+  <body>
+    <Header frontmatter={frontmatter} pathname={pathname} client:load />
+    <Container>
+      <main>
+        <article>
+          <header class="space-y-1 pb-5">
+            <div id="memo-title" class="pt-5 space-y-1">
+              <h1 class="font-bold text-xl md:text-2xl">{title}</h1>
+              <div class="text-sm text-gray-500 dark:text-gray-300">
+                {
+                  category && (
+                    <a
+                      class="underline"
+                      href={`/archives/category/${category}`}
+                    >
+                      {category}
+                    </a>
+                  )
+                }
+                {category && " / "}
+                <FormattedDate date={date} />
+              </div>
+            </div>
+          </header>
+          <Prose>
+            <slot />
+          </Prose>
+        </article>
+      </main>
+    </Container>
+  </body>
+</html>

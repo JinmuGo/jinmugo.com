@@ -1,29 +1,47 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import BaseHead from "@/components/BaseHead.astro";
-import Header from "@/components/Header.astro";
-import Footer from "@/components/Footer.astro";
-import FormattedDate from "@/components/FormattedDate.astro";
-import Prose from "@/components/Prose.astro";
-import Container from "@/components/Container.astro";
-import PageViews from "@/components/PageViews.astro";
 import AICollaborationBadge from "@/components/AICollaborationBadge.astro";
+import BaseHead from "@/components/BaseHead.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
+import PageView from "@/components/PageView.astro";
+import Prose from "@/components/Prose.astro";
+import Container from "@/layouts/Container.astro";
+import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData";
+import StructuredData from "@/utils/structuredData.astro";
+import Header from "@/widget/Header/Header.tsx";
+import type { PostMetadata } from "@/types/post";
 
 interface Props {
-  frontmatter: CollectionEntry<"post">["data"] & { slug: string };
+  frontmatter: PostMetadata;
 }
 
 const { frontmatter } = Astro.props;
-const { title, date, summary, category, withAI, slug } = frontmatter;
+const { title, date, summary, category, withAI, slug, tags } = frontmatter;
+const pathname = Astro.url.pathname;
+const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
+const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL;
+
+const jsonLd = generatePostsPageSchema({
+  title: title,
+  description: summary || title,
+  url: buildPageUrl("", `/${category}/${slug}`),
+  keywords: tags?.join(", ") || "",
+  inLanguage: lang,
+});
 ---
 
-<html lang="ko">
+<html lang={lang}>
   <head>
-    <BaseHead title={title} description={summary || title} />
+    <BaseHead
+      title={title}
+      description={summary || title}
+      tags={tags}
+      ogImage={`/posts/${category}/${slug}/og.png`}
+    />
   </head>
 
   <body>
-    <Header />
+    <Header frontmatter={frontmatter} pathname={pathname} client:load />
+    <StructuredData schema={jsonLd} />
     <Container>
       <main>
         <article>
@@ -37,7 +55,7 @@ const { title, date, summary, category, withAI, slug } = frontmatter;
                 / <FormattedDate date={date} />
               </div>
               <div class="flex items-center gap-2">
-                <PageViews slug={slug} />
+                <PageView slug={slug} apiBaseUrl={apiBaseUrl} />
                 <AICollaborationBadge withAI={withAI} lang="ko" />
               </div>
             </div>

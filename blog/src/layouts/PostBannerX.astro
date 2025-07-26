@@ -1,61 +1,80 @@
 ---
-import type { CollectionEntry } from 'astro:content';
-import BaseHead from '@/components/BaseHead.astro';
-import Header from '@/components/Header.astro';
-import Footer from '@/components/Footer.astro';
-import FormattedDate from '@/components/FormattedDate.astro';
-import { Image } from 'astro:assets';
-import { getBannerImage } from '@/utils/banner';
-import Prose from '@/components/Prose.astro';
-import Container from '@/components/Container.astro';
-import PageViews from '@/components/PageViews.astro';
-import AICollaborationBadge from '@/components/AICollaborationBadge.astro';
+import { Image } from "astro:assets";
+import BaseHead from "@/components/BaseHead.astro";
+import Prose from "@/components/Prose.astro";
+import Container from "@/layouts/Container.astro";
+import type { PostMetadata } from "@/types/post";
+import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData";
+import StructuredData from "@/utils/structuredData.astro";
+import Header from "@/widget/Header/Header.tsx";
+import FormattedDate from "@/components/FormattedDate.astro";
+import PageView from "@/components/PageView.astro";
+import AICollaborationBadge from "@/components/AICollaborationBadge.astro";
 
 interface Props {
-  frontmatter: CollectionEntry<'post'>['data'] & { slug: string };
+  frontmatter: PostMetadata;
+  bannerImage: ImageMetadata;
 }
 
-const { frontmatter } = Astro.props;
-const { title, date, lastmod, banner, summary, category, slug, withAI } = frontmatter;
+const { frontmatter, bannerImage } = Astro.props;
+const { title, date, summary, category, slug, withAI, tags } = frontmatter;
+const pathname = Astro.url.pathname;
+const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
+const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL;
 
-// banner 이미지 가져오기
-const bannerSrc = await getBannerImage(banner, frontmatter.slug);
+const jsonLd = generatePostsPageSchema({
+  title: title,
+  description: summary || title,
+  url: buildPageUrl("", `/${category}/${slug}`),
+  keywords: tags?.join(", ") || "",
+  inLanguage: lang,
+});
 ---
 
-<html lang="ko">
-	<head>
-		<BaseHead title={title} description={summary || title} />
-	</head>
+<html lang={lang}>
+  <head>
+    <BaseHead
+      title={title}
+      description={summary || title}
+      tags={tags}
+      ogImage={`/posts/${category}/${slug}/og.png`}
+    />
+  </head>
 
-	<body>
-		<Header />
-		<Container>
-			<main>
-				<article>
-					<header class="space-y-1 pb-5 text-center">
-						<div class="w-11/12 mx-auto">
-							<Image width={1200} height={300} src={bannerSrc} alt={`${title} 배너`} />
-						</div>
-						<div id="post-title" class="flex flex-col justify-center items-center pt-5">
-							<h1 class="font-bold text-xl md:text-2xl">{title}</h1>
-							<p>{summary}</p>
-							<div class="text-sm text-gray-500 dark:text-gray-300">
-								<a class="underline" href={`/archives/category/${category}`}>
-									{category}
-								</a>{" "}
-								/ <FormattedDate date={date} />
-							</div>
-							<div class="flex items-center gap-2">
-								<PageViews slug={slug} />
-								<AICollaborationBadge withAI={withAI} lang="ko" />
-							</div>
-						</div>
-					</header>
-					<Prose>
-						<slot />
-					</Prose>
-				</article>
-			</main>
-		</Container>
+  <body>
+    <StructuredData schema={jsonLd} />
+    <Header frontmatter={frontmatter} pathname={pathname} client:load />
+    <Container>
+      <main>
+        <article>
+          <header class="space-y-1 pb-5 text-center">
+            <div class="w-11/12 mx-auto">
+              <Image
+                width={1200}
+                height={300}
+                src={bannerImage}
+                alt={`${title} 배너`}
+              />
+            </div>
+            <div id="post-title" class="pt-10">
+              <h1 class="font-bold text-xl md:text-2xl">{title}</h1>
+              <p>{summary}</p>
+              <div class="text-sm text-gray-500 dark:text-gray-300">
+                <a href={`/archives/category/${category}`} class="underline">
+                  {category}
+                </a> / <FormattedDate date={date} />
+                <div>
+                  <PageView slug={slug} apiBaseUrl={apiBaseUrl} />
+                  <AICollaborationBadge withAI={withAI} lang={lang} />
+                </div>
+              </div>
+            </div>
+          </header>
+        </article>
+        <Prose>
+          <slot />
+        </Prose>
+      </main>
+    </Container>
   </body>
 </html>

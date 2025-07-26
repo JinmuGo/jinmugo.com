@@ -1,0 +1,22 @@
+---
+import { cn } from "@/utils/tailwind";
+import Footer from "@/widget/Footer/Footer.astro";
+
+export interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<main
+  class={cn(
+    `mx-auto min-h-screen divide-gray-200 dark:divide-gray-800 flex flex-col justify-between max-w-2xl lg:max-w-3xl xl:max-w-4xl px-4 sm:px-6 xl:px-0`,
+    className,
+  )}
+>
+  <div class="flex-1">
+    <slot />
+  </div>
+  <Footer />
+</main>

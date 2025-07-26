@@ -1,14 +1,26 @@
 ---
+import type { CollectionEntry } from "astro:content";
 import BaseHead from "@/components/BaseHead.astro";
-import Container from "@/components/Container.astro";
+import siteMetadata from "@/consts";
+import Container from "@/layouts/Container.astro";
+import Header from "@/widget/Header/Header.tsx";
+
+const pathname = Astro.url.pathname;
+
+const frontmatter = Astro.props
+  .frontmatter as CollectionEntry<"post">["data"] & { slug: string };
+const title = Astro.props.title ?? siteMetadata.title;
+const description = Astro.props.description ?? siteMetadata.description;
+const image = Astro.props.image;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title="Astro Basics" description="Astro Basics" />
+    <BaseHead title={title} description={description} image={image} />
   </head>
   <body>
+    <Header frontmatter={frontmatter} pathname={pathname} client:load />
     <Container>
       <slot />
     </Container>
