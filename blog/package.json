@@ -30,6 +30,7 @@
     "@tailwindcss/vite": "^4.1.11",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@yeskunall/astro-umami": "^0.0.6",
     "astro": "^5.11.2",
     "astro-icon": "^1.1.5",
     "astro-themes": "^0.2.7",
