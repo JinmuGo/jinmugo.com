@@ -16,3 +16,11 @@ install:
 fclean:
 	rm -rf node_modules
 .PHONY: fclean
+
+lint:
+	pnpm lint
+.PHONY: lint
+
+lint-fix:
+	pnpm lint:fix
+.PHONY: lint-fix

@@ -1,8 +1,12 @@
-# build output
-dist/
+.turbo/
 
-# generated types
-.astro/
+# environment variables
+.env
+.env.production
+.env.local
+
+# macOS-specific files
+.DS_Store
 
 # dependencies
 node_modules/
@@ -12,18 +16,3 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-
-# environment variables
-.env
-.env.production
-
-# macOS-specific files
-.DS_Store
-
-# jetbrains setting folder
-.idea/
-
-blog/src/content/app
-blog/src/content/banner
-blog/src/content/memo
-blog/src/content/post
