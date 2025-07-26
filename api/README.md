@@ -9,13 +9,15 @@ Cloudflare Workers 기반의 블로그 API 서버입니다. **Chanfana**와 **Op
 - **🌍 Geolocation API** - 사용자 위치 정보 제공
 - **📚 OpenAPI 문서** - 자동 생성되는 API 문서
 - **🔥 Fast & Scalable** - Cloudflare Edge Network 기반
+- **🗄️ D1 Database** - Cloudflare D1을 통한 완전한 서버리스 데이터베이스
+- **🔄 Auto Sync** - 블로그 포스트 자동 동기화 시스템
 
 ## 🛠 기술 스택
 
 - **Runtime**: Cloudflare Workers
 - **Framework**: Hono + Chanfana
 - **Database**: Cloudflare D1 (SQLite)
-- **ORM**: Prisma
+- **ORM**: Prisma + @prisma/adapter-d1
 - **Documentation**: OpenAPI 3.1
 - **TypeScript**: 완전한 타입 안전성
 
@@ -38,7 +40,7 @@ npm run db:generate
 #### D1 데이터베이스 생성
 ```bash
 # D1 데이터베이스 생성
-wrangler d1 create blog-db
+npx wrangler d1 create blog-db
 
 # 출력에서 database_id를 복사하여 wrangler.jsonc에 추가
 ```
@@ -71,12 +73,27 @@ NODE_ENV=development
 
 ### 5. 데이터베이스 마이그레이션
 
+#### D1 데이터베이스 마이그레이션 (권장)
 ```bash
-# 로컬 개발용 (SQLite 파일)
-npm run db:push
+# D1 데이터베이스에 스키마 적용
+npm run db:migrate-d1
 
-# 프로덕션 D1 데이터베이스에 스키마 적용
-wrangler d1 execute blog-db --file=./migrations/schema.sql
+# 또는 직접 wrangler 사용
+npx wrangler d1 execute blog-db --file=./schema.sql --remote
+```
+
+#### 로컬 개발용 (SQLite 파일)
+```bash
+npm run db:push
+```
+
+#### 포스트 데이터 동기화
+```bash
+# D1 데이터베이스에 포스트 슬러그 동기화
+npm run db:sync-posts-d1
+
+# 로컬 데이터베이스에 포스트 슬러그 동기화
+npm run db:sync-posts
 ```
 
 ## 🏃‍♂️ 실행
@@ -160,11 +177,17 @@ npm run deploy
 # Prisma 클라이언트 생성
 npm run db:generate
 
-# 데이터베이스 스키마 적용
+# D1 데이터베이스 마이그레이션
+npm run db:migrate-d1
+
+# 로컬 데이터베이스 스키마 적용
 npm run db:push
 
-# 데이터베이스 마이그레이션
-npm run db:migrate
+# D1 데이터베이스에 포스트 동기화
+npm run db:sync-posts-d1
+
+# 로컬 데이터베이스에 포스트 동기화
+npm run db:sync-posts
 
 # Prisma Studio 실행
 npm run db:studio
@@ -176,15 +199,25 @@ npm run cf-typegen
 ## 🏗 프로젝트 구조
 
 ```
-src/
-├── endpoints/          # API 엔드포인트들
-│   ├── like/          # 좋아요 관련 API
-│   ├── view/          # 조회수 관련 API
-│   └── geolocation/   # 위치 정보 API
-├── lib/               # 유틸리티 함수들
-│   └── db.ts          # Prisma 클라이언트 설정
-├── types.ts           # TypeScript 타입 정의
-└── index.ts           # 메인 애플리케이션 파일
+api/
+├── src/
+│   ├── endpoints/          # API 엔드포인트들
+│   │   ├── like/          # 좋아요 관련 API
+│   │   ├── view/          # 조회수 관련 API
+│   │   └── geolocation/   # 위치 정보 API
+│   ├── lib/               # 유틸리티 함수들
+│   │   └── db.ts          # Prisma D1 클라이언트 설정
+│   ├── types.ts           # TypeScript 타입 정의
+│   └── index.ts           # 메인 애플리케이션 파일
+├── scripts/               # 데이터베이스 스크립트들
+│   ├── sync-posts.ts      # 로컬 DB 포스트 동기화
+│   ├── sync-posts-d1.ts   # D1 DB 포스트 동기화
+│   ├── migrate-to-d1.ts   # D1 마이그레이션 유틸리티
+│   └── run-d1-migration.ts # D1 마이그레이션 실행
+├── schema.prisma          # Prisma 스키마 정의
+├── schema.sql             # D1용 SQL 스키마
+├── wrangler.jsonc         # Cloudflare Workers 설정
+└── generated/             # Prisma 클라이언트 생성 파일
 ```
 
 ## 🤝 기여하기
@@ -199,6 +232,55 @@ src/
 
 This project is licensed under the MIT License.
 
+## 🗄️ D1 데이터베이스 마이그레이션 가이드
+
+### 완료된 작업
+
+✅ **D1 스키마 마이그레이션**
+- Prisma 스키마를 D1용 SQL로 변환
+- 모든 테이블, 인덱스, 외래 키 제약 조건 포함
+- 로컬 및 원격 D1 데이터베이스에 성공적으로 적용
+
+✅ **포스트 데이터 동기화**
+- 23개 블로그 포스트 슬러그를 D1에 자동 동기화
+- `sync-posts-d1.ts` 스크립트로 자동화
+- 중복 방지를 위한 `INSERT OR IGNORE` 사용
+
+✅ **Prisma D1 어댑터 설정**
+- `@prisma/adapter-d1` 패키지 설치 및 설정
+- D1 바인딩을 통한 Prisma 클라이언트 연결
+- 완전한 타입 안전성 보장
+
+### 사용 가능한 명령어
+
+```bash
+# D1 스키마 마이그레이션
+npm run db:migrate-d1
+
+# D1 포스트 동기화
+npm run db:sync-posts-d1
+
+# Prisma 클라이언트 생성
+npm run db:generate
+
+# 개발 서버 실행 (D1 연결 포함)
+npm run dev
+```
+
+### 데이터베이스 구조
+
+현재 D1 데이터베이스에는 다음 테이블들이 포함되어 있습니다:
+- **User** - 사용자 정보 (BetterAuth)
+- **Post** - 블로그 포스트 (23개 포스트 슬러그)
+- **Comment** - 댓글 시스템 (Fuma Comment)
+- **CommentLike** - 댓글 좋아요
+- **PostLike** - 포스트 좋아요
+- **PostView** - 포스트 조회수
+- **Account** - OAuth 계정 (BetterAuth)
+- **Session** - 세션 관리 (BetterAuth)
+- **VerificationToken** - 이메일 인증 (BetterAuth)
+- **Authenticator** - WebAuthn 지원
+
 ---
 
-**Powered by Cloudflare Workers** ⚡
+**Powered by Cloudflare Workers & D1** ⚡🗄️
