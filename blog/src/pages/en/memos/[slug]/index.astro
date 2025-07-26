@@ -1,8 +1,8 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
-import MemoDefault from "@/layouts/MemoDefault.astro";
 import { components } from "@/components/mdx/components.astro";
 import PhotoSwipe from "@/components/PhotoSwipe.astro";
+import MemoDefault from "@/layouts/MemoDefault.astro";
 
 export async function getStaticPaths() {
 	// .en.md 파일(영문)만 필터링

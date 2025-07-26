@@ -5,13 +5,13 @@ import FormattedDate from "@/components/FormattedDate.astro";
 import PageView from "@/components/PageView.astro";
 import Prose from "@/components/Prose.astro";
 import Container from "@/layouts/Container.astro";
+import type { PostMetadata } from "@/types/post";
 import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData";
 import StructuredData from "@/utils/structuredData.astro";
 import Header from "@/widget/Header/Header.tsx";
-import type { PostMetadata } from "@/types/post";
 
 interface Props {
-  frontmatter: PostMetadata;
+	frontmatter: PostMetadata;
 }
 
 const { frontmatter } = Astro.props;
@@ -21,11 +21,11 @@ const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
 const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL;
 
 const jsonLd = generatePostsPageSchema({
-  title: title,
-  description: summary || title,
-  url: buildPageUrl("", `/${category}/${slug}`),
-  keywords: tags?.join(", ") || "",
-  inLanguage: lang,
+	title: title,
+	description: summary || title,
+	url: buildPageUrl("", `/${category}/${slug}`),
+	keywords: tags?.join(", ") || "",
+	inLanguage: lang,
 });
 ---
 

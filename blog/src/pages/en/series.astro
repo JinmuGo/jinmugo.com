@@ -16,7 +16,9 @@ function groupPostsBySeries(posts: Post[]): Series[] {
 	const map = new Map<string, Series>();
 	posts.forEach((post) => {
 		const series = post.data.series;
-		if (!series) return;
+		if (!series) {
+			return;
+		}
 		if (!map.has(series)) {
 			map.set(series, { name: series, posts: [], totalPosts: 0 });
 		}

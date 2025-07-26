@@ -12,13 +12,12 @@ import StructuredData from "@/utils/structuredData.astro";
 import Header from "@/widget/Header/Header.tsx";
 
 interface Props {
-  frontmatter: PostMetadata;
-  bannerImage: ImageMetadata;
+	frontmatter: PostMetadata;
+	bannerImage: ImageMetadata;
 }
 
 const { frontmatter, bannerImage } = Astro.props;
-const { title, date, summary, withAI, category, slug, tags } =
-  frontmatter;
+const { title, date, summary, withAI, category, slug, tags } = frontmatter;
 const pathname = Astro.url.pathname;
 const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL;
 
@@ -26,11 +25,11 @@ const { width, height } = bannerImage;
 const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
 
 const jsonLd = generatePostsPageSchema({
-  title: title,
-  description: summary || title,
-  url: buildPageUrl("", `/${category}/${slug}`),
-  keywords: tags?.join(", ") || "",
-  inLanguage: lang,
+	title: title,
+	description: summary || title,
+	url: buildPageUrl("", `/${category}/${slug}`),
+	keywords: tags?.join(", ") || "",
+	inLanguage: lang,
 });
 ---
 

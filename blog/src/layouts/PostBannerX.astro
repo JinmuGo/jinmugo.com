@@ -1,19 +1,19 @@
 ---
 import { Image } from "astro:assets";
+import AICollaborationBadge from "@/components/AICollaborationBadge.astro";
 import BaseHead from "@/components/BaseHead.astro";
+import FormattedDate from "@/components/FormattedDate.astro";
+import PageView from "@/components/PageView.astro";
 import Prose from "@/components/Prose.astro";
 import Container from "@/layouts/Container.astro";
 import type { PostMetadata } from "@/types/post";
 import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData";
 import StructuredData from "@/utils/structuredData.astro";
 import Header from "@/widget/Header/Header.tsx";
-import FormattedDate from "@/components/FormattedDate.astro";
-import PageView from "@/components/PageView.astro";
-import AICollaborationBadge from "@/components/AICollaborationBadge.astro";
 
 interface Props {
-  frontmatter: PostMetadata;
-  bannerImage: ImageMetadata;
+	frontmatter: PostMetadata;
+	bannerImage: ImageMetadata;
 }
 
 const { frontmatter, bannerImage } = Astro.props;
@@ -23,11 +23,11 @@ const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
 const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL;
 
 const jsonLd = generatePostsPageSchema({
-  title: title,
-  description: summary || title,
-  url: buildPageUrl("", `/${category}/${slug}`),
-  keywords: tags?.join(", ") || "",
-  inLanguage: lang,
+	title: title,
+	description: summary || title,
+	url: buildPageUrl("", `/${category}/${slug}`),
+	keywords: tags?.join(", ") || "",
+	inLanguage: lang,
 });
 ---
 

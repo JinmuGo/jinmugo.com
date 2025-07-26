@@ -39,7 +39,9 @@ const images = await Promise.all(
 		let width = 1200;
 		let height = 800;
 		try {
-			if (!obj.Key) throw new Error("Key is undefined");
+			if (!obj.Key) {
+				throw new Error("Key is undefined");
+			}
 			const head = await s3Client.send(
 				new HeadObjectCommand({
 					Bucket: import.meta.env.R2_BUCKET_NAME,

@@ -2,10 +2,10 @@
 import { callouts } from "./callout.astro";
 
 export interface Props {
-  type: string;
-  isFoldable: boolean;
-  defaultFolded?: boolean;
-  className?: string;
+	type: string;
+	isFoldable: boolean;
+	defaultFolded?: boolean;
+	className?: string;
 }
 const { type, isFoldable, defaultFolded, className } = Astro.props;
 const callout = callouts[type as keyof typeof callouts] ?? callouts.note;
