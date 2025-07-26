@@ -1,0 +1,51 @@
+---
+import siteMetadata from "@/consts";
+import Layout from "@/layouts/Layout.astro";
+import ListLayouts from "@/layouts/ListLayouts";
+import { getEnglishPosts, sortPostsByDate } from "@/utils/posts";
+import {
+	buildItemUrl,
+	buildPageUrl,
+	generatePostsPageSchema,
+} from "@/utils/structuredData";
+import StructuredData from "@/utils/structuredData.astro";
+
+// 모든 영어 포스트 가져오기
+const posts = await getEnglishPosts();
+const sortedPosts = sortPostsByDate<"post">(posts);
+
+const title = siteMetadata.title;
+const description = siteMetadata.description;
+
+// 구조화된 데이터 생성
+const jsonLd = generatePostsPageSchema({
+	title,
+	description,
+	url: buildPageUrl("/en", "/posts"),
+	keywords: "posts, articles, collection",
+	inLanguage: "en",
+	itemListElements: sortedPosts.map((post, index) => ({
+		"@type": "ListItem",
+		url: buildItemUrl(`/en/posts/${post.data.category}/${post.slug}`),
+		position: index + 1,
+		item: {
+			"@type": "Article",
+			name: post.data.title,
+			url: buildItemUrl(`/en/posts/${post.data.category}/${post.slug}`),
+		},
+	})),
+});
+---
+
+<Layout>
+  <StructuredData schema={jsonLd} />
+  <ListLayouts
+    posts={sortedPosts.map((post) => ({
+      ...post.data,
+      slug: post.slug,
+    }))}
+    title={title}
+    postType="post"
+    client:load
+  />
+</Layout>

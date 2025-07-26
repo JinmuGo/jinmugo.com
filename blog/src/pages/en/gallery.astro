@@ -1,0 +1,126 @@
+---
+import type { _Object } from "@aws-sdk/client-s3";
+import {
+  HeadObjectCommand,
+  ListObjectsCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
+import { Image } from "astro:assets";
+import siteMetadata from "@/consts";
+import Layout from "@/layouts/Layout.astro";
+import { generatePageSchema } from "@/utils/structuredData";
+import StructuredData from "@/utils/structuredData.astro";
+
+// S3 클라이언트 생성
+const s3Client = new S3Client({
+  credentials: {
+    accessKeyId: import.meta.env.R2_ACCESS_KEY_ID,
+    secretAccessKey: import.meta.env.R2_SECRET_ACCESS_KEY,
+  },
+  endpoint: `https://${import.meta.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  region: "auto",
+});
+
+const prefixDateRegex =
+  /^(?:\d{4})\/(?:0[1-9]|1[0-2])\/(?:0[1-9]|[12]\d|3[01])/;
+
+// S3에서 이미지 목록 가져오기 (빌드 타임)
+const listCommand = new ListObjectsCommand({
+  Bucket: import.meta.env.R2_BUCKET_NAME,
+});
+const { Contents } = await s3Client.send(listCommand);
+
+const filtered = ((Contents ?? []) as _Object[]).filter(
+  (obj: _Object) => obj.Key?.endsWith(".jpg") && prefixDateRegex.test(obj.Key),
+);
+
+const images = await Promise.all(
+  filtered.map(async (obj: _Object) => {
+    let width = 1200;
+    let height = 800;
+    try {
+      if (!obj.Key) throw new Error("Key is undefined");
+      const head = await s3Client.send(
+        new HeadObjectCommand({
+          Bucket: import.meta.env.R2_BUCKET_NAME,
+          Key: obj.Key,
+        }),
+      );
+      if (head.Metadata?.width && head.Metadata?.height) {
+        width = Number(head.Metadata.width);
+        height = Number(head.Metadata.height);
+      }
+    } catch {
+      // 무시하고 기본값 사용
+    }
+    return {
+      key: obj.Key ?? "",
+      src: obj.Key ? `${siteMetadata.cdnUrl}/${obj.Key}` : "",
+      width,
+      height,
+    };
+  }),
+);
+
+const title = "Gallery";
+const description = "진무의 사진 갤러리입니다.";
+
+const jsonLd = generatePageSchema({
+  type: "ImageGallery",
+  title,
+  description,
+  url: `${siteMetadata.siteUrl}/gallery`,
+  inLanguage: "ko",
+});
+---
+
+<Layout title={title} description={description}>
+  <StructuredData schema={jsonLd} />
+  <div class="space-y-2 pt-6 pb-8 md:space-y-5">
+    <h1
+      class="text-3xl font-extrabold tracking-tight leading-9 text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14"
+    >
+      {title}
+    </h1>
+    <p class="text-lg text-gray-600 dark:text-gray-300">{description}</p>
+  </div>
+  <div class="columns-1 sm:columns-2 lg:columns-3 gap-4" id="gallery">
+    {
+      images.map(
+        (img: { key: string; src: string; width: number; height: number }) => (
+          <a
+            href={img.src}
+            data-pswp-width={img.width}
+            data-pswp-height={img.height}
+            class="break-inside-avoid mb-4 block cursor-zoom-in"
+            target="_blank"
+          >
+            <Image
+              src={img.src}
+              alt={img.key}
+              width={img.width}
+              height={img.height}
+              class="rounded-lg shadow-md w-full h-auto object-cover"
+            />
+          </a>
+        ),
+      )
+    }
+  </div>
+</Layout>
+
+<script>
+  import PhotoSwipeLightbox from "photoswipe/lightbox";
+  import "photoswipe/style.css";
+
+  const lightbox = new PhotoSwipeLightbox({
+    gallery: "#gallery",
+    children: "a",
+    pswpModule: () => import("photoswipe"),
+    bgOpacity: 0.85,
+    escKey: true,
+    pinchToClose: true,
+  });
+
+  lightbox.init();
+</script>

@@ -1,0 +1,129 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import { buildPageUrl, generatePageSchema } from "@/utils/structuredData";
+import StructuredData from "@/utils/structuredData.astro";
+
+export async function getStaticPaths() {
+	const posts = await getCollection("post");
+
+	const categories = [
+		...new Set(posts.map((post) => post.data.category).filter(Boolean)),
+	];
+	const tags = [
+		...new Set(posts.flatMap((post) => post.data.tags ?? []).filter(Boolean)),
+	];
+	const years = [
+		...new Set(
+			posts
+				.map((post) =>
+					post.data.date
+						? new Date(post.data.date).getFullYear().toString()
+						: null,
+				)
+				.filter(Boolean),
+		),
+	];
+
+	const paths = [
+		...categories.map((category) => ({
+			params: { classify: "category", target: category }, // 인코딩 X
+		})),
+		...tags.map((tag) => ({
+			params: { classify: "tag", target: tag }, // 인코딩 X
+		})),
+		...years.map((year) => ({
+			params: { classify: "year", target: year }, // 인코딩 X
+		})),
+	];
+
+	return paths;
+}
+
+const { classify, target } = Astro.params;
+const decodeTarget = decodeURIComponent(target ?? "");
+
+const posts = await getCollection("post");
+const capitalizeFirst = (str: string) =>
+	str.charAt(0).toUpperCase() + str.slice(1);
+
+function getPostBySlug(
+	posts: CollectionEntry<"post">[],
+	classify: string,
+	target: string,
+) {
+	if (!classify || !target) {
+		return [];
+	}
+
+	switch (classify) {
+		case "category":
+			return posts.filter((post) => post.data.category === target);
+		case "tag":
+			return posts.filter((post) => post.data.tags?.includes(target));
+		case "year":
+			return posts.filter(
+				(post) =>
+					post.data.date &&
+					new Date(post.data.date).getFullYear().toString() === target,
+			);
+		default:
+			return [];
+	}
+}
+
+const postsWithSlug = getPostBySlug(posts, classify ?? "", decodeTarget ?? "");
+const title = `${capitalizeFirst(decodeTarget ?? "")} - ${capitalizeFirst(classify ?? "")}`;
+const description = `Archives of ${capitalizeFirst(decodeTarget ?? "")} in ${capitalizeFirst(classify ?? "")}`;
+const url = buildPageUrl("", `/archives/${classify}/${decodeTarget}`);
+const jsonLd = generatePageSchema({
+	type: "CollectionPage",
+	title,
+	description,
+	url,
+	keywords: `archives, ${classify}, ${decodeTarget}`,
+	inLanguage: "ko",
+});
+---
+
+<Layout title={title} description={description}>
+  <StructuredData schema={jsonLd} />
+  <div class="min-h-screen px-2 sm:px-4">
+    <div class="space-y-2 py-6 md:space-y-1">
+      <h1
+        class="text-3xl capitalize leading-9 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-100"
+      >
+        {decodeTarget}
+      </h1>
+      <p class="text-lg leading-7 text-gray-500 dark:text-gray-400">
+        {description}
+      </p>
+    </div>
+    {postsWithSlug.length === 0 && "No posts found."}
+    <ul>
+      {
+        postsWithSlug.map((post) => (
+          <li class:list={["flex", "justify-between", "items-center", "py-3"]}>
+            <a
+              href={`/posts/${post.data.category}/${post.slug}`}
+              class="text-base sm:text-lg font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
+            >
+              {post.data.title}
+            </a>
+            <div class="flex-1 border-b-2 min-w-2.5 border-dotted border-gray-300 mx-2" />
+            <span class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 min-w-[90px] text-right">
+              {post.data.date
+                ? new Date(post.data.date).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "2-digit",
+                  })
+                : ""}
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Layout>

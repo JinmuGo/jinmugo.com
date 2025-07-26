@@ -1,18 +1,41 @@
 ---
-import { getKoreanPosts, sortPostsByDate } from "@/utils/posts";
-import Layout from "@/layouts/Layout.astro";
-import HeroImage from "@/components/HeroImage.astro";
-import PostTimeline from "@/components/Timeline/PostTimeline.astro";
+import { Image } from "astro:assets";
 import Bleed from "@/components/Bleed.astro";
+import PostTimeline from "@/components/Timeline/PostTimeline.astro";
+import siteMetadata from "@/consts";
+import Layout from "@/layouts/Layout.astro";
+import { getKoreanPosts, sortPostsByDate } from "@/utils/posts";
+import { generatePageSchema } from "@/utils/structuredData";
+import StructuredData from "@/utils/structuredData.astro";
+import Avatar from "~/public/avatar.webp";
 import HeroImageSrc from "~/public/sea-boat.webp";
 
 const posts = await getKoreanPosts();
 const sortedPosts = sortPostsByDate<"post">(posts);
+
+const title = siteMetadata.title;
+const description = siteMetadata.description;
+const url = siteMetadata.siteUrl;
+const jsonLd = generatePageSchema({
+	title,
+	description,
+	url,
+	keywords: "blog, posts, timeline",
+	inLanguage: "ko",
+});
 ---
 
-<Layout>
+<Layout title={title} description={description} image={Avatar}>
+  <StructuredData schema={jsonLd} />
   <Bleed>
-    <HeroImage src={HeroImageSrc} alt="boat" blurSrc="sea-boat-blur.webp" />
+    <Image
+      src={HeroImageSrc}
+      alt="boat"
+      class="object-cover w-full h-full"
+      loading="eager"
+      fetchpriority="high"
+      data-blur-src="sea-boat-blur.webp"
+    />
   </Bleed>
   <PostTimeline posts={sortedPosts} />
 </Layout>

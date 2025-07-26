@@ -1,0 +1,38 @@
+---
+import type { CollectionEntry } from "astro:content";
+import MemoDefault from "@/layouts/MemoDefault.astro";
+import { getKoreanMemos } from "@/utils/memos";
+import { components } from "@/components/mdx/components.astro";
+import PhotoSwipe from "@/components/PhotoSwipe.astro";
+
+export async function getStaticPaths() {
+  const memos = await getKoreanMemos();
+
+  return memos.map((entry: CollectionEntry<"memo">) => {
+    const slugParts = entry.id.split("/");
+    const folderName = slugParts[0];
+    return {
+      params: {
+        slug: folderName.toLowerCase(),
+      },
+      props: { entry },
+    };
+  });
+}
+
+const { slug } = Astro.params;
+
+const { entry }: { entry: CollectionEntry<"memo"> } = Astro.props;
+const frontmatterWithSlug = {
+  ...entry.data,
+  slug,
+};
+
+const { Content } = await entry.render();
+---
+
+<MemoDefault frontmatter={frontmatterWithSlug}>
+  <Content components={components} />
+</MemoDefault>
+
+<PhotoSwipe />

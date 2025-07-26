@@ -1,39 +1,36 @@
 ---
-import { type CollectionEntry } from "astro:content";
-import PostDefault from "@/layouts/PostDefault.astro";
+import type { CollectionEntry } from "astro:content";
 import PostBannerX from "@/layouts/PostBannerX.astro";
 import PostBannerY from "@/layouts/PostBannerY.astro";
-import { getBannerImage } from "@/utils/banner";
-import { getKoreanPosts } from "@/utils/posts";
+import PostDefault from "@/layouts/PostDefault.astro";
 import type { PostLayoutType } from "@/types/post";
+import { getBannerImageBySlug } from "@/utils/banner.astro";
+import { getKoreanPosts } from "@/utils/posts";
+import { components } from "@/components/mdx/components.astro";
+import PhotoSwipe from "@/components/PhotoSwipe.astro";
 
 export async function getStaticPaths() {
-  // .md 파일(한글)만 필터링
   const posts = await getKoreanPosts();
 
   return posts.map((entry: CollectionEntry<"post">) => {
-    const slugParts = entry.id.split("/");
-    const folderName = slugParts[0];
     return {
       params: {
         category: entry.data.category,
-        slug: folderName,
+        slug: entry.slug,
       },
-      props: { entry },
+      props: { entry, slug: entry.slug },
     };
   });
 }
 
-const { entry }: { entry: CollectionEntry<"post"> } = Astro.props;
+const { entry, slug }: { entry: CollectionEntry<"post">; slug: string } =
+  Astro.props;
 const { Content } = await entry.render();
 const frontmatterWithSlug = {
   ...entry.data,
-  slug: entry.id.split("/")[0],
+  slug,
 };
-const bannerImage = await getBannerImage(
-  frontmatterWithSlug.banner,
-  frontmatterWithSlug.slug,
-);
+const bannerImage = getBannerImageBySlug(slug);
 let layout: PostLayoutType = "PostDefault";
 if (bannerImage) {
   const { width, height } = bannerImage;
@@ -48,23 +45,23 @@ if (bannerImage) {
 {
   layout === "PostDefault" && (
     <PostDefault frontmatter={frontmatterWithSlug}>
-      <Content />
+      <Content components={components} />
     </PostDefault>
   )
 }
-
 {
   layout === "PostBannerX" && (
-    <PostBannerX frontmatter={frontmatterWithSlug}>
-      <Content />
+    <PostBannerX frontmatter={frontmatterWithSlug} bannerImage={bannerImage!}>
+      <Content components={components} />
     </PostBannerX>
   )
 }
-
 {
   layout === "PostBannerY" && (
-    <PostBannerY frontmatter={frontmatterWithSlug}>
-      <Content />
+    <PostBannerY frontmatter={frontmatterWithSlug} bannerImage={bannerImage!}>
+      <Content components={components} />
     </PostBannerY>
   )
 }
+
+<PhotoSwipe />
