@@ -1,0 +1,66 @@
+---
+
+---
+
+<script>
+  import PhotoSwipeLightbox from "photoswipe/lightbox";
+  import PhotoSwipe, { type PhotoSwipeOptions } from "photoswipe";
+  import "photoswipe/style.css";
+
+  interface PostBodyPhotoSwipeProps extends PhotoSwipeOptions {
+    readonly photo_scale: number;
+  }
+
+  const initPhotoSwipe = () => {
+    const options: PostBodyPhotoSwipeProps = {
+      photo_scale: 2,
+      arrowNext: false,
+      arrowPrev: false,
+      children: "a.photo-swipe",
+      counter: false,
+      gallery: "#prose",
+      // dynamic import is not supported in UMD version
+      pswpModule: PhotoSwipe,
+      showHideAnimationType: "fade",
+      zoom: false,
+      pinchToClose: true,
+      escKey: true,
+    };
+    const galleryEl = document.querySelector(options.gallery as string);
+    if (!galleryEl) {
+      return;
+    }
+    const imgEls: HTMLImageElement[] = [];
+    const els: NodeListOf<HTMLImageElement> = galleryEl.querySelectorAll(
+      "img:not(.emoji):not(#embed-card-image)",
+    );
+
+    els.forEach((el) => {
+      if (el.src.trim() == "") {
+        return;
+      }
+      if (!imgEls.includes(el)) {
+        imgEls.push(el);
+      }
+    });
+    if (imgEls.length === 0) {
+      return;
+    }
+    imgEls.forEach((imgEl) => {
+      imgEl.outerHTML = `
+  <a class="photo-swipe cursor-zoom-in"
+    href="${imgEl.src}"
+    data-pswp-width="${(Math.max(imgEl.naturalWidth, imgEl.width) * options.photo_scale).toString()}"
+    data-pswp-height="${(Math.max(imgEl.naturalHeight, imgEl.height) * options.photo_scale).toString()}"
+    data-pswp-caption="${imgEl.getAttribute("caption") ?? imgEl.alt}"
+    target="_blank">
+    ${imgEl.outerHTML}
+  </a>`;
+    });
+    // Initialize PhotoSwipe 5
+    const lightbox = new PhotoSwipeLightbox(options);
+    lightbox.init();
+  };
+
+  initPhotoSwipe();
+</script>
