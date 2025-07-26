@@ -1,8 +1,8 @@
 ---
 // TimelineTime.astro
 interface Props {
-  class?: string;
-  datetime?: string;
+	class?: string;
+	datetime?: string;
 }
 
 const { class: className = "", datetime } = Astro.props;
@@ -14,4 +14,3 @@ const { class: className = "", datetime } = Astro.props;
 >
   <slot />
 </time>
-

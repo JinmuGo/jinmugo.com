@@ -1,35 +1,35 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import Timeline from "./Timeline.astro";
-import TimelineItem from "./TimelineItem.astro";
-import TimelineHeader from "./TimelineHeader.astro";
-import TimelineTime from "./TimelineTime.astro";
-import TimelineTitle from "./TimelineTitle.astro";
 import TimelineDescription from "./TimelineDescription.astro";
 import TimelineDot from "./TimelineDot.astro";
+import TimelineHeader from "./TimelineHeader.astro";
+import TimelineItem from "./TimelineItem.astro";
+import TimelineTime from "./TimelineTime.astro";
+import TimelineTitle from "./TimelineTitle.astro";
 
 interface Props {
-  posts: (
-    | CollectionEntry<"post">
-    | {
-        id: string;
-        render(): Promise<any>;
-        slug: string;
-        body: string;
-        collection: "post";
-        data: {
-          title: string;
-          date: Date;
-          draft: boolean;
-          bannerOnlyText: boolean;
-          category: string;
-          summary?: string;
-          withAI?: boolean;
-        };
-        rendered?: any;
-        filePath?: string;
-      }
-  )[];
+	posts: (
+		| CollectionEntry<"post">
+		| {
+				id: string;
+				render(): Promise<import("astro:content").RenderResult>;
+				slug: string;
+				body: string;
+				collection: "post";
+				data: {
+					title: string;
+					date: Date;
+					draft: boolean;
+					bannerOnlyText: boolean;
+					category: string;
+					summary?: string;
+					withAI?: boolean;
+				};
+				rendered?: import("astro:content").RenderedContent;
+				filePath?: string;
+		  }
+	)[];
 }
 
 const { posts } = Astro.props;
@@ -38,7 +38,7 @@ const { posts } = Astro.props;
 <Timeline>
   {
     posts.map((post, index) => {
-      const postUrl = `/post/${post.data.category}/${post.slug.split("/")[0]}`;
+      const postUrl = `/posts/${post.data.category}/${post.slug}`;
       const formattedDate = post.data.date.toISOString().split("T")[0]; // yyyy-MM-dd 형식
       const isLatest = index === 0;
 

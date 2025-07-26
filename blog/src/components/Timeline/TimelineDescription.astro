@@ -1,7 +1,7 @@
 ---
 // TimelineDescription.astro
 interface Props {
-  class?: string;
+	class?: string;
 }
 
 const { class: className = "" } = Astro.props;
@@ -9,4 +9,4 @@ const { class: className = "" } = Astro.props;
 
 <div class={`text-muted-foreground ${className}`}>
   <slot />
-</div> 
+</div>

@@ -5,13 +5,7 @@ import { Icon } from "astro-icon/components";
 <style>
   @layer components {
     button {
-      position: fixed;
-      right: 10px;
-      bottom: 10px;
       cursor: pointer;
-      border-radius: var(--border-radius-sm);
-      padding: 5px;
-      background: var(--bg-card);
 
       /**
        * Without this media query the button gets stuck after you tap it on 
@@ -89,16 +83,6 @@ import { Icon } from "astro-icon/components";
   aria-label="automatic/system"
   aria-live="polite"
 >
-  <Icon
-    class="light"
-    name="sun"
-    size={16}
-    aria-labelledby="theme-switcher"
-  />
-  <Icon
-    class="dark"
-    name="moon"
-    size={16}
-    aria-labelledby="theme-switcher"
-  />
+  <Icon class="light" name="sun" size={24} aria-labelledby="theme-switcher" />
+  <Icon class="dark" name="moon" size={24} aria-labelledby="theme-switcher" />
 </button>
