@@ -14,12 +14,13 @@ const description = Astro.props.description ?? pkg.description;
 const image = Astro.props.image;
 const lang = Astro.props.lang ?? "ko";
 const jsonLd = Astro.props.jsonLd;
+const ogImage = Astro.props.ogImage;
 ---
 
 <!doctype html>
 <html lang={lang}>
   <head>
-    <BaseHead title={title} description={description} image={image} />
+    <BaseHead title={title} description={description} image={image} ogImage={ogImage} />
     {jsonLd && <StructuredData schema={jsonLd} />}
   </head>
   <body class="text-foreground font-sans dark:bg-gray-950">

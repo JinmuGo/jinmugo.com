@@ -35,6 +35,7 @@ const jsonLd = generatePostsPageSchema({
   description={summary || title}
   lang={lang}
   jsonLd={jsonLd}
+  ogImage={`/posts/${slug}/og.png`}
 >
   <Prose>
     <header

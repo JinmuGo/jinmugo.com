@@ -18,6 +18,7 @@ const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
   title={title}
   description={summary || title}
   lang={lang}
+  ogImage={`/memos/${slug}/og.png`}
 >
   <main>
     <article>
