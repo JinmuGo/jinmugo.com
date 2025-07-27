@@ -96,6 +96,7 @@ export const OpenGraphImage = ({
 					fill="#f3f4f6"
 				/>
 			</svg>
+			{/* biome-ignore lint/a11y/noSvgWithoutTitle: OG 이미지 생성용 SVG */}
 			<svg
 				width={width}
 				height={height}

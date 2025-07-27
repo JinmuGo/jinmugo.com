@@ -7,14 +7,16 @@ import { getEnglishPosts } from "@/utils/posts.ts";
 
 export const GET: APIRoute = async (context) => {
 	const posts = (await getEnglishPosts()).map((post: Post) => ({
-		link: `/posts/${post.data.category}/${post.slug}`,
+		link: `/en/posts/${post.data.category}/${post.slug}`,
+		title: post.data.title,
 		pubDate: post.data.date,
 		description: post.data.summary,
 		categories: post.data.tags,
 		author: siteMetadata.author,
 	}));
 	const memos = (await getEnglishMemos()).map((memo: Memo) => ({
-		link: `/memos/${memo.slug}`,
+		link: `/en/memos/${memo.slug}`,
+		title: memo.data.title,
 		pubDate: memo.data.date,
 		description: memo.data.summary,
 		categories: memo.data.tags,
