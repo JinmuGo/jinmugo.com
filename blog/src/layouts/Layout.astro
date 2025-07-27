@@ -1,25 +1,28 @@
 ---
 import type { Post } from "@/types/content";
 import BaseHead from "@/components/BaseHead.astro";
-import siteMetadata from "@/consts";
+import pkg from "../../package.json";
 import Container from "@/layouts/Container.astro";
 import Header from "@/widget/Header/Header.tsx";
+import StructuredData from "@/utils/structuredData.astro";
 
 const pathname = Astro.url.pathname;
 
-const frontmatter = Astro.props
-	.frontmatter as Post;
-const title = Astro.props.title ?? siteMetadata.title;
-const description = Astro.props.description ?? siteMetadata.description;
+const frontmatter = Astro.props.frontmatter as Post;
+const title = Astro.props.title ?? pkg.title;
+const description = Astro.props.description ?? pkg.description;
 const image = Astro.props.image;
+const lang = Astro.props.lang ?? "ko";
+const jsonLd = Astro.props.jsonLd;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <BaseHead title={title} description={description} image={image} />
+    {jsonLd && <StructuredData schema={jsonLd} />}
   </head>
-  <body>
+  <body class="text-foreground">
     <Header frontmatter={frontmatter} pathname={pathname} client:load />
     <Container>
       <slot />

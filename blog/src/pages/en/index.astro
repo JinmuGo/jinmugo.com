@@ -2,22 +2,21 @@
 import { Image } from "astro:assets";
 import Bleed from "@/components/Bleed.astro";
 import PostTimeline from "@/components/Timeline/PostTimeline.astro";
-import siteMetadata from "@/consts";
+import pkg from "../../../package.json";
 import Layout from "@/layouts/Layout.astro";
 import { getEnglishPosts, sortPostsByDate } from "@/content-utils/posts";
 import { getEnglishMemos, sortMemosByDate } from "@/content-utils/memos";
 import { generatePageSchema } from "@/utils/structuredData";
-import StructuredData from "@/utils/structuredData.astro";
 import HeroImageSrc from "~/public/sea-boat.webp";
 
 const posts = await getEnglishPosts();
 const memos = await getEnglishMemos();
-const sortedPosts = sortPostsByDate<"post">(posts);
+const sortedPosts = sortPostsByDate(posts);
 const sortedMemos = sortMemosByDate(memos);
 
-const title = siteMetadata.title;
-const description = siteMetadata.description;
-const url = `${siteMetadata.siteUrl}/en`;
+const title = pkg.title;
+const description = pkg.description;
+const url = `${pkg.homepage}/en`;
 const jsonLd = generatePageSchema({
 	title,
 	description,
@@ -27,8 +26,13 @@ const jsonLd = generatePageSchema({
 });
 ---
 
-<Layout title={title} description={description}>
-  <StructuredData schema={jsonLd} />
+<Layout 
+  title={title} 
+  description={description}
+  image={HeroImageSrc}
+  lang="en"
+  jsonLd={jsonLd}
+>
   <Bleed>
     <Image
       src={HeroImageSrc}

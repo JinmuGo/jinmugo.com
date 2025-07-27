@@ -2,12 +2,11 @@
 import { Image } from "astro:assets";
 import Bleed from "@/components/Bleed.astro";
 import PostTimeline from "@/components/Timeline/PostTimeline.astro";
-import siteMetadata from "@/consts";
+import pkg from "../../package.json";
 import Layout from "@/layouts/Layout.astro";
 import { getKoreanPosts, sortPostsByDate } from "@/content-utils/posts";
 import { getKoreanMemos, sortMemosByDate } from "@/content-utils/memos";
 import { generatePageSchema } from "@/utils/structuredData";
-import StructuredData from "@/utils/structuredData.astro";
 import Avatar from "~/public/avatar.webp";
 import HeroImageSrc from "~/public/sea-boat.webp";
 
@@ -21,9 +20,9 @@ console.log(
   }),
 );
 
-const title = siteMetadata.title;
-const description = siteMetadata.description;
-const url = siteMetadata.siteUrl;
+const title = pkg.title;
+const description = pkg.description;
+const url = pkg.homepage;
 const jsonLd = generatePageSchema({
   title,
   description,
@@ -33,8 +32,13 @@ const jsonLd = generatePageSchema({
 });
 ---
 
-<Layout title={title} description={description} image={Avatar}>
-  <StructuredData schema={jsonLd} />
+<Layout 
+  title={title} 
+  description={description} 
+  image={Avatar}
+  lang="ko"
+  jsonLd={jsonLd}
+>
   <Bleed>
     <Image
       src={HeroImageSrc}

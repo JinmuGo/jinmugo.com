@@ -4,7 +4,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import siteMetadata from "@/consts";
+import pkg from "../../../package.json";
 import Layout from "@/layouts/Layout.astro";
 import {
 	type Project,
@@ -12,9 +12,8 @@ import {
 	projectsData,
 } from "@/utils/projectsData";
 import { generatePageSchema } from "@/utils/structuredData";
-import StructuredData from "@/utils/structuredData.astro";
 
-const cdnUrl = `${siteMetadata.siteUrl}/banner/`;
+const cdnUrl = `${pkg.homepage}/banner/`;
 
 function groupBySection(projects: Project[]): ProjectSection {
 	return projects.reduce((acc: ProjectSection, cur: Project) => {
@@ -31,7 +30,7 @@ const projects: ProjectSection = groupBySection(projectsData);
 
 const title = "Projects";
 const description = "Project collection.";
-const url = `${siteMetadata.siteUrl}/en/projects`;
+const url = `${pkg.homepage}/en/projects`;
 const jsonLd = generatePageSchema({
 	title,
 	description,
@@ -41,8 +40,12 @@ const jsonLd = generatePageSchema({
 });
 ---
 
-<Layout title={title} description={description} lang="en">
-  <StructuredData schema={jsonLd} />
+<Layout 
+  title={title} 
+  description={description} 
+  lang="en"
+  jsonLd={jsonLd}
+>
   {
     Object.entries(projects).map(([section, projects]: [string, Project[]]) => (
       <section class="my-2">

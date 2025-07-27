@@ -1,5 +1,5 @@
 ---
-import siteMetadata from "@/consts";
+import pkg from "../../../package.json";
 import SocialIcon from "./SocialIcon.astro";
 ---
 
@@ -8,9 +8,9 @@ import SocialIcon from "./SocialIcon.astro";
     class="flex flex-col gap-4 justify-end w-full md:flex-row md:justify-between md:items-center"
   >
     <div class="space-x-4 flex">
-      <SocialIcon kind="mail" href={`mailto:${siteMetadata.email}`} size={6} />
-      <SocialIcon kind="github" href={siteMetadata.github} size={6} />
-      <SocialIcon kind="linkedin" href={siteMetadata.linkedin} size={6} />
+      <SocialIcon kind="mail" href={`mailto:${pkg.email}`} size={6} />
+      <SocialIcon kind="github" href={pkg.social.github} size={6} />
+      <SocialIcon kind="linkedin" href={pkg.social.linkedin} size={6} />
     </div>
     <div>
       <p class="text-gray-500 dark:text-gray-400">

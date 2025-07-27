@@ -1,8 +1,17 @@
 {
   "name": "blog",
+  "title": "Thing's of my life",
+  "description": "A Smooth Sea Never Made a Skilled Sailor",
+  "author": "Jinmu Go",
+  "email": "hi@jinmu.me",
   "type": "module",
   "version": "0.0.1",
   "homepage": "https://jinmu.me",
+  "cdnUrl": "https://cdn.jinmu.me",
+  "social": {
+    "github": "https://github.com/JinmuGo",
+    "linkedin": "https://www.linkedin.com/in/jinmugo"
+  },
   "scripts": {
     "dev": "pnpm prebuild && astro dev",
     "prebuild": "sh scripts/prebuild.sh",

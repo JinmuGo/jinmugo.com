@@ -1,5 +1,5 @@
 ---
-import siteMetadata from "@/consts";
+import pkg from "../../../../package.json";
 import Layout from "@/layouts/Layout.astro";
 import ListLayouts from "@/layouts/ListLayouts";
 import { getEnglishMemos, sortMemosByDate } from "@/content-utils/memos";
@@ -8,14 +8,13 @@ import {
 	buildPageUrl,
 	generatePostsPageSchema,
 } from "@/utils/structuredData";
-import StructuredData from "@/utils/structuredData.astro";
 
 // 모든 영어 메모 가져오기
 const memos = await getEnglishMemos();
 const sortedMemos = sortMemosByDate(memos);
 
-const title = siteMetadata.title;
-const description = siteMetadata.description;
+const title = pkg.title;
+const description = pkg.description;
 
 // 구조화된 데이터 생성
 const jsonLd = generatePostsPageSchema({
@@ -37,8 +36,12 @@ const jsonLd = generatePostsPageSchema({
 });
 ---
 
-<Layout>
-  <StructuredData schema={jsonLd} />
+<Layout
+  title={title}
+  description={description}
+  lang="en"
+  jsonLd={jsonLd}
+>
   <ListLayouts
     posts={sortedMemos.map((memo) => ({
       ...memo.data,

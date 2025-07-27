@@ -1,4 +1,4 @@
-import siteMetadata from "@/consts";
+import pkg from "../../package.json";
 
 export interface ListItem {
 	"@type": "ListItem";
@@ -81,7 +81,7 @@ export const generatePageSchema = (options: PageSchemaOptions) => {
 	// 공통 publisher 정보 추가
 	pageSchema.publisher = {
 		"@type": "Organization",
-		name: siteMetadata.title,
+		name: pkg.title,
 	};
 
 	// 목록 페이지라면, itemListElements 옵션이 있을 경우 ItemList 스키마를 mainEntity에 포함

@@ -1,15 +1,14 @@
 ---
 import { Image } from "astro:assets";
-import siteMetadata from "@/consts";
+import pkg from "../../package.json";
 import { getKoreanApp } from "@/content-utils/apps";
 import { buildPageUrl, generatePageSchema } from "@/utils/structuredData";
-import StructuredData from "@/utils/structuredData.astro";
 import Layout from "../layouts/Layout.astro";
 
 const jsonLd = generatePageSchema({
   title: "About",
   description: "About Jinmu",
-  url: buildPageUrl(siteMetadata.siteUrl, "/about"),
+  url: buildPageUrl(pkg.homepage, "/about"),
   keywords: "about, author, profile",
   inLanguage: "ko",
 });
@@ -19,8 +18,13 @@ const { name, bio, avatar } = app[0].data;
 const { Content } = await app[0].render();
 ---
 
-<Layout>
-  <StructuredData schema={jsonLd} />
+<Layout
+  title="About"
+  description="About Jinmu"
+  image={avatar}
+  lang="ko"
+  jsonLd={jsonLd}
+>
   <>
     <div class="relative w-full mx-auto aspect-square sm:aspect-[16/9]">
       <Image

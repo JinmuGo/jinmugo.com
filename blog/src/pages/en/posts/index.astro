@@ -1,5 +1,5 @@
 ---
-import siteMetadata from "@/consts";
+import pkg from "../../../../package.json";
 import Layout from "@/layouts/Layout.astro";
 import ListLayouts from "@/layouts/ListLayouts";
 import { getEnglishPosts, sortPostsByDate } from "@/content-utils/posts";
@@ -8,14 +8,13 @@ import {
 	buildPageUrl,
 	generatePostsPageSchema,
 } from "@/utils/structuredData";
-import StructuredData from "@/utils/structuredData.astro";
 
 // 모든 영어 포스트 가져오기
 const posts = await getEnglishPosts();
-const sortedPosts = sortPostsByDate<"post">(posts);
+const sortedPosts = sortPostsByDate(posts);
 
-const title = siteMetadata.title;
-const description = siteMetadata.description;
+const title = pkg.title;
+const description = pkg.description;
 
 // 구조화된 데이터 생성
 const jsonLd = generatePostsPageSchema({
@@ -37,8 +36,12 @@ const jsonLd = generatePostsPageSchema({
 });
 ---
 
-<Layout>
-  <StructuredData schema={jsonLd} />
+<Layout
+  title={title}
+  description={description}
+  lang="en"
+  jsonLd={jsonLd}
+>
   <ListLayouts
     posts={sortedPosts.map((post) => ({
       ...post.data,
