@@ -8,6 +8,7 @@ const categorySchema = z.enum([
 	"book",
 	"thinking",
 	"health",
+	"tech",
 ]);
 
 const postCollection = defineCollection({
