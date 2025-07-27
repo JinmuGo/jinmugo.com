@@ -4,14 +4,17 @@ import Bleed from "@/components/Bleed.astro";
 import PostTimeline from "@/components/Timeline/PostTimeline.astro";
 import siteMetadata from "@/consts";
 import Layout from "@/layouts/Layout.astro";
-import { getKoreanPosts, sortPostsByDate } from "@/utils/posts";
+import { getKoreanPosts, sortPostsByDate } from "@/content-utils/posts";
+import { getKoreanMemos, sortMemosByDate } from "@/content-utils/memos";
 import { generatePageSchema } from "@/utils/structuredData";
 import StructuredData from "@/utils/structuredData.astro";
 import Avatar from "~/public/avatar.webp";
 import HeroImageSrc from "~/public/sea-boat.webp";
 
 const posts = await getKoreanPosts();
+const memos = await getKoreanMemos();
 const sortedPosts = sortPostsByDate<"post">(posts);
+const sortedMemos = sortMemosByDate(memos);
 
 const title = siteMetadata.title;
 const description = siteMetadata.description;
@@ -20,7 +23,7 @@ const jsonLd = generatePageSchema({
 	title,
 	description,
 	url,
-	keywords: "blog, posts, timeline",
+	keywords: "blog, posts, memos, timeline",
 	inLanguage: "ko",
 });
 ---
@@ -37,5 +40,5 @@ const jsonLd = generatePageSchema({
       data-blur-src="sea-boat-blur.webp"
     />
   </Bleed>
-  <PostTimeline posts={sortedPosts} />
+  <PostTimeline posts={sortedPosts} memos={sortedMemos} />
 </Layout>

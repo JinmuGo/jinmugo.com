@@ -1,19 +1,28 @@
 ---
-import { getCollection } from "astro:content";
 import ArchiveSection from "@/components/ArchiveSection.astro";
 import Title from "@/components/Title";
 import Layout from "@/layouts/Layout.astro";
 import { countBy } from "@/lib/utils";
+import { getEnglishPosts } from "@/content-utils/posts";
+import { getEnglishMemos } from "@/content-utils/memos";
 import { buildPageUrl, generatePageSchema } from "@/utils/structuredData";
 import StructuredData from "@/utils/structuredData.astro";
+import type { Post, Memo } from "@/types/post";
 
-const posts = await getCollection("post");
+const posts = await getEnglishPosts();
+const memos = await getEnglishMemos();
 
-const years = countBy(posts, (post) =>
-	new Date(post.data.date).getFullYear().toString(),
+// 모든 콘텐츠를 하나로 합치기
+const allContent = [
+  ...posts.map((post: Post) => ({ ...post, type: post.type })),
+  ...memos.map((memo: Memo) => ({ ...memo, type: memo.type })),
+];
+
+const years = countBy(allContent, (item) =>
+	new Date(item.data.date).getFullYear().toString(),
 );
-const categories = countBy(posts, (post) => post.data.category ?? []);
-const tags = countBy(posts, (post) => post.data.tags ?? []);
+const categories = countBy(allContent, (item) => item.data.category ?? []);
+const tags = countBy(allContent, (item) => item.data.tags ?? []);
 
 const title = "Archives";
 const description = "Archives by category, tag, and year.";

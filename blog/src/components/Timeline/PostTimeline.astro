@@ -1,5 +1,4 @@
 ---
-import type { CollectionEntry } from "astro:content";
 import Timeline from "./Timeline.astro";
 import TimelineDescription from "./TimelineDescription.astro";
 import TimelineDot from "./TimelineDot.astro";
@@ -7,53 +6,39 @@ import TimelineHeader from "./TimelineHeader.astro";
 import TimelineItem from "./TimelineItem.astro";
 import TimelineTime from "./TimelineTime.astro";
 import TimelineTitle from "./TimelineTitle.astro";
+import MemoLabel from "@/components/MemoLabel.astro";
+import type { Post, Memo } from "@/types/post";
 
-interface Props {
-	posts: (
-		| CollectionEntry<"post">
-		| {
-				id: string;
-				render(): Promise<import("astro:content").RenderResult>;
-				slug: string;
-				body: string;
-				collection: "post";
-				data: {
-					title: string;
-					date: Date;
-					draft: boolean;
-					bannerOnlyText: boolean;
-					category: string;
-					summary?: string;
-					withAI?: boolean;
-				};
-				rendered?: import("astro:content").RenderedContent;
-				filePath?: string;
-		  }
-	)[];
-}
+const { posts, memos = [] } = Astro.props;
 
-const { posts } = Astro.props;
+// 모든 콘텐츠를 날짜순으로 정렬
+const allContent = [...posts, ...memos].sort((a, b) => 
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
 ---
 
 <Timeline>
   {
-    posts.map((post, index) => {
-      const postUrl = `/posts/${post.data.category}/${post.slug}`;
-      const formattedDate = post.data.date.toISOString().split("T")[0]; // yyyy-MM-dd 형식
+    allContent.map((item: Post | Memo, index: number) => {
+      const itemUrl = item.type === 'post' ? `/posts/${item.slug}` : `/memos/${item.slug}`;
+      const formattedDate = item.data.date.toISOString().split("T")[0]; // yyyy-MM-dd 형식
       const isLatest = index === 0;
 
       return (
         <TimelineItem>
           <TimelineHeader>
-            <TimelineTime datetime={post.data.date.toISOString()}>
+            <TimelineTime datetime={item.data.date.toISOString()}>
               {formattedDate}
             </TimelineTime>
             <TimelineDot isLatest={isLatest} />
-            <TimelineTitle href={postUrl}>
-              {post.data.title}
-              {post.data.summary && (
+            <TimelineTitle href={itemUrl}>
+              <div class="flex items-center space-x-2">
+                <span>{item.data.title}</span>
+                {item.type === 'memo' && <MemoLabel />}
+              </div>
+              {item.data.summary && (
                 <TimelineDescription class="mt-1 text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
-                  {post.data.summary}
+                  {item.data.summary}
                 </TimelineDescription>
               )}
             </TimelineTitle>

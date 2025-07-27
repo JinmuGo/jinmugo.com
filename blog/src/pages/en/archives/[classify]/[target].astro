@@ -1,89 +1,114 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
+import { getEnglishPosts } from "@/content-utils/posts";
+import { getEnglishMemos } from "@/content-utils/memos";
 import { buildPageUrl, generatePageSchema } from "@/utils/structuredData";
 import StructuredData from "@/utils/structuredData.astro";
+import MemoLabel from "@/components/MemoLabel.astro";
+import type { Post, Memo } from "@/types/post";
 
 export async function getStaticPaths() {
-	const posts = await getCollection("post");
+  const posts = await getEnglishPosts();
+  const memos = await getEnglishMemos();
 
-	const categories = [
-		...new Set(posts.map((post) => post.data.category).filter(Boolean)),
-	];
-	const tags = [
-		...new Set(posts.flatMap((post) => post.data.tags ?? []).filter(Boolean)),
-	];
-	const years = [
-		...new Set(
-			posts
-				.map((post) =>
-					post.data.date
-						? new Date(post.data.date).getFullYear().toString()
-						: null,
-				)
-				.filter(Boolean),
-		),
-	];
+  const allContent = [...posts, ...memos] as (Post | Memo)[];
 
-	const paths = [
-		...categories.map((category) => ({
-			params: { classify: "category", target: category },
-		})),
-		...tags.map((tag) => ({
-			params: { classify: "tag", target: tag },
-		})),
-		...years.map((year) => ({
-			params: { classify: "year", target: year },
-		})),
-	];
+  const categories = [
+    ...new Set(allContent.map((item) => item.data.category).filter(Boolean)),
+  ];
+  const tags = [
+    ...new Set(
+      [...allContent.flatMap((item) => item.data.tags ?? [])].filter(Boolean),
+    ),
+  ];
+  const years = [
+    ...new Set([
+      ...allContent
+        .map((item) =>
+          item.data.date
+            ? new Date(item.data.date).getFullYear().toString()
+            : null,
+        )
+        .filter(Boolean),
+    ]),
+  ];
 
-	return paths;
+  const paths = [
+    ...categories.map((category) => ({
+      params: { classify: "category", target: category },
+    })),
+    ...tags.map((tag) => ({
+      params: { classify: "tag", target: tag },
+    })),
+    ...years.map((year) => ({
+      params: { classify: "year", target: year },
+    })),
+  ];
+
+  return paths;
 }
 
 const { classify, target } = Astro.params;
 const decodeTarget = decodeURIComponent(target ?? "");
 
-const posts = await getCollection("post");
+const posts = await getEnglishPosts();
+const memos = await getEnglishMemos();
+const allContent = [...posts, ...memos] as (Post | Memo)[];
+
 const capitalizeFirst = (str: string) =>
-	str.charAt(0).toUpperCase() + str.slice(1);
+  str.charAt(0).toUpperCase() + str.slice(1);
 
-function getPostBySlug(
-	posts: CollectionEntry<"post">[],
-	classify: string,
-	target: string,
+function getContentBySlug(
+  allContent: (Post | Memo)[],
+  classify: string,
+  target: string,
 ) {
-	if (!classify || !target) {
-		return [];
-	}
+  if (!classify || !target) {
+    return [];
+  }
 
-	switch (classify) {
-		case "category":
-			return posts.filter((post) => post.data.category === target);
-		case "tag":
-			return posts.filter((post) => post.data.tags?.includes(target));
-		case "year":
-			return posts.filter(
-				(post) =>
-					post.data.date &&
-					new Date(post.data.date).getFullYear().toString() === target,
-			);
-		default:
-			return [];
-	}
+  switch (classify) {
+    case "category":
+      return allContent
+        .filter((item) => item.data.category === target)
+        .map((item) => ({ ...item, type: item.type }));
+    case "tag":
+      return [
+        ...allContent
+          .filter((item) => item.data.tags?.includes(target))
+          .map((item) => ({ ...item, type: item.type })),
+      ];
+    case "year":
+      return [
+        ...allContent
+          .filter(
+            (item) =>
+              item.data.date &&
+              new Date(item.data.date).getFullYear().toString() === target,
+          )
+          .map((item) => ({ ...item, type: item.type })),
+      ];
+    default:
+      return [];
+  }
 }
 
-const postsWithSlug = getPostBySlug(posts, classify ?? "", decodeTarget ?? "");
+const contentWithSlug = getContentBySlug(
+  allContent,
+  classify ?? "",
+  decodeTarget ?? "",
+);
+
 const title = `${capitalizeFirst(decodeTarget ?? "")} - ${capitalizeFirst(classify ?? "")}`;
 const description = `Archives of ${capitalizeFirst(decodeTarget ?? "")} in ${capitalizeFirst(classify ?? "")}`;
 const url = buildPageUrl("/en", `/archives/${classify}/${decodeTarget}`);
 const jsonLd = generatePageSchema({
-	type: "CollectionPage",
-	title,
-	description,
-	url,
-	keywords: `archives, ${classify}, ${decodeTarget}`,
-	inLanguage: "en",
+  type: "CollectionPage",
+  title,
+  description,
+  url,
+  keywords: `archives, ${classify}, ${decodeTarget}`,
+  inLanguage: "en",
 });
 ---
 
@@ -100,21 +125,28 @@ const jsonLd = generatePageSchema({
         {description}
       </p>
     </div>
-    {postsWithSlug.length === 0 && "No posts found."}
+    {contentWithSlug.length === 0 && "No content found."}
     <ul>
       {
-        postsWithSlug.map((post) => (
+        contentWithSlug.map((item) => (
           <li class:list={["flex", "justify-between", "items-center", "py-3"]}>
-            <a
-              href={`/en/posts/${post.data.category}/${post.slug}`}
-              class="text-base sm:text-lg font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
-            >
-              {post.data.title}
-            </a>
+            <div class="flex items-center space-x-2">
+              <a
+                href={
+                  item.type === "post"
+                    ? `/en/posts/${item.slug}`
+                    : `/en/memos/${item.slug}`
+                }
+                class="text-base sm:text-lg font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
+              >
+                {item.data.title}
+              </a>
+              {item.type === "memo" && <MemoLabel />}
+            </div>
             <div class="flex-1 border-b-2 min-w-2.5 border-dotted border-gray-300 mx-2" />
             <span class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 min-w-[90px] text-right">
-              {post.data.date
-                ? new Date(post.data.date).toLocaleDateString("en-US", {
+              {item.data.date
+                ? new Date(item.data.date).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "short",
                     day: "2-digit",
