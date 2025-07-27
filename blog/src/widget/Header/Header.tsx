@@ -63,7 +63,7 @@ const Header = ({ frontmatter, pathname }: HeaderProps) => {
 	const lang = isEn ? "en" : "ko";
 
 	return (
-		<header className="w-full bg-background/80 dark:bg-background/80 py-5 backdrop-blur-sm backdrop-saturate-180 sticky top-0 z-50">
+		<header className="w-full py-5 backdrop-blur-sm backdrop-saturate-180 sticky top-0 z-50">
 			<div className="relative">
 				<section
 					className={`${isSlideOpen ? "-translate-y-[200%]" : "translate-y-0 "} duration-300 transition-all mx-auto flex items-center justify-between max-w-2xl lg:max-w-3xl xl:max-w-4xl px-4 sm:px-6 xl:px-0`}
