@@ -6,7 +6,7 @@ import {
 	AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
-import type { PostMetadata } from "@/types/post";
+import type { PostMetadata } from "@/types/content";
 
 /**
  * Props for SeriesPostsAccordion

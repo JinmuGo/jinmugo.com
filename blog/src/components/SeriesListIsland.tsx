@@ -1,7 +1,7 @@
 import type React from "react";
 import SeriesPostsAccordion from "@/components/SeriesPostsAccordion";
 import { Accordion } from "@/components/ui/accordion";
-import type { Post } from "@/types/post";
+import type { Post } from "@/types/content";
 import Title from "./Title";
 
 interface Series {

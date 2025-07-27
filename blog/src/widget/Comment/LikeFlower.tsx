@@ -5,7 +5,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { MemoMetadata, PostMetadata } from "@/types/post";
+import type { MemoMetadata, PostMetadata } from "@/types/content";
 import { useAsyncEffect } from "@/utils/useAsyncEffect";
 
 // 기본 상수들 (원본 값 그대로 사용)

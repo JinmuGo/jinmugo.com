@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import type { MemoMetadata, PostMetadata } from "@/types/post";
+import type { MemoMetadata, PostMetadata } from "@/types/content";
 
 const ChevronUpIcon = () => (
 	<svg
