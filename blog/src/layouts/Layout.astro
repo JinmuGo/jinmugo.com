@@ -1,10 +1,10 @@
 ---
-import type { Post } from "@/types/content";
 import BaseHead from "@/components/BaseHead.astro";
-import pkg from "../../package.json";
 import Container from "@/layouts/Container.astro";
-import Header from "@/widget/Header/Header.tsx";
+import type { Post } from "@/types/content";
 import StructuredData from "@/utils/structuredData.astro";
+import Header from "@/widget/Header/Header.tsx";
+import pkg from "~/package.json";
 
 const pathname = Astro.url.pathname;
 
@@ -22,7 +22,7 @@ const jsonLd = Astro.props.jsonLd;
     <BaseHead title={title} description={description} image={image} />
     {jsonLd && <StructuredData schema={jsonLd} />}
   </head>
-  <body class="text-foreground">
+  <body class="text-foreground font-sans dark:bg-gray-950">
     <Header frontmatter={frontmatter} pathname={pathname} client:load />
     <Container>
       <slot />

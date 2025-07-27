@@ -1,70 +1,53 @@
 ---
 import AICollaborationBadge from "@/components/AICollaborationBadge.astro";
-import BaseHead from "@/components/BaseHead.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
 import PageView from "@/components/PageView.astro";
 import Prose from "@/components/Prose.astro";
-import Container from "@/layouts/Container.astro";
+import Layout from "@/layouts/Layout.astro";
 import type { PostMetadata } from "@/types/content";
 import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData";
-import StructuredData from "@/utils/structuredData.astro";
-import Header from "@/widget/Header/Header.tsx";
 
 interface Props {
-	frontmatter: PostMetadata;
+  frontmatter: PostMetadata;
 }
 
 const { frontmatter } = Astro.props;
 const { title, date, summary, category, withAI, slug, tags } = frontmatter;
-const pathname = Astro.url.pathname;
 const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
 const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL;
 
 const jsonLd = generatePostsPageSchema({
-	title: title,
-	description: summary || title,
-	url: buildPageUrl("", `/${category}/${slug}`),
-	keywords: tags?.join(", ") || "",
-	inLanguage: lang,
+  title: title,
+  description: summary || title,
+  url: buildPageUrl("", `/${category}/${slug}`),
+  keywords: tags?.join(", ") || "",
+  inLanguage: lang,
 });
 ---
 
-<html lang={lang}>
-  <head>
-    <BaseHead
-      title={title}
-      description={summary || title}
-      tags={tags}
-      ogImage={`/posts/${slug}/og.png`}
-    />
-  </head>
-
-  <body>
-    <Header frontmatter={frontmatter} pathname={pathname} client:load />
-    <StructuredData schema={jsonLd} />
-    <Container>
-      <main>
-        <article>
-          <header class="space-y-1 pb-5">
-            <div id="post-title" class="pt-5 space-y-1">
-              <h1 class="font-bold text-xl md:text-2xl">{title}</h1>
-              <div class="text-sm text-gray-500 dark:text-gray-300">
-                <a class="underline" href={`/archives/category/${category}`}>
-                  {category}
-                </a>{" "}
-                / <FormattedDate date={date} />
-              </div>
-              <div class="flex items-center gap-2">
-                <PageView slug={slug} apiBaseUrl={apiBaseUrl} />
-                <AICollaborationBadge withAI={withAI} lang="ko" />
-              </div>
-            </div>
-          </header>
-          <Prose>
-            <slot />
-          </Prose>
-        </article>
-      </main>
-    </Container>
-  </body>
-</html>
+<Layout
+  frontmatter={frontmatter}
+  title={title}
+  description={summary || title}
+  lang={lang}
+  jsonLd={jsonLd}
+>
+  <header class="space-y-1">
+    <div id="post-title" class="pt-5 space-y-1">
+      <h1 class="font-bold text-xl xl:text-2xl">{title}</h1>
+      <div class="text-sm text-gray-500 dark:text-gray-300">
+        <a class="underline" href={`/archives/category/${category}`}>
+          {category}
+        </a>{" "}
+        / <FormattedDate date={date} />
+      </div>
+      <div class="flex items-center gap-2">
+        <PageView slug={slug} apiBaseUrl={apiBaseUrl} />
+        <AICollaborationBadge withAI={withAI} lang="ko" />
+      </div>
+    </div>
+  </header>
+  <Prose as="article">
+    <slot />
+  </Prose>
+</Layout>

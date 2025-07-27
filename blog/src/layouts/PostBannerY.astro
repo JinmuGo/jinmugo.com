@@ -1,81 +1,65 @@
 ---
 import { Image } from "astro:assets";
 import AICollaborationBadge from "@/components/AICollaborationBadge.astro";
-import BaseHead from "@/components/BaseHead.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
 import PageView from "@/components/PageView.astro";
 import Prose from "@/components/Prose.astro";
-import Container from "@/layouts/Container.astro";
+import Layout from "@/layouts/Layout.astro";
 import type { PostMetadata } from "@/types/content";
 import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData";
-import StructuredData from "@/utils/structuredData.astro";
-import Header from "@/widget/Header/Header.tsx";
 
 interface Props {
-	frontmatter: PostMetadata;
-	bannerImage: ImageMetadata;
+  frontmatter: PostMetadata;
+  bannerImage: ImageMetadata;
 }
 
 const { frontmatter, bannerImage } = Astro.props;
 const { title, date, summary, withAI, category, slug, tags } = frontmatter;
-const pathname = Astro.url.pathname;
 const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL;
 
 const { width, height } = bannerImage;
 const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
 
 const jsonLd = generatePostsPageSchema({
-	title: title,
-	description: summary || title,
-	url: buildPageUrl("", `/${category}/${slug}`),
-	keywords: tags?.join(", ") || "",
-	inLanguage: lang,
+  title: title,
+  description: summary || title,
+  url: buildPageUrl("", `/${category}/${slug}`),
+  keywords: tags?.join(", ") || "",
+  inLanguage: lang,
 });
 ---
 
-<html lang={lang}>
-  <head>
-    <BaseHead
-      title={title}
-      description={summary || title}
-      tags={tags}
-      ogImage={`/posts/${slug}/og.png`}
-    />
-  </head>
-  <body>
-    <StructuredData schema={jsonLd} />
-    <Header frontmatter={frontmatter} pathname={pathname} client:load />
-    <Container>
-      <main>
-        <article>
-          <header
-            class="space-y-1 pb-5 md:flex md:flex-row-reverse md:justify-between items-end"
-          >
-            <Image
-              width={width}
-              height={height}
-              src={bannerImage}
-              alt={`${title} 배너`}
-            />
-            <div id="post-title" class="pt-10">
-              <div class="flex items-center gap-2">
-                <PageView slug={slug} apiBaseUrl={apiBaseUrl} />
-                <AICollaborationBadge withAI={withAI} lang={lang} />
-              </div>
-              <h1 class="font-bold text-xl md:text-2xl">{title}</h1>
-              <p>{summary}</p>
-              <div class="text-sm text-gray-500 dark:text-gray-300">
-                <a href={`/archives/category/${category}`} class="underline">
-                  {category}
-                </a> / <FormattedDate date={date} />
-              </div>
-            </div>
-          </header>
-        </article>
-        <Prose>
-          <slot />
-        </Prose>
-      </main>
-    </Container>
-  </body>
-</html>
+<Layout
+  frontmatter={frontmatter}
+  title={title}
+  description={summary || title}
+  lang={lang}
+  jsonLd={jsonLd}
+>
+  <Prose>
+    <header
+      class="space-y-1 pb-5 md:flex md:flex-row-reverse md:justify-between items-end"
+    >
+      <Image
+        width={width}
+        height={height}
+        src={bannerImage}
+        alt={`${title} 배너`}
+      />
+      <div id="post-title" class="pt-10">
+        <div class="flex items-center gap-2">
+          <PageView slug={slug} apiBaseUrl={apiBaseUrl} />
+          <AICollaborationBadge withAI={withAI} lang={lang} />
+        </div>
+        <h1 class="text-3xl md:text-4xl">{title}</h1>
+        <p>{summary}</p>
+        <div class="text-sm text-gray-500 dark:text-gray-300">
+          <a href={`/archives/category/${category}`} class="underline">
+            {category}
+          </a> / <FormattedDate date={date} />
+        </div>
+      </div>
+    </header>
+    <slot />
+  </Prose>
+</Layout>

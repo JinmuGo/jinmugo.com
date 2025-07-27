@@ -1,62 +1,51 @@
 ---
-import BaseHead from "@/components/BaseHead.astro";
 import FormattedDate from "@/components/FormattedDate.astro";
 import Prose from "@/components/Prose.astro";
-import Container from "@/layouts/Container.astro";
-import Header from "@/widget/Header/Header.tsx";
+import Layout from "@/layouts/Layout.astro";
 import type { Memo } from "@/types/content";
 
 interface Props {
-  frontmatter: Memo;
+	frontmatter: Memo;
 }
 
 const { frontmatter } = Astro.props;
 const { title, date, summary, category, slug } = frontmatter;
-const pathname = Astro.url.pathname;
 const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
 ---
 
-<html lang={lang}>
-  <head>
-    <BaseHead
-      title={title}
-      description={summary || title}
-      ogImage={`/memos/${slug}/og.png`}
-    />
-  </head>
-
-  <body>
-    <Header frontmatter={frontmatter} pathname={pathname} client:load />
-    <Container>
-      <main>
-        <article>
-          <header class="space-y-1 pb-5">
-            <div id="memo-title" class="pt-5 space-y-1">
-              <h1 class="font-bold text-xl md:text-2xl">{title}</h1>
-              <p class="text-sm text-gray-500 dark:text-gray-300">
-                {summary}
-              </p>
-              <div class="text-sm text-gray-500 dark:text-gray-300">
-                {
-                  category && (
-                    <a
-                      class="underline"
-                      href={`/archives/category/${category}`}
-                    >
-                      {category}
-                    </a>
-                  )
-                }
-                {category && " / "}
-                <FormattedDate date={date} />
-              </div>
-            </div>
-          </header>
-          <Prose>
-            <slot />
-          </Prose>
-        </article>
-      </main>
-    </Container>
-  </body>
-</html>
+<Layout
+  frontmatter={frontmatter}
+  title={title}
+  description={summary || title}
+  lang={lang}
+>
+  <main>
+    <article>
+      <header class="space-y-1 pb-5">
+        <div id="memo-title" class="pt-5 space-y-1">
+          <h1 class="font-bold text-xl md:text-2xl">{title}</h1>
+          <p class="text-sm text-gray-500 dark:text-gray-300">
+            {summary}
+          </p>
+          <div class="text-sm text-gray-500 dark:text-gray-300">
+            {
+              category && (
+                <a
+                  class="underline"
+                  href={`/archives/category/${category}`}
+                >
+                  {category}
+                </a>
+              )
+            }
+            {category && " / "}
+            <FormattedDate date={date} />
+          </div>
+        </div>
+      </header>
+      <Prose>
+        <slot />
+      </Prose>
+    </article>
+  </main>
+</Layout>
