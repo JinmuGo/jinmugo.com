@@ -1,24 +1,20 @@
 ---
 import { Image } from "astro:assets";
-import { type CollectionEntry, getCollection } from "astro:content";
 import siteMetadata from "@/consts";
 import Layout from "@/layouts/Layout.astro";
+import { getEnglishApp } from "@/content-utils/apps";
 import { buildPageUrl, generatePageSchema } from "@/utils/structuredData";
 import StructuredData from "@/utils/structuredData.astro";
 
 const jsonLd = generatePageSchema({
-	title: "About",
-	description: "About Jinmu",
-	url: buildPageUrl(siteMetadata.siteUrl, "/about"),
-	keywords: "about, author, profile",
-	inLanguage: "en",
+  title: "About",
+  description: "About Jinmu",
+  url: buildPageUrl(siteMetadata.siteUrl, "/about"),
+  keywords: "about, author, profile",
+  inLanguage: "en",
 });
 
-const pathname = Astro.url.pathname.includes("/en") ? "abouten" : "about";
-const app = await getCollection(
-	"app",
-	(item: CollectionEntry<"app">) => item.slug === pathname,
-);
+const app = await getEnglishApp();
 const { name, bio, avatar } = app[0].data;
 const { Content } = await app[0].render();
 ---

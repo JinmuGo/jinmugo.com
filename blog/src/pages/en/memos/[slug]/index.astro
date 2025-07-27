@@ -1,34 +1,30 @@
 ---
-import { type CollectionEntry, getCollection } from "astro:content";
 import { components } from "@/components/mdx/components.astro";
 import PhotoSwipe from "@/components/PhotoSwipe.astro";
 import MemoDefault from "@/layouts/MemoDefault.astro";
+import { getEnglishMemos } from "@/content-utils/memos";
+import type { Memo } from "@/types/content";
 
 export async function getStaticPaths() {
-	// .en.md 파일(영문)만 필터링
-	const memos = await getCollection(
-		"memo",
-		({ id, data }: CollectionEntry<"memo">) => {
-			return !data.draft && id.endsWith(".en.md");
-		},
-	);
+  // .en.md 파일(영문)만 필터링
+  const memos = await getEnglishMemos();
 
-	return memos.map((entry: CollectionEntry<"memo">) => {
-		const slugParts = entry.id.split("/");
-		const folderName = slugParts[0];
-		return {
-			params: {
-				slug: folderName.toLowerCase(),
-			},
-			props: { entry },
-		};
-	});
+  return memos.map((entry: Memo) => {
+    const slugParts = entry.id.split("/");
+    const folderName = slugParts[0];
+    return {
+      params: {
+        slug: folderName.toLowerCase(),
+      },
+      props: { entry },
+    };
+  });
 }
 
-const { entry }: { entry: CollectionEntry<"memo"> } = Astro.props;
+const { entry }: { entry: Memo } = Astro.props;
 const frontmatterWithSlug = {
-	...entry.data,
-	slug: entry.id.split("/")[0],
+  ...entry.data,
+  slug: entry.id.split("/")[0],
 };
 
 const { Content } = await entry.render();

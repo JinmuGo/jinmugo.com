@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SearchInput from "@/components/SearchInput";
-import type { MemoMetadata, PostMetadata } from "@/types/post";
+import type { MemoMetadata, PostMetadata } from "@/types/content";
 
 type ListLayoutProps = {
 	posts: (PostMetadata | MemoMetadata)[];

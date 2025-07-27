@@ -1,9 +1,9 @@
 import rss from "@astrojs/rss";
 import type { APIRoute } from "astro";
 import siteMetadata from "@/consts.ts";
-import type { Memo, Post } from "@/types/post";
-import { getEnglishMemos } from "@/utils/memos.ts";
-import { getEnglishPosts } from "@/utils/posts.ts";
+import type { Memo, Post } from "@/types/content";
+import { getEnglishMemos } from "@/content-utils/memos.ts";
+import { getEnglishPosts } from "@/content-utils/posts.ts";
 
 export const GET: APIRoute = async (context) => {
 	const posts = (await getEnglishPosts()).map((post: Post) => ({

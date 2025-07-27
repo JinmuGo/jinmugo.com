@@ -5,7 +5,7 @@ import { getEnglishMemos } from "@/content-utils/memos";
 import { buildPageUrl, generatePageSchema } from "@/utils/structuredData";
 import StructuredData from "@/utils/structuredData.astro";
 import MemoLabel from "@/components/MemoLabel.astro";
-import type { Post, Memo } from "@/types/post";
+import type { Post, Memo } from "@/types/content";
 
 export async function getStaticPaths() {
   const posts = await getEnglishPosts();

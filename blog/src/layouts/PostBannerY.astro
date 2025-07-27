@@ -6,7 +6,7 @@ import FormattedDate from "@/components/FormattedDate.astro";
 import PageView from "@/components/PageView.astro";
 import Prose from "@/components/Prose.astro";
 import Container from "@/layouts/Container.astro";
-import type { PostMetadata } from "@/types/post";
+import type { PostMetadata } from "@/types/content";
 import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData";
 import StructuredData from "@/utils/structuredData.astro";
 import Header from "@/widget/Header/Header.tsx";
@@ -39,7 +39,7 @@ const jsonLd = generatePostsPageSchema({
       title={title}
       description={summary || title}
       tags={tags}
-      ogImage={`/posts/${category}/${slug}/og.png`}
+      ogImage={`/posts/${slug}/og.png`}
     />
   </head>
   <body>

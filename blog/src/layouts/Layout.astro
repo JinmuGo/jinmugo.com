@@ -1,5 +1,5 @@
 ---
-import type { CollectionEntry } from "astro:content";
+import type { Post } from "@/types/content";
 import BaseHead from "@/components/BaseHead.astro";
 import siteMetadata from "@/consts";
 import Container from "@/layouts/Container.astro";
@@ -8,7 +8,7 @@ import Header from "@/widget/Header/Header.tsx";
 const pathname = Astro.url.pathname;
 
 const frontmatter = Astro.props
-	.frontmatter as CollectionEntry<"post">["data"] & { slug: string };
+	.frontmatter as Post;
 const title = Astro.props.title ?? siteMetadata.title;
 const description = Astro.props.description ?? siteMetadata.description;
 const image = Astro.props.image;

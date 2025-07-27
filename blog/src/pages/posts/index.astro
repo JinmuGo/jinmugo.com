@@ -1,7 +1,7 @@
 ---
 import PageLayout from "@/layouts/Layout.astro";
 import ListLayouts from "@/layouts/ListLayouts";
-import { getKoreanPosts, sortPostsByDate } from "@/utils/posts";
+import { getKoreanPosts, sortPostsByDate } from "@/content-utils/posts";
 import {
 	buildItemUrl,
 	buildPageUrl,
@@ -24,12 +24,12 @@ const jsonLd = generatePostsPageSchema({
 	inLanguage: "ko",
 	itemListElements: sortedPosts.map((post, index) => ({
 		"@type": "ListItem",
-		url: buildItemUrl(`/posts/${post.data.category}/${post.slug}`),
+		url: buildItemUrl(`/posts/${post.slug}`),
 		position: index + 1,
 		item: {
 			"@type": "Article",
 			name: post.data.title,
-			url: buildItemUrl(`/posts/${post.data.category}/${post.slug}`),
+			url: buildItemUrl(`/posts/${post.slug}`),
 		},
 	})),
 });

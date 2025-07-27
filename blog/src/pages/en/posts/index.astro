@@ -2,7 +2,7 @@
 import siteMetadata from "@/consts";
 import Layout from "@/layouts/Layout.astro";
 import ListLayouts from "@/layouts/ListLayouts";
-import { getEnglishPosts, sortPostsByDate } from "@/utils/posts";
+import { getEnglishPosts, sortPostsByDate } from "@/content-utils/posts";
 import {
 	buildItemUrl,
 	buildPageUrl,
@@ -26,12 +26,12 @@ const jsonLd = generatePostsPageSchema({
 	inLanguage: "en",
 	itemListElements: sortedPosts.map((post, index) => ({
 		"@type": "ListItem",
-		url: buildItemUrl(`/en/posts/${post.data.category}/${post.slug}`),
+		url: buildItemUrl(`/en/posts/${post.slug}`),
 		position: index + 1,
 		item: {
 			"@type": "Article",
 			name: post.data.title,
-			url: buildItemUrl(`/en/posts/${post.data.category}/${post.slug}`),
+			url: buildItemUrl(`/en/posts/${post.slug}`),
 		},
 	})),
 });

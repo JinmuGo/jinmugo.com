@@ -7,7 +7,7 @@ import { getKoreanPosts } from "@/content-utils/posts";
 import { getKoreanMemos } from "@/content-utils/memos";
 import { buildPageUrl, generatePageSchema } from "@/utils/structuredData";
 import StructuredData from "@/utils/structuredData.astro";
-import type { Post, Memo } from "@/types/post";
+import type { Post, Memo } from "@/types/content";
 
 const posts = await getKoreanPosts();
 const memos = await getKoreanMemos();
