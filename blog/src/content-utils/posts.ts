@@ -31,9 +31,9 @@ export async function getEnglishPosts() {
 /**
  * 포스트들을 날짜순으로 정렬하는 함수 (최신순)
  */
-export function sortPostsByDate<T extends "post" | "memo">(
-  posts: CollectionEntry<T>[],
-): CollectionEntry<T>[] {
+export function sortPostsByDate(
+  posts: Post[],
+): Post[] {
   return posts.sort(
     (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
   );
@@ -42,10 +42,10 @@ export function sortPostsByDate<T extends "post" | "memo">(
 /**
  * 포스트들을 최신 N개로 제한하는 함수
  */
-export function limitPosts<T extends "post" | "memo">(
-  posts: CollectionEntry<T>[],
+export function limitPosts(
+  posts: Post[],
   limit: number,
-): CollectionEntry<T>[] {
+): Post[] {
   return posts.slice(0, limit);
 }
 
@@ -54,7 +54,7 @@ export function limitPosts<T extends "post" | "memo">(
  */
 export async function getLatestKoreanPosts(limit: number = 3) {
   const posts = await getKoreanPosts();
-  return limitPosts(sortPostsByDate<"post">(posts), limit);
+  return limitPosts(sortPostsByDate(posts), limit);
 }
 
 /**
@@ -62,5 +62,5 @@ export async function getLatestKoreanPosts(limit: number = 3) {
  */
 export async function getLatestEnglishPosts(limit: number = 3) {
   const posts = await getEnglishPosts();
-  return limitPosts(sortPostsByDate<"post">(posts), limit);
+  return limitPosts(sortPostsByDate(posts), limit);
 }
