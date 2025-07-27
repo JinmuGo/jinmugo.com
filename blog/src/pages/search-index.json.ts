@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import type { Post } from "@/types/content";
 import { getKoreanPosts } from "@/content-utils/posts";
+import type { Post } from "@/types/content";
 
 export const GET: APIRoute = async () => {
 	const allPosts = await getKoreanPosts();

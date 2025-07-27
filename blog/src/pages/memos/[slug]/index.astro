@@ -1,8 +1,8 @@
 ---
 import { components } from "@/components/mdx/components.astro";
 import PhotoSwipe from "@/components/PhotoSwipe.astro";
-import MemoDefault from "@/layouts/MemoDefault.astro";
 import { getKoreanMemos } from "@/content-utils/memos";
+import MemoDefault from "@/layouts/MemoDefault.astro";
 import type { Memo } from "@/types/content";
 
 export async function getStaticPaths() {
@@ -22,7 +22,7 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 
-  const { entry }: { entry: Memo } = Astro.props;
+const { entry }: { entry: Memo } = Astro.props;
 const frontmatterWithSlug = {
 	...entry.data,
 	slug,

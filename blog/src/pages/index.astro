@@ -2,11 +2,11 @@
 import { Image } from "astro:assets";
 import Bleed from "@/components/Bleed.astro";
 import PostTimeline from "@/components/Timeline/PostTimeline.astro";
-import pkg from "../../package.json";
-import Layout from "@/layouts/Layout.astro";
-import { getKoreanPosts, sortPostsByDate } from "@/content-utils/posts";
 import { getKoreanMemos, sortMemosByDate } from "@/content-utils/memos";
+import { getKoreanPosts, sortPostsByDate } from "@/content-utils/posts";
+import Layout from "@/layouts/Layout.astro";
 import { generatePageSchema } from "@/utils/structuredData";
+import pkg from "~/package.json";
 import Avatar from "~/public/avatar.webp";
 import HeroImageSrc from "~/public/sea-boat.webp";
 
@@ -14,27 +14,22 @@ const posts = await getKoreanPosts();
 const memos = await getKoreanMemos();
 const sortedPosts = sortPostsByDate(posts);
 const sortedMemos = sortMemosByDate(memos);
-console.log(
-  sortedPosts.forEach((post) => {
-    console.log(post.id);
-  }),
-);
 
 const title = pkg.title;
 const description = pkg.description;
 const url = pkg.homepage;
 const jsonLd = generatePageSchema({
-  title,
-  description,
-  url,
-  keywords: "blog, posts, memos, timeline",
-  inLanguage: "ko",
+	title,
+	description,
+	url,
+	keywords: "blog, posts, memos, timeline",
+	inLanguage: "ko",
 });
 ---
 
-<Layout 
-  title={title} 
-  description={description} 
+<Layout
+  title={title}
+  description={description}
   image={Avatar}
   lang="ko"
   jsonLd={jsonLd}

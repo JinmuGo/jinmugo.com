@@ -1,13 +1,12 @@
 ---
+import { getKoreanMemos, sortMemosByDate } from "@/content-utils/memos";
 import Layout from "@/layouts/Layout.astro";
 import ListLayouts from "@/layouts/ListLayouts";
-import { getKoreanMemos, sortMemosByDate } from "@/content-utils/memos";
 import {
 	buildItemUrl,
 	buildPageUrl,
 	generatePostsPageSchema,
 } from "@/utils/structuredData";
-import StructuredData from "@/utils/structuredData.astro";
 
 // 모든 한국어 메모 가져오기
 const memos = await getKoreanMemos();
@@ -36,8 +35,12 @@ const jsonLd = generatePostsPageSchema({
 });
 ---
 
-<Layout>
-  <StructuredData schema={jsonLd} />
+<Layout
+  title={title}
+  description={description}
+  lang="ko"
+  jsonLd={jsonLd}
+>
   <ListLayouts
     posts={sortedMemos.map((memo) => ({
       ...memo.data,

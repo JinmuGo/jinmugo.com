@@ -1,17 +1,16 @@
 ---
-import PageLayout from "@/layouts/Layout.astro";
-import ListLayouts from "@/layouts/ListLayouts";
 import { getKoreanPosts, sortPostsByDate } from "@/content-utils/posts";
+import Layout from "@/layouts/Layout.astro";
+import ListLayouts from "@/layouts/ListLayouts";
 import {
 	buildItemUrl,
 	buildPageUrl,
 	generatePostsPageSchema,
 } from "@/utils/structuredData";
-import StructuredData from "@/utils/structuredData.astro";
 
 // 모든 한국어 포스트 가져오기
 const posts = await getKoreanPosts();
-const sortedPosts = sortPostsByDate<"post">(posts);
+const sortedPosts = sortPostsByDate(posts);
 
 const title = "Posts";
 const description = "Post collection";
@@ -35,8 +34,12 @@ const jsonLd = generatePostsPageSchema({
 });
 ---
 
-<PageLayout>
-  <StructuredData schema={jsonLd} />
+<Layout
+  title={title}
+  description={description}
+  lang="ko"
+  jsonLd={jsonLd}
+>
   <ListLayouts
     posts={sortedPosts.map((post) => ({
       ...post.data,
@@ -46,4 +49,4 @@ const jsonLd = generatePostsPageSchema({
     postType="post"
     client:load
   />
-</PageLayout>
+</Layout>

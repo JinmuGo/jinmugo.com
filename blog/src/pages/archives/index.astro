@@ -1,25 +1,24 @@
 ---
 import ArchiveSection from "@/components/ArchiveSection.astro";
 import Title from "@/components/Title";
+import { getKoreanMemos } from "@/content-utils/memos";
+import { getKoreanPosts } from "@/content-utils/posts";
 import Layout from "@/layouts/Layout.astro";
 import { countBy } from "@/lib/utils";
-import { getKoreanPosts } from "@/content-utils/posts";
-import { getKoreanMemos } from "@/content-utils/memos";
+import type { Memo, Post } from "@/types/content";
 import { buildPageUrl, generatePageSchema } from "@/utils/structuredData";
-import StructuredData from "@/utils/structuredData.astro";
-import type { Post, Memo } from "@/types/content";
 
 const posts = await getKoreanPosts();
 const memos = await getKoreanMemos();
 
 // 모든 콘텐츠를 하나로 합치기
 const allContent = [
-  ...posts.map((post: Post) => ({ ...post, type: post.type })),
-  ...memos.map((memo: Memo) => ({ ...memo, type: memo.type })),
+	...posts.map((post: Post) => ({ ...post, type: post.type })),
+	...memos.map((memo: Memo) => ({ ...memo, type: memo.type })),
 ];
 
 const years = countBy(allContent, (item) =>
-  new Date(item.data.date).getFullYear().toString(),
+	new Date(item.data.date).getFullYear().toString(),
 );
 const categories = countBy(allContent, (item) => item.data.category ?? []);
 const tags = countBy(allContent, (item) => item.data.tags ?? []);
@@ -30,17 +29,21 @@ const description = "카테고리, 태그, 연도별 아카이브 모음";
 const url = buildPageUrl("", "/archives");
 
 const jsonLd = generatePageSchema({
-  type: "CollectionPage",
-  title,
-  description,
-  url,
-  keywords: "archives, category, tag, year, collection",
-  inLanguage: "ko",
+	type: "CollectionPage",
+	title,
+	description,
+	url,
+	keywords: "archives, category, tag, year, collection",
+	inLanguage: "ko",
 });
 ---
 
-<Layout title={title} description={description}>
-  <StructuredData schema={jsonLd} />
+<Layout 
+  title={title} 
+  description={description}
+  lang="ko"
+  jsonLd={jsonLd}
+>
   <div class="space-y-2 pt-6 pb-8 md:space-y-5">
     <Title>Archives</Title>
   </div>
