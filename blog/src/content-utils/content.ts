@@ -1,9 +1,9 @@
 import type { CollectionEntry } from "astro:content";
 
 function filterDraft<T extends "post" | "memo">(
-  entry: CollectionEntry<T>,
+	entry: CollectionEntry<T>,
 ): boolean {
-  return import.meta.env.PROD ? !entry.data.draft : true;
+	return import.meta.env.PROD ? !entry.data.draft : true;
 }
 
 /**
@@ -11,9 +11,13 @@ function filterDraft<T extends "post" | "memo">(
  * .en.md 파일을 제외하고 draft가 아닌 콘텐츠만 반환
  */
 export function filterKoreanContent<T extends "post" | "memo">(
-  entry: CollectionEntry<T>,
+	entry: CollectionEntry<T>,
 ): boolean {
-  return filterDraft(entry) && (!entry.id.endsWith(".en.md") && !entry.id.endsWith(".en.mdx"));
+	return (
+		filterDraft(entry) &&
+		!entry.id.endsWith(".en.md") &&
+		!entry.id.endsWith(".en.mdx")
+	);
 }
 
 /**
@@ -21,7 +25,10 @@ export function filterKoreanContent<T extends "post" | "memo">(
  * .en.md 파일만 포함하고 draft가 아닌 콘텐츠만 반환
  */
 export function filterEnglishContent<T extends "post" | "memo">(
-  entry: CollectionEntry<T>,
+	entry: CollectionEntry<T>,
 ): boolean {
-  return filterDraft(entry) && (entry.id.endsWith(".en.md") || entry.id.endsWith(".en.mdx"));
+	return (
+		filterDraft(entry) &&
+		(entry.id.endsWith(".en.md") || entry.id.endsWith(".en.mdx"))
+	);
 }

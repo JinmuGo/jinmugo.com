@@ -6,4 +6,4 @@ export async function getEnglishApp() {
 
 export async function getKoreanApp() {
 	return await getCollection("app", (item) => item.slug === "about");
-} 
+}
