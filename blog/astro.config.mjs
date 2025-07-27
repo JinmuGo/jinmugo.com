@@ -3,7 +3,7 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 import icon from "astro-icon";
-import pkg from "./package.json";
+import pkg from "~/package.json";
 
 import mdx from "@astrojs/mdx";
 
@@ -27,11 +27,14 @@ export default defineConfig({
         provider: fontProviders.google(),
         name: "Asta Sans",
         cssVariable: "--font-asta",
+        weights: [300, 400, 700]
       },
       {
         provider: fontProviders.google(),
         name: "Geist",
         cssVariable: "--font-geist",
+        fallbacks: ["Asta Sans"],
+        weights: [300, 400, 700]
       },
     ],
   },
