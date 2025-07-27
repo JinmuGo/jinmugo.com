@@ -7,12 +7,18 @@ import { getKoreanPosts } from "@/utils/posts.ts";
 
 export const GET: APIRoute = async (context) => {
 	const posts = (await getKoreanPosts()).map((post: Post) => ({
-		...post.data,
 		link: `/posts/${post.data.category}/${post.slug}`,
+		pubDate: post.data.date,
+		description: post.data.summary,
+		categories: post.data.tags,
+    author: siteMetadata.author
 	}));
 	const memos = (await getKoreanMemos()).map((memo: Memo) => ({
-		...memo.data,
 		link: `/memos/${memo.slug}`,
+		pubDate: memo.data.date,
+		description: memo.data.summary,
+		categories: memo.data.tags,
+		author: siteMetadata.author,
 	}));
 
 	const items = [...posts, ...memos];
