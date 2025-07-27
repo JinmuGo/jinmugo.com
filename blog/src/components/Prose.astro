@@ -1,7 +1,41 @@
 ---
+interface Props {
+  as?: string;
+}
 
+const { as = "div" } = Astro.props;
+const id = "prose";
+const defaultClass = "prose-custom";
 ---
 
-<div id="prose" class="prose dark:prose-invert mx-auto max-w-none py-4">
-  <slot />
-</div>
+{
+  as === "div" && (
+    <div id={id} class={defaultClass}>
+      <slot />
+    </div>
+  )
+}
+
+{
+  as === "section" && (
+    <section id={id} class={defaultClass}>
+      <slot />
+    </section>
+  )
+}
+
+{
+  as === "article" && (
+    <article id={id} class={defaultClass}>
+      <slot />
+    </article>
+  )
+}
+
+{
+  as === "main" && (
+    <main id={id} class={defaultClass}>
+      <slot />
+    </main>
+  )
+}

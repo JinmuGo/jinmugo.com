@@ -10,6 +10,10 @@ export function PageViewIsland({
 	const [count, setCount] = useState<number>(-1);
 
 	useEffect(() => {
+		if (import.meta.env.DEV) {
+			setCount(0);
+			return;
+		}
 		(async () => {
 			// 조회수 증가 (body로 slug 전달)
 			await fetch(`${apiBaseUrl}/api/view/${slug}`, {
