@@ -1,17 +1,16 @@
 @layer components {
-  .prose-custom {
-    @apply text-text-light dark:text-text-dark;
-    @apply prose prose-lg xl:prose-xl dark:prose-invert;
-    @apply mx-auto max-w-none;
-    @apply mt-14;
-    @apply not-prose-headings:font-light;
+	.prose-custom {
+		@apply text-text-light dark:text-text-dark;
+		@apply prose prose-lg xl:prose-xl dark:prose-invert;
+		@apply mx-auto max-w-none;
+		@apply mt-14;
+		@apply not-prose-headings:font-light;
 
-    /* Code styling */
-    @apply [&_a_code]:text-primary-400;
-    @apply [&_code:not(pre_code)]:text-primary-500;
+		/* Code styling */
+		@apply [&_a_code]:text-primary-400;
+		@apply [&_code:not(pre_code)]:text-primary-500;
 
-    /* Image styling */
-    @apply [&_img]:mx-auto;
-
-  }
+		/* Image styling */
+		@apply [&_img]:mx-auto;
+	}
 }

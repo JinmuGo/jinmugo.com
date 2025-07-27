@@ -5,25 +5,25 @@ import "@/styles/global.css";
 import { Font } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import Themes from "astro-themes";
-import FallbackImage from "~/public/avatar.webp";
 import pkg from "~/package.json";
+import FallbackImage from "~/public/avatar.webp";
 
 interface Props {
-  title: string;
-  description: string;
-  image?: ImageMetadata;
-  ogImage?: string;
-  tags?: string[];
+	title: string;
+	description: string;
+	image?: ImageMetadata;
+	ogImage?: string;
+	tags?: string[];
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const {
-  title,
-  description,
-  image = FallbackImage,
-  ogImage,
-  tags,
+	title,
+	description,
+	image = FallbackImage,
+	ogImage,
+	tags,
 } = Astro.props;
 ---
 

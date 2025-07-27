@@ -9,44 +9,44 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme inline {
-  --font-sans: var(--font-geist), var(--font-asta), sans-serif;
+	--font-sans: var(--font-geist), var(--font-asta), sans-serif;
 
-  --color-primary-50: oklch(98% 0.016 73.684deg);
-  --color-primary-100: oklch(95.4% 0.038 75.164deg);
-  --color-primary-200: oklch(90.1% 0.076 70.697deg);
-  --color-primary-300: oklch(83.7% 0.128 66.29deg);
-  --color-primary-400: oklch(75% 0.183 55.934deg);
-  --color-primary-500: oklch(70.5% 0.213 47.604deg);
-  --color-primary-600: oklch(64.6% 0.222 41.116deg);
-  --color-primary-700: oklch(55.3% 0.195 38.402deg);
-  --color-primary-800: oklch(47% 0.157 37.304deg);
-  --color-primary-900: oklch(40.8% 0.123 38.172deg);
-  --color-primary-950: oklch(26.6% 0.079 36.259deg);
+	--color-primary-50: oklch(98% 0.016 73.684deg);
+	--color-primary-100: oklch(95.4% 0.038 75.164deg);
+	--color-primary-200: oklch(90.1% 0.076 70.697deg);
+	--color-primary-300: oklch(83.7% 0.128 66.29deg);
+	--color-primary-400: oklch(75% 0.183 55.934deg);
+	--color-primary-500: oklch(70.5% 0.213 47.604deg);
+	--color-primary-600: oklch(64.6% 0.222 41.116deg);
+	--color-primary-700: oklch(55.3% 0.195 38.402deg);
+	--color-primary-800: oklch(47% 0.157 37.304deg);
+	--color-primary-900: oklch(40.8% 0.123 38.172deg);
+	--color-primary-950: oklch(26.6% 0.079 36.259deg);
 
-  --color-text-light: oklch(0.3942 0 0);
-  --color-text-dark: oklch(0.7572 0 0);
+	--color-text-light: oklch(0.3942 0 0);
+	--color-text-dark: oklch(0.7572 0 0);
 }
 
 html[data-theme="light"] {
-  .dark {
-    display: none;
-  }
+	.dark {
+		display: none;
+	}
 
-  .astro-code,
-  .astro-code span {
-    color: var(--shiki-light);
-    background-color: var(--shiki-light-bg);
-  }
+	.astro-code,
+	.astro-code span {
+		color: var(--shiki-light);
+		background-color: var(--shiki-light-bg);
+	}
 }
 
 html[data-theme="dark"] {
-  .light {
-    display: none;
-  }
+	.light {
+		display: none;
+	}
 
-  .astro-code,
-  .astro-code span {
-    color: var(--shiki-dark);
-    background-color: var(--shiki-dark-bg);
-  }
+	.astro-code,
+	.astro-code span {
+		color: var(--shiki-dark);
+		background-color: var(--shiki-dark-bg);
+	}
 }

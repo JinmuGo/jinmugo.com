@@ -9,8 +9,8 @@ import type { PostMetadata } from "@/types/content";
 import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData";
 
 interface Props {
-  frontmatter: PostMetadata;
-  bannerImage: ImageMetadata;
+	frontmatter: PostMetadata;
+	bannerImage: ImageMetadata;
 }
 
 const { frontmatter, bannerImage } = Astro.props;
@@ -21,11 +21,11 @@ const { width, height } = bannerImage;
 const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
 
 const jsonLd = generatePostsPageSchema({
-  title: title,
-  description: summary || title,
-  url: buildPageUrl("", `/${category}/${slug}`),
-  keywords: tags?.join(", ") || "",
-  inLanguage: lang,
+	title: title,
+	description: summary || title,
+	url: buildPageUrl("", `/${category}/${slug}`),
+	keywords: tags?.join(", ") || "",
+	inLanguage: lang,
 });
 ---
 
