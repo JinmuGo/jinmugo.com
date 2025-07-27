@@ -1,13 +1,13 @@
 ---
-import pkg from "../../../../package.json";
+import { getEnglishPosts, sortPostsByDate } from "@/content-utils/posts";
 import Layout from "@/layouts/Layout.astro";
 import ListLayouts from "@/layouts/ListLayouts";
-import { getEnglishPosts, sortPostsByDate } from "@/content-utils/posts";
 import {
 	buildItemUrl,
 	buildPageUrl,
 	generatePostsPageSchema,
 } from "@/utils/structuredData";
+import pkg from "~/package.json";
 
 // 모든 영어 포스트 가져오기
 const posts = await getEnglishPosts();
@@ -36,12 +36,7 @@ const jsonLd = generatePostsPageSchema({
 });
 ---
 
-<Layout
-  title={title}
-  description={description}
-  lang="en"
-  jsonLd={jsonLd}
->
+<Layout title={title} description={description} lang="en" jsonLd={jsonLd}>
   <ListLayouts
     posts={sortedPosts.map((post) => ({
       ...post.data,

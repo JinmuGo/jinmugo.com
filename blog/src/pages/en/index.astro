@@ -2,11 +2,11 @@
 import { Image } from "astro:assets";
 import Bleed from "@/components/Bleed.astro";
 import PostTimeline from "@/components/Timeline/PostTimeline.astro";
-import pkg from "../../../package.json";
-import Layout from "@/layouts/Layout.astro";
-import { getEnglishPosts, sortPostsByDate } from "@/content-utils/posts";
 import { getEnglishMemos, sortMemosByDate } from "@/content-utils/memos";
+import { getEnglishPosts, sortPostsByDate } from "@/content-utils/posts";
+import Layout from "@/layouts/Layout.astro";
 import { generatePageSchema } from "@/utils/structuredData";
+import pkg from "~/package.json";
 import HeroImageSrc from "~/public/sea-boat.webp";
 
 const posts = await getEnglishPosts();

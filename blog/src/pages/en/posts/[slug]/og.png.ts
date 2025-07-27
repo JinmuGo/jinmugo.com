@@ -1,16 +1,14 @@
 import type { InferGetStaticParamsType } from "astro";
 import { OpenGraphImage } from "@/components/og/image";
-import { PNG } from "@/utils/openGraph";
 import { getEnglishPosts } from "@/content-utils/posts";
+import { PNG } from "@/utils/openGraph";
 
 const posts = await getEnglishPosts();
 
 type Params = InferGetStaticParamsType<typeof getStaticPaths>;
 
 export async function GET({ params }: { params: Params }) {
-	const post = posts.find(
-		(post) => post.slug === params.slug,
-	);
+	const post = posts.find((post) => post.slug === params.slug);
 	if (!post) {
 		return new Response("Post not found", { status: 404 });
 	}

@@ -4,7 +4,6 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import pkg from "../../../package.json";
 import Layout from "@/layouts/Layout.astro";
 import {
 	type Project,
@@ -12,6 +11,7 @@ import {
 	projectsData,
 } from "@/utils/projectsData";
 import { generatePageSchema } from "@/utils/structuredData";
+import pkg from "~/package.json";
 
 const cdnUrl = `${pkg.homepage}/banner/`;
 
