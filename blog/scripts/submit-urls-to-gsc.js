@@ -23,10 +23,8 @@ async function getNewUrls() {
     // sitemap.xml 파일을 읽어서 URL 목록을 추출
     const sitemapPath = join(
       process.cwd(),
-      ".next",
-      "server",
-      "app",
-      "sitemap.xml.body",
+      "dist",
+      "sitemap-0.xml",
     );
 
     if (!existsSync(sitemapPath)) {
