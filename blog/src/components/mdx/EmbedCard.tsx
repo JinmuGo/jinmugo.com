@@ -21,21 +21,21 @@ export default function EmbedCard({
 }: EmbedCardProps) {
 	return (
 		<a className="no-underline" href={url}>
-			<Card className="w-full h-32 my-4 flex-row items-center p-0 rounded-md gap-4 overflow-hidden">
-				{/* 카드 헤더: 제목, 부제목 */}
-				<CardHeader className="basis-1/3 px-0 h-full shrink-0">
+			<Card className="w-full h-32 my-4 flex-row items-stretch p-0 rounded-md gap-4 overflow-hidden">
+				{/* 카드 헤더: 이미지 영역 */}
+				<CardHeader className="basis-1/3 px-0 py-0 h-32 shrink-0 flex items-center justify-center">
 					<img
 						id="embed-card-image"
-						className="!my-0 w-full h-full object-cover"
+						className="!my-0 w-full h-full object-cover min-h-0"
 						src={image}
 						alt={title}
 					/>
 				</CardHeader>
 
-				{/* 카드 컨텐츠: 이미지 영역 */}
-				<CardContent className="basis-2/3 px-0 py-4">
-					<CardTitle className="line-clamp-2">{title}</CardTitle>
-					<CardDescription className="line-clamp-2">
+				{/* 카드 컨텐츠: 제목, 설명 */}
+				<CardContent className="basis-2/3 px-4 py-4 flex flex-col justify-center">
+					<CardTitle className="line-clamp-2 text-sm leading-tight">{title}</CardTitle>
+					<CardDescription className="line-clamp-2 text-xs leading-tight mt-1">
 						{description}
 					</CardDescription>
 				</CardContent>
