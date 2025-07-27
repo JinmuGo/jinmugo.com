@@ -3,7 +3,7 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 import icon from "astro-icon";
-import pkg from "~/package.json";
+import pkg from "./package.json";
 
 import mdx from "@astrojs/mdx";
 
@@ -19,7 +19,7 @@ import yeskunallumami from "@yeskunall/astro-umami";
 
 // https://astro.build/config
 export default defineConfig({
-  site: pkg.homepage,
+  site: process.env.NODE_ENV === "development" ? "http://localhost:4321" : pkg.homepage,
   output: "static",
   experimental: {
     fonts: [
