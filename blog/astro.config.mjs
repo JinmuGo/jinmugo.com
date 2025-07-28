@@ -1,7 +1,7 @@
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig, fontProviders } from "astro/config";
+import { defineConfig, fontProviders, envField } from "astro/config";
 import icon from "astro-icon";
 import pkg from "./package.json";
 
@@ -21,6 +21,14 @@ import yeskunallumami from "@yeskunall/astro-umami";
 export default defineConfig({
   site: process.env.NODE_ENV === "development" ? "http://localhost:4321" : pkg.homepage,
   output: "static",
+  env: {
+    schema: {
+      GOOGLE_TAG_ID: envField.string({
+        context: "client",
+        access: "public",
+      }),
+    }
+  },
   experimental: {
     fonts: [
       {
@@ -41,7 +49,7 @@ export default defineConfig({
   devToolbar: {
     enabled: process.env.NODE_ENV === "development",
   },
-  integrations: [react(), sitemap(), icon(), mdx(), yeskunallumami({ id: import.meta.env.UMAMI_ID })],
+  integrations: [react(), sitemap(), icon(), mdx(), yeskunallumami({ id: process.env.UMAMI_ID})],
 
   vite: {
     plugins: tailwindcss(),
