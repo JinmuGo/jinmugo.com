@@ -9,20 +9,16 @@ export async function getStaticPaths() {
 	const memos = await getKoreanMemos();
 
 	return memos.map((entry: Memo) => {
-		const slugParts = entry.id.split("/");
-		const folderName = slugParts[0];
 		return {
 			params: {
-				slug: folderName.toLowerCase(),
+				slug: entry.slug,
 			},
-			props: { entry },
+			props: { entry, slug: entry.slug },
 		};
 	});
 }
 
-const { slug } = Astro.params;
-
-const { entry }: { entry: Memo } = Astro.props;
+const { entry, slug }: { entry: Memo; slug: string } = Astro.props;
 const frontmatterWithSlug = {
 	...entry.data,
 	slug,

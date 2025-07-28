@@ -25,7 +25,7 @@ export async function getEnglishMemos() {
 	return (await getCollection("memo", filterEnglishContent)).map(
 		(memo: Memo) => ({
 			...memo,
-			slug: memo.slug.split("/").pop() ?? "",
+			slug: memo.slug.split("/").pop()?.replace(/en$/, "") ?? "",
 			type: "memo",
 		}),
 	);

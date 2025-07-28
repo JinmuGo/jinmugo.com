@@ -20,7 +20,7 @@ const Header = ({ frontmatter, pathname }: HeaderProps) => {
 	const [isEndofContent, setIsEndofContent] = useState<boolean>(false);
 	const [open, setOpen] = useState<boolean>(false);
 	const handleScroll = useCallback(() => {
-		const target = document.querySelector("#post-title");
+		const target = document.querySelector("#post-title, #memo-title");
 		const rect = target?.getBoundingClientRect();
 		if (!rect) {
 			return;
