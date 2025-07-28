@@ -36,8 +36,8 @@ export default function HeaderSlider({
 }: HeaderSliderProps) {
 	const { category, date, title } = postMetadata;
 	const href = pathname.startsWith("/en")
-		? `/en/posts/category/${category ?? ""}`
-		: `/posts/category/${category ?? ""}`;
+		? `/en/archives/category/${category ?? ""}`
+		: `/archives/category/${category ?? ""}`;
 	const [isHovered, setIsHovered] = useState<boolean>(false);
 
 	const onClick = useCallback(() => {
