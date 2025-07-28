@@ -1,7 +1,7 @@
 import { Bool, OpenAPIRoute, Str } from "chanfana";
 import { z } from "zod";
+import { getPostBySlug, getPrismaClient } from "../../../lib/db";
 import type { AppContext } from "../../../types";
-import { getPrismaClient, getPostBySlug } from "../../../lib/db";
 
 export class GetPostView extends OpenAPIRoute {
   schema = {
@@ -56,4 +56,4 @@ export class GetPostView extends OpenAPIRoute {
       await prisma.$disconnect();
     }
   }
-} 
+}

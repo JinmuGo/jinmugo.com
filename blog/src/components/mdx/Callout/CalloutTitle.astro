@@ -1,14 +1,14 @@
 ---
-import { Icon } from "astro-icon/components";
-import { callouts } from "./callout.astro";
+import { Icon } from "astro-icon/components"
+import { callouts } from "./callout.astro"
 
 export interface Props {
-	type: string;
-	isFoldable: boolean;
-	className?: string;
+  type: string
+  isFoldable: boolean
+  className?: string
 }
-const { type, isFoldable, className } = Astro.props;
-const callout = callouts[type as keyof typeof callouts] ?? callouts.note;
+const { type, isFoldable, className } = Astro.props
+const callout = callouts[type as keyof typeof callouts] ?? callouts.note
 ---
 
 {

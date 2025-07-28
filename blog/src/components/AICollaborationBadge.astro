@@ -1,21 +1,21 @@
 ---
 export interface Props {
-	withAI?: boolean;
-	class?: string;
-	lang?: "en" | "ko";
+  withAI?: boolean
+  class?: string
+  lang?: "en" | "ko"
 }
 
-const { withAI = false, class: className, lang = "ko" } = Astro.props;
+const { withAI = false, class: className, lang = "ko" } = Astro.props
 
 const content = withAI
-	? lang === "en"
-		? "This post was written with AI assistance"
-		: "AI와 함께 작성한 글입니다"
-	: lang === "en"
-		? "This post was written without AI"
-		: "AI를 사용하지 않은 글입니다";
+  ? lang === "en"
+    ? "This post was written with AI assistance"
+    : "AI와 함께 작성한 글입니다"
+  : lang === "en"
+    ? "This post was written without AI"
+    : "AI를 사용하지 않은 글입니다"
 
-const shortContent = withAI ? "With AI" : "Without AI";
+const shortContent = withAI ? "With AI" : "Without AI"
 ---
 
 <div class:list={["inline-flex items-center", className]} title={content}>

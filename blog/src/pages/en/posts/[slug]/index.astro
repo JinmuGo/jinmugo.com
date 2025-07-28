@@ -1,42 +1,42 @@
 ---
-import { components } from "@/components/mdx/components.astro";
-import PhotoSwipe from "@/components/PhotoSwipe.astro";
-import { getEnglishPosts } from "@/content-utils/posts";
-import PostBannerX from "@/layouts/PostBannerX.astro";
-import PostBannerY from "@/layouts/PostBannerY.astro";
-import PostDefault from "@/layouts/PostDefault.astro";
-import type { Post } from "@/types/content";
-import { getBannerImageBySlug } from "@/utils/banner.astro";
+import { components } from "@/components/mdx/components.astro"
+import PhotoSwipe from "@/components/PhotoSwipe.astro"
+import { getEnglishPosts } from "@/content-utils/posts"
+import PostBannerX from "@/layouts/PostBannerX.astro"
+import PostBannerY from "@/layouts/PostBannerY.astro"
+import PostDefault from "@/layouts/PostDefault.astro"
+import type { Post } from "@/types/content"
+import { getBannerImageBySlug } from "@/utils/banner.astro"
 
 export async function getStaticPaths() {
-	const posts = await getEnglishPosts();
+  const posts = await getEnglishPosts()
 
-	return posts.map((entry: Post) => {
-		return {
-			params: {
-				slug: entry.slug,
-			},
-			props: { entry, slug: entry.slug },
-		};
-	});
+  return posts.map((entry: Post) => {
+    return {
+      params: {
+        slug: entry.slug,
+      },
+      props: { entry, slug: entry.slug },
+    }
+  })
 }
 
-const { entry, slug }: { entry: Post; slug: string } = Astro.props;
-const { Content } = await entry.render();
+const { entry, slug }: { entry: Post; slug: string } = Astro.props
+const { Content } = await entry.render()
 const frontmatterWithSlug = {
-	...entry.data,
-	slug,
-};
+  ...entry.data,
+  slug,
+}
 
-const bannerImage = getBannerImageBySlug(slug);
-let layout = "PostDefault";
+const bannerImage = getBannerImageBySlug(slug)
+let layout = "PostDefault"
 if (bannerImage) {
-	const { width, height } = bannerImage;
-	if (width > height) {
-		layout = "PostBannerX";
-	} else {
-		layout = "PostBannerY";
-	}
+  const { width, height } = bannerImage
+  if (width > height) {
+    layout = "PostBannerX"
+  } else {
+    layout = "PostBannerY"
+  }
 }
 ---
 

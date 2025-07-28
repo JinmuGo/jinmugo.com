@@ -1,41 +1,41 @@
 ---
-import { components } from "@/components/mdx/components.astro";
-import PhotoSwipe from "@/components/PhotoSwipe.astro";
-import { getKoreanPosts } from "@/content-utils/posts";
-import PostBannerX from "@/layouts/PostBannerX.astro";
-import PostBannerY from "@/layouts/PostBannerY.astro";
-import PostDefault from "@/layouts/PostDefault.astro";
-import type { Post, PostLayoutType } from "@/types/content";
-import { getBannerImageBySlug } from "@/utils/banner.astro";
+import { components } from "@/components/mdx/components.astro"
+import PhotoSwipe from "@/components/PhotoSwipe.astro"
+import { getKoreanPosts } from "@/content-utils/posts"
+import PostBannerX from "@/layouts/PostBannerX.astro"
+import PostBannerY from "@/layouts/PostBannerY.astro"
+import PostDefault from "@/layouts/PostDefault.astro"
+import type { Post, PostLayoutType } from "@/types/content"
+import { getBannerImageBySlug } from "@/utils/banner.astro"
 
 export async function getStaticPaths() {
-	const posts = await getKoreanPosts();
+  const posts = await getKoreanPosts()
 
-	return posts.map((entry: Post) => {
-		return {
-			params: {
-				slug: entry.slug,
-			},
-			props: { entry, slug: entry.slug },
-		};
-	});
+  return posts.map((entry: Post) => {
+    return {
+      params: {
+        slug: entry.slug,
+      },
+      props: { entry, slug: entry.slug },
+    }
+  })
 }
 
-const { entry, slug }: { entry: Post; slug: string } = Astro.props;
-const { Content } = await entry.render();
+const { entry, slug }: { entry: Post; slug: string } = Astro.props
+const { Content } = await entry.render()
 const frontmatterWithSlug = {
-	...entry.data,
-	slug,
-};
-const bannerImage = getBannerImageBySlug(slug);
-let layout: PostLayoutType = "PostDefault";
+  ...entry.data,
+  slug,
+}
+const bannerImage = getBannerImageBySlug(slug)
+let layout: PostLayoutType = "PostDefault"
 if (bannerImage) {
-	const { width, height } = bannerImage;
-	if (width > height) {
-		layout = "PostBannerX";
-	} else {
-		layout = "PostBannerY";
-	}
+  const { width, height } = bannerImage
+  if (width > height) {
+    layout = "PostBannerX"
+  } else {
+    layout = "PostBannerY"
+  }
 }
 ---
 

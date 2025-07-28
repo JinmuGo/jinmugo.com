@@ -1,32 +1,32 @@
 ---
-import { Image } from "astro:assets";
-import AICollaborationBadge from "@/components/AICollaborationBadge.astro";
-import FormattedDate from "@/components/FormattedDate.astro";
-import PageView from "@/components/PageView.astro";
-import Prose from "@/components/Prose.astro";
-import Layout from "@/layouts/Layout.astro";
-import type { PostMetadata } from "@/types/content";
-import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData";
+import { Image } from "astro:assets"
+import AICollaborationBadge from "@/components/AICollaborationBadge.astro"
+import FormattedDate from "@/components/FormattedDate.astro"
+import PageView from "@/components/PageView.astro"
+import Prose from "@/components/Prose.astro"
+import Layout from "@/layouts/Layout.astro"
+import type { PostMetadata } from "@/types/content"
+import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData"
 
 interface Props {
-	frontmatter: PostMetadata;
-	bannerImage: ImageMetadata;
+  frontmatter: PostMetadata
+  bannerImage: ImageMetadata
 }
 
-const { frontmatter, bannerImage } = Astro.props;
-const { title, date, summary, withAI, category, slug, tags } = frontmatter;
-const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL;
+const { frontmatter, bannerImage } = Astro.props
+const { title, date, summary, withAI, category, slug, tags } = frontmatter
+const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL
 
-const { width, height } = bannerImage;
-const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
+const { width, height } = bannerImage
+const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko"
 
 const jsonLd = generatePostsPageSchema({
-	title: title,
-	description: summary || title,
-	url: buildPageUrl("", `/${category}/${slug}`),
-	keywords: tags?.join(", ") || "",
-	inLanguage: lang,
-});
+  title: title,
+  description: summary || title,
+  url: buildPageUrl("", `/${category}/${slug}`),
+  keywords: tags?.join(", ") || "",
+  inLanguage: lang,
+})
 ---
 
 <Layout

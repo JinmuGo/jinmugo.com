@@ -1,78 +1,73 @@
 ---
-import { Image } from "astro:assets";
-import type { _Object } from "@aws-sdk/client-s3";
-import {
-	HeadObjectCommand,
-	ListObjectsCommand,
-	S3Client,
-} from "@aws-sdk/client-s3";
-import Layout from "@/layouts/Layout.astro";
-import { generatePageSchema } from "@/utils/structuredData";
-import pkg from "~/package.json";
+import { Image } from "astro:assets"
+import type { _Object } from "@aws-sdk/client-s3"
+import { HeadObjectCommand, ListObjectsCommand, S3Client } from "@aws-sdk/client-s3"
+import Layout from "@/layouts/Layout.astro"
+import { generatePageSchema } from "@/utils/structuredData"
+import pkg from "~/package.json"
 
 // S3 클라이언트 생성
 const s3Client = new S3Client({
-	credentials: {
-		accessKeyId: import.meta.env.R2_ACCESS_KEY_ID,
-		secretAccessKey: import.meta.env.R2_SECRET_ACCESS_KEY,
-	},
-	endpoint: `https://${import.meta.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-	region: "auto",
-});
+  credentials: {
+    accessKeyId: import.meta.env.R2_ACCESS_KEY_ID,
+    secretAccessKey: import.meta.env.R2_SECRET_ACCESS_KEY,
+  },
+  endpoint: `https://${import.meta.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  region: "auto",
+})
 
-const prefixDateRegex =
-	/^(?:\d{4})\/(?:0[1-9]|1[0-2])\/(?:0[1-9]|[12]\d|3[01])/;
+const prefixDateRegex = /^(?:\d{4})\/(?:0[1-9]|1[0-2])\/(?:0[1-9]|[12]\d|3[01])/
 
 // S3에서 이미지 목록 가져오기 (빌드 타임)
 const listCommand = new ListObjectsCommand({
-	Bucket: import.meta.env.R2_BUCKET_NAME,
-});
-const { Contents } = await s3Client.send(listCommand);
+  Bucket: import.meta.env.R2_BUCKET_NAME,
+})
+const { Contents } = await s3Client.send(listCommand)
 
 const filtered = ((Contents ?? []) as _Object[]).filter(
-	(obj: _Object) => obj.Key?.endsWith(".jpg") && prefixDateRegex.test(obj.Key),
-);
+  (obj: _Object) => obj.Key?.endsWith(".jpg") && prefixDateRegex.test(obj.Key),
+)
 
 const images = await Promise.all(
-	filtered.map(async (obj: _Object) => {
-		let width = 1200;
-		let height = 800;
-		try {
-			if (!obj.Key) {
-				throw new Error("Key is undefined");
-			}
-			const head = await s3Client.send(
-				new HeadObjectCommand({
-					Bucket: import.meta.env.R2_BUCKET_NAME,
-					Key: obj.Key,
-				}),
-			);
-			if (head.Metadata?.width && head.Metadata?.height) {
-				width = Number(head.Metadata.width);
-				height = Number(head.Metadata.height);
-			}
-		} catch {
-			// 무시하고 기본값 사용
-		}
-		return {
-			key: obj.Key ?? "",
-			src: obj.Key ? `${pkg.cdnUrl}/${obj.Key}` : "",
-			width,
-			height,
-		};
-	}),
-);
+  filtered.map(async (obj: _Object) => {
+    let width = 1200
+    let height = 800
+    try {
+      if (!obj.Key) {
+        throw new Error("Key is undefined")
+      }
+      const head = await s3Client.send(
+        new HeadObjectCommand({
+          Bucket: import.meta.env.R2_BUCKET_NAME,
+          Key: obj.Key,
+        }),
+      )
+      if (head.Metadata?.width && head.Metadata?.height) {
+        width = Number(head.Metadata.width)
+        height = Number(head.Metadata.height)
+      }
+    } catch {
+      // 무시하고 기본값 사용
+    }
+    return {
+      key: obj.Key ?? "",
+      src: obj.Key ? `${pkg.cdnUrl}/${obj.Key}` : "",
+      width,
+      height,
+    }
+  }),
+)
 
-const title = "Gallery";
-const description = "Jinmu's gallery";
+const title = "Gallery"
+const description = "Jinmu's gallery"
 
 const jsonLd = generatePageSchema({
-	type: "ImageGallery",
-	title,
-	description,
-	url: `${pkg.homepage}/gallery`,
-	inLanguage: "ko",
-});
+  type: "ImageGallery",
+  title,
+  description,
+  url: `${pkg.homepage}/gallery`,
+  inLanguage: "ko",
+})
 ---
 
 <Layout 

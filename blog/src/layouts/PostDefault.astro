@@ -1,28 +1,28 @@
 ---
-import AICollaborationBadge from "@/components/AICollaborationBadge.astro";
-import FormattedDate from "@/components/FormattedDate.astro";
-import PageView from "@/components/PageView.astro";
-import Prose from "@/components/Prose.astro";
-import Layout from "@/layouts/Layout.astro";
-import type { PostMetadata } from "@/types/content";
-import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData";
+import AICollaborationBadge from "@/components/AICollaborationBadge.astro"
+import FormattedDate from "@/components/FormattedDate.astro"
+import PageView from "@/components/PageView.astro"
+import Prose from "@/components/Prose.astro"
+import Layout from "@/layouts/Layout.astro"
+import type { PostMetadata } from "@/types/content"
+import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData"
 
 interface Props {
-	frontmatter: PostMetadata;
+  frontmatter: PostMetadata
 }
 
-const { frontmatter } = Astro.props;
-const { title, date, summary, category, withAI, slug, tags } = frontmatter;
-const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
-const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL;
+const { frontmatter } = Astro.props
+const { title, date, summary, category, withAI, slug, tags } = frontmatter
+const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko"
+const apiBaseUrl = import.meta.env.PUBLIC_API_BASE_URL
 
 const jsonLd = generatePostsPageSchema({
-	title: title,
-	description: summary || title,
-	url: buildPageUrl("", `/${category}/${slug}`),
-	keywords: tags?.join(", ") || "",
-	inLanguage: lang,
-});
+  title: title,
+  description: summary || title,
+  url: buildPageUrl("", `/${category}/${slug}`),
+  keywords: tags?.join(", ") || "",
+  inLanguage: lang,
+})
 ---
 
 <Layout

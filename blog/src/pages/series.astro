@@ -1,59 +1,59 @@
 ---
-import SeriesListIsland from "@/components/SeriesListIsland.tsx";
-import { getKoreanPosts } from "@/content-utils/posts";
-import Layout from "@/layouts/Layout.astro";
-import type { Post } from "@/types/content";
-import { buildPageUrl, generatePageSchema } from "@/utils/structuredData";
+import SeriesListIsland from "@/components/SeriesListIsland.tsx"
+import { getKoreanPosts } from "@/content-utils/posts"
+import Layout from "@/layouts/Layout.astro"
+import type { Post } from "@/types/content"
+import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
 
 interface Series {
-	name: string;
-	posts: Post[];
-	totalPosts: number;
+  name: string
+  posts: Post[]
+  totalPosts: number
 }
 
 function groupPostsBySeries(posts: Post[]): Series[] {
-	const map = new Map<string, Series>();
-	posts.forEach((post) => {
-		const series = post.data.series;
-		if (!series) {
-			return;
-		}
-		if (!map.has(series)) {
-			map.set(series, { name: series, posts: [], totalPosts: 0 });
-		}
-		const seriesObj = map.get(series);
-		if (seriesObj) {
-			seriesObj.posts.push(post);
-			seriesObj.totalPosts++;
-		}
-	});
-	return Array.from(map.values());
+  const map = new Map<string, Series>()
+  posts.forEach((post) => {
+    const series = post.data.series
+    if (!series) {
+      return
+    }
+    if (!map.has(series)) {
+      map.set(series, { name: series, posts: [], totalPosts: 0 })
+    }
+    const seriesObj = map.get(series)
+    if (seriesObj) {
+      seriesObj.posts.push(post)
+      seriesObj.totalPosts++
+    }
+  })
+  return Array.from(map.values())
 }
 
-const posts = await getKoreanPosts();
-const seriesList = groupPostsBySeries(posts);
+const posts = await getKoreanPosts()
+const seriesList = groupPostsBySeries(posts)
 
-const title = "Series";
-const description = "블로그 시리즈 모음집입니다.";
+const title = "Series"
+const description = "블로그 시리즈 모음집입니다."
 const jsonLd = generatePageSchema({
-	type: "CollectionPage",
-	title,
-	description,
-	url: buildPageUrl("", "/series"),
-	keywords: "series, blog series, collections",
-	inLanguage: "ko",
-	itemListElements: seriesList.map((series, idx) => ({
-		"@type": "ListItem",
-		url: `/series/${encodeURIComponent(series.name)}`,
-		position: idx + 1,
-		item: {
-			"@type": "Collection",
-			name: series.name,
-			description: `${series.totalPosts}개의 포스트`,
-			url: `/series/${encodeURIComponent(series.name)}`,
-		},
-	})),
-});
+  type: "CollectionPage",
+  title,
+  description,
+  url: buildPageUrl("", "/series"),
+  keywords: "series, blog series, collections",
+  inLanguage: "ko",
+  itemListElements: seriesList.map((series, idx) => ({
+    "@type": "ListItem",
+    url: `/series/${encodeURIComponent(series.name)}`,
+    position: idx + 1,
+    item: {
+      "@type": "Collection",
+      name: series.name,
+      description: `${series.totalPosts}개의 포스트`,
+      url: `/series/${encodeURIComponent(series.name)}`,
+    },
+  })),
+})
 ---
 
 <Layout 

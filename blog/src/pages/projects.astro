@@ -1,44 +1,36 @@
 ---
-import Title from "@/components/Title";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
-import Layout from "@/layouts/Layout.astro";
-import {
-	type Project,
-	type ProjectSection,
-	projectsData,
-} from "@/utils/projectsData";
-import { generatePageSchema } from "@/utils/structuredData";
-import pkg from "~/package.json";
+import Title from "@/components/Title"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import Layout from "@/layouts/Layout.astro"
+import { type Project, type ProjectSection, projectsData } from "@/utils/projectsData"
+import { generatePageSchema } from "@/utils/structuredData"
+import pkg from "~/package.json"
 
-const cdnUrl = `${pkg.homepage}/banner/`;
+const cdnUrl = `${pkg.homepage}/banner/`
 
 function groupBySection(projects: Project[]): ProjectSection {
-	return projects.reduce((acc: ProjectSection, cur: Project) => {
-		if (cur.section in acc) {
-			acc[cur.section]?.push(cur);
-		} else {
-			acc[cur.section] = [cur];
-		}
-		return acc;
-	}, {} as ProjectSection);
+  return projects.reduce((acc: ProjectSection, cur: Project) => {
+    if (cur.section in acc) {
+      acc[cur.section]?.push(cur)
+    } else {
+      acc[cur.section] = [cur]
+    }
+    return acc
+  }, {} as ProjectSection)
 }
 
-const projects: ProjectSection = groupBySection(projectsData);
+const projects: ProjectSection = groupBySection(projectsData)
 
-const title = "Projects";
-const description = "프로젝트 모음집입니다.";
-const url = `${pkg.homepage}/projects`;
+const title = "Projects"
+const description = "프로젝트 모음집입니다."
+const url = `${pkg.homepage}/projects`
 const jsonLd = generatePageSchema({
-	title,
-	description,
-	url,
-	keywords: "projects, portfolio, collection",
-	inLanguage: "ko",
-});
+  title,
+  description,
+  url,
+  keywords: "projects, portfolio, collection",
+  inLanguage: "ko",
+})
 ---
 
 <Layout 

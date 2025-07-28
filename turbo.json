@@ -17,6 +17,12 @@
     "lint:fix": {
       "cache": false,
       "dependsOn": ["^lint:fix"]
+    },
+    "format": {
+      "cache": false
+    },
+    "check": {
+      "cache": false
     }
   }
 }

@@ -1,16 +1,16 @@
 ---
-import FormattedDate from "@/components/FormattedDate.astro";
-import Prose from "@/components/Prose.astro";
-import Layout from "@/layouts/Layout.astro";
-import type { Memo } from "@/types/content";
+import FormattedDate from "@/components/FormattedDate.astro"
+import Prose from "@/components/Prose.astro"
+import Layout from "@/layouts/Layout.astro"
+import type { Memo } from "@/types/content"
 
 interface Props {
-	frontmatter: Memo;
+  frontmatter: Memo
 }
 
-const { frontmatter } = Astro.props;
-const { title, date, summary, category, slug } = frontmatter;
-const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko";
+const { frontmatter } = Astro.props
+const { title, date, summary, category, slug } = frontmatter
+const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko"
 ---
 
 <Layout

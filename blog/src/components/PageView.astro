@@ -1,7 +1,7 @@
 ---
-import { PageViewIsland } from "./PageViewIsland";
+import { PageViewIsland } from "./PageViewIsland"
 
-const { slug, apiBaseUrl } = Astro.props;
+const { slug, apiBaseUrl } = Astro.props
 ---
 
 <PageViewIsland client:only="react" slug={slug} apiBaseUrl={apiBaseUrl} />

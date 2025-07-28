@@ -16,7 +16,11 @@
     "db:sync-posts": "pnpm dlx tsx scripts/sync-posts.ts",
     "db:sync-posts-d1": "pnpm dlx tsx scripts/sync-posts-d1.ts",
     "db:migrate-d1": "wrangler d1 execute blog-db --file=./schema.sql",
-    "db:push-d1": "prisma db push --schema=./schema.prisma"
+    "db:push-d1": "prisma db push --schema=./schema.prisma",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --apply .",
+    "check": "biome check ."
   },
   "dependencies": {
     "@fuma-comment/server": "^1.3.0",

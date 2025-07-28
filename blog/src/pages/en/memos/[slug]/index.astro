@@ -1,31 +1,31 @@
 ---
-import { components } from "@/components/mdx/components.astro";
-import PhotoSwipe from "@/components/PhotoSwipe.astro";
-import { getEnglishMemos } from "@/content-utils/memos";
-import MemoDefault from "@/layouts/MemoDefault.astro";
-import type { Memo } from "@/types/content";
+import { components } from "@/components/mdx/components.astro"
+import PhotoSwipe from "@/components/PhotoSwipe.astro"
+import { getEnglishMemos } from "@/content-utils/memos"
+import MemoDefault from "@/layouts/MemoDefault.astro"
+import type { Memo } from "@/types/content"
 
 export async function getStaticPaths() {
-	// .en.md 파일(영문)만 필터링
-	const memos = await getEnglishMemos();
+  // .en.md 파일(영문)만 필터링
+  const memos = await getEnglishMemos()
 
-	return memos.map((entry: Memo) => {
-		return {
-			params: {
-				slug: entry.slug,
-			},
-			props: { entry, slug: entry.slug },
-		};
-	});
+  return memos.map((entry: Memo) => {
+    return {
+      params: {
+        slug: entry.slug,
+      },
+      props: { entry, slug: entry.slug },
+    }
+  })
 }
 
-const { entry, slug }: { entry: Memo; slug: string } = Astro.props;
+const { entry, slug }: { entry: Memo; slug: string } = Astro.props
 const frontmatterWithSlug = {
-	...entry.data,
-	slug,
-};
+  ...entry.data,
+  slug,
+}
 
-const { Content } = await entry.render();
+const { Content } = await entry.render()
 ---
 
 <MemoDefault frontmatter={frontmatterWithSlug}>

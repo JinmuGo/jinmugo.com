@@ -1,38 +1,34 @@
 ---
-import { getKoreanMemos, sortMemosByDate } from "@/content-utils/memos";
-import Layout from "@/layouts/Layout.astro";
-import ListLayouts from "@/layouts/ListLayouts";
-import {
-	buildItemUrl,
-	buildPageUrl,
-	generatePostsPageSchema,
-} from "@/utils/structuredData";
+import { getKoreanMemos, sortMemosByDate } from "@/content-utils/memos"
+import Layout from "@/layouts/Layout.astro"
+import ListLayouts from "@/layouts/ListLayouts"
+import { buildItemUrl, buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData"
 
 // 모든 한국어 메모 가져오기
-const memos = await getKoreanMemos();
-const sortedMemos = sortMemosByDate(memos);
+const memos = await getKoreanMemos()
+const sortedMemos = sortMemosByDate(memos)
 
-const title = "Memos";
-const description = "Memo collection";
+const title = "Memos"
+const description = "Memo collection"
 
 // 구조화된 데이터 생성
 const jsonLd = generatePostsPageSchema({
-	title,
-	description,
-	url: buildPageUrl("", "/memos"),
-	keywords: "memos, notes, collection",
-	inLanguage: "ko",
-	itemListElements: sortedMemos.map((memo, index) => ({
-		"@type": "ListItem",
-		url: buildItemUrl(`/memos/${memo.slug}`),
-		position: index + 1,
-		item: {
-			"@type": "Article",
-			name: memo.data.title,
-			url: buildItemUrl(`/memos/${memo.slug}`),
-		},
-	})),
-});
+  title,
+  description,
+  url: buildPageUrl("", "/memos"),
+  keywords: "memos, notes, collection",
+  inLanguage: "ko",
+  itemListElements: sortedMemos.map((memo, index) => ({
+    "@type": "ListItem",
+    url: buildItemUrl(`/memos/${memo.slug}`),
+    position: index + 1,
+    item: {
+      "@type": "Article",
+      name: memo.data.title,
+      url: buildItemUrl(`/memos/${memo.slug}`),
+    },
+  })),
+})
 ---
 
 <Layout

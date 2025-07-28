@@ -1,116 +1,96 @@
 ---
-import MemoLabel from "@/components/MemoLabel.astro";
-import { getKoreanMemos } from "@/content-utils/memos";
-import { getKoreanPosts } from "@/content-utils/posts";
-import Layout from "@/layouts/Layout.astro";
-import type { Memo, Post } from "@/types/content";
-import { buildPageUrl, generatePageSchema } from "@/utils/structuredData";
+import MemoLabel from "@/components/MemoLabel.astro"
+import { getKoreanMemos } from "@/content-utils/memos"
+import { getKoreanPosts } from "@/content-utils/posts"
+import Layout from "@/layouts/Layout.astro"
+import type { Memo, Post } from "@/types/content"
+import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
 
 export async function getStaticPaths() {
-	const posts = await getKoreanPosts();
-	const memos = await getKoreanMemos();
+  const posts = await getKoreanPosts()
+  const memos = await getKoreanMemos()
 
-	const allContent = [...posts, ...memos] as (Post | Memo)[];
+  const allContent = [...posts, ...memos] as (Post | Memo)[]
 
-	const categories = [
-		...new Set(allContent.map((item) => item.data.category).filter(Boolean)),
-	];
-	const tags = [
-		...new Set(
-			[...allContent.flatMap((item) => item.data.tags ?? [])].filter(Boolean),
-		),
-	];
-	const years = [
-		...new Set([
-			...allContent
-				.map((item) =>
-					item.data.date
-						? new Date(item.data.date).getFullYear().toString()
-						: null,
-				)
-				.filter(Boolean),
-		]),
-	];
+  const categories = [...new Set(allContent.map((item) => item.data.category).filter(Boolean))]
+  const tags = [...new Set([...allContent.flatMap((item) => item.data.tags ?? [])].filter(Boolean))]
+  const years = [
+    ...new Set([
+      ...allContent
+        .map((item) => (item.data.date ? new Date(item.data.date).getFullYear().toString() : null))
+        .filter(Boolean),
+    ]),
+  ]
 
-	const paths = [
-		...categories.map((category) => ({
-			params: { classify: "category", target: category }, // 인코딩 X
-		})),
-		...tags.map((tag) => ({
-			params: { classify: "tag", target: tag }, // 인코딩 X
-		})),
-		...years.map((year) => ({
-			params: { classify: "year", target: year }, // 인코딩 X
-		})),
-	];
+  const paths = [
+    ...categories.map((category) => ({
+      params: { classify: "category", target: category }, // 인코딩 X
+    })),
+    ...tags.map((tag) => ({
+      params: { classify: "tag", target: tag }, // 인코딩 X
+    })),
+    ...years.map((year) => ({
+      params: { classify: "year", target: year }, // 인코딩 X
+    })),
+  ]
 
-	return paths;
+  return paths
 }
 
-const { classify, target } = Astro.params;
-const decodeTarget = decodeURIComponent(target ?? "");
+const { classify, target } = Astro.params
+const decodeTarget = decodeURIComponent(target ?? "")
 
-const posts = await getKoreanPosts();
-const memos = await getKoreanMemos();
-const allContent = [...posts, ...memos] as (Post | Memo)[];
+const posts = await getKoreanPosts()
+const memos = await getKoreanMemos()
+const allContent = [...posts, ...memos] as (Post | Memo)[]
 
-const capitalizeFirst = (str: string) =>
-	str.charAt(0).toUpperCase() + str.slice(1);
+const capitalizeFirst = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
-function getContentBySlug(
-	allContent: (Post | Memo)[],
-	classify: string,
-	target: string,
-) {
-	if (!classify || !target) {
-		return [];
-	}
+function getContentBySlug(allContent: (Post | Memo)[], classify: string, target: string) {
+  if (!classify || !target) {
+    return []
+  }
 
-	switch (classify) {
-		case "category":
-			return allContent
-				.filter((item) => item.data.category === target)
-				.map((item) => ({ ...item, type: item.type }));
-		case "tag":
-			return [
-				...allContent
-					.filter((item) => item.data.tags?.includes(target))
-					.map((item) => ({ ...item, type: item.type })),
-				...allContent
-					.filter((item) => item.data.tags?.includes(target))
-					.map((item) => ({ ...item, type: item.type })),
-			];
-		case "year":
-			return [
-				...allContent
-					.filter(
-						(item) =>
-							item.data.date &&
-							new Date(item.data.date).getFullYear().toString() === target,
-					)
-					.map((item) => ({ ...item, type: item.type })),
-			];
-		default:
-			return [];
-	}
+  switch (classify) {
+    case "category":
+      return allContent
+        .filter((item) => item.data.category === target)
+        .map((item) => ({ ...item, type: item.type }))
+    case "tag":
+      return [
+        ...allContent
+          .filter((item) => item.data.tags?.includes(target))
+          .map((item) => ({ ...item, type: item.type })),
+        ...allContent
+          .filter((item) => item.data.tags?.includes(target))
+          .map((item) => ({ ...item, type: item.type })),
+      ]
+    case "year":
+      return [
+        ...allContent
+          .filter(
+            (item) =>
+              item.data.date && new Date(item.data.date).getFullYear().toString() === target,
+          )
+          .map((item) => ({ ...item, type: item.type })),
+      ]
+    default:
+      return []
+  }
 }
 
-const contentWithSlug = getContentBySlug(
-	allContent,
-	classify ?? "",
-	decodeTarget ?? "",
-);
-const title = `${capitalizeFirst(decodeTarget ?? "")} - ${capitalizeFirst(classify ?? "")}`;
-const description = `Archives of ${capitalizeFirst(decodeTarget ?? "")} in ${capitalizeFirst(classify ?? "")}`;
-const url = buildPageUrl("", `/archives/${classify}/${decodeTarget}`);
+const contentWithSlug = getContentBySlug(allContent, classify ?? "", decodeTarget ?? "")
+const title = `${capitalizeFirst(decodeTarget ?? "")} - ${capitalizeFirst(classify ?? "")}`
+const description = `Archives of ${capitalizeFirst(decodeTarget ?? "")} in ${capitalizeFirst(classify ?? "")}`
+const url = buildPageUrl("", `/archives/${classify}/${decodeTarget}`)
 const jsonLd = generatePageSchema({
-	type: "CollectionPage",
-	title,
-	description,
-	url,
-	keywords: `archives, ${classify}, ${decodeTarget}`,
-	inLanguage: "ko",
-});
+  type: "CollectionPage",
+  title,
+  description,
+  url,
+  keywords: `archives, ${classify}, ${decodeTarget}`,
+  inLanguage: "ko",
+})
 ---
 
 <Layout 

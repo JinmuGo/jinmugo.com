@@ -1,20 +1,20 @@
 ---
-import BaseHead from "@/components/BaseHead.astro";
-import Container from "@/layouts/Container.astro";
-import type { Post } from "@/types/content";
-import StructuredData from "@/utils/structuredData.astro";
-import Header from "@/widget/Header/Header.tsx";
-import pkg from "~/package.json";
+import BaseHead from "@/components/BaseHead.astro"
+import Container from "@/layouts/Container.astro"
+import type { Post } from "@/types/content"
+import StructuredData from "@/utils/structuredData.astro"
+import Header from "@/widget/Header/Header.tsx"
+import pkg from "~/package.json"
 
-const pathname = Astro.url.pathname;
+const pathname = Astro.url.pathname
 
-const frontmatter = Astro.props.frontmatter as Post;
-const title = Astro.props.title ?? pkg.title;
-const description = Astro.props.description ?? pkg.description;
-const image = Astro.props.image;
-const lang = Astro.props.lang ?? "ko";
-const jsonLd = Astro.props.jsonLd;
-const ogImage = Astro.props.ogImage;
+const frontmatter = Astro.props.frontmatter as Post
+const title = Astro.props.title ?? pkg.title
+const description = Astro.props.description ?? pkg.description
+const image = Astro.props.image
+const lang = Astro.props.lang ?? "ko"
+const jsonLd = Astro.props.jsonLd
+const ogImage = Astro.props.ogImage
 ---
 
 <!doctype html>

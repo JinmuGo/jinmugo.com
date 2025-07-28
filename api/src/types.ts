@@ -1,8 +1,8 @@
-import { Context } from "hono";
+import type { Context } from "hono";
 
 // Cloudflare Workers Environment Bindings
 export interface Env {
-  DB: D1Database;  // D1 Database binding
+  DB: D1Database; // D1 Database binding
 }
 
 export type AppContext = Context<{ Bindings: Env }>;
@@ -25,7 +25,7 @@ export const PostSchema = {
   slug: String,
 };
 
-// PostLike Schema  
+// PostLike Schema
 export const PostLikeSchema = {
   userId: String,
   postId: Number,

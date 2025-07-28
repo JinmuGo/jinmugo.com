@@ -1,21 +1,21 @@
 ---
-import { Image } from "astro:assets";
-import { getKoreanApp } from "@/content-utils/apps";
-import { buildPageUrl, generatePageSchema } from "@/utils/structuredData";
-import pkg from "~/package.json";
-import Layout from "../layouts/Layout.astro";
+import { Image } from "astro:assets"
+import { getKoreanApp } from "@/content-utils/apps"
+import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
+import pkg from "~/package.json"
+import Layout from "../layouts/Layout.astro"
 
 const jsonLd = generatePageSchema({
-	title: "About",
-	description: "About Jinmu",
-	url: buildPageUrl(pkg.homepage, "/about"),
-	keywords: "about, author, profile",
-	inLanguage: "ko",
-});
+  title: "About",
+  description: "About Jinmu",
+  url: buildPageUrl(pkg.homepage, "/about"),
+  keywords: "about, author, profile",
+  inLanguage: "ko",
+})
 
-const app = await getKoreanApp();
-const { name, bio, avatar } = app[0].data;
-const { Content } = await app[0].render();
+const app = await getKoreanApp()
+const { name, bio, avatar } = app[0].data
+const { Content } = await app[0].render()
 ---
 
 <Layout

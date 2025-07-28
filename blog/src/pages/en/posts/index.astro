@@ -1,39 +1,35 @@
 ---
-import { getEnglishPosts, sortPostsByDate } from "@/content-utils/posts";
-import Layout from "@/layouts/Layout.astro";
-import ListLayouts from "@/layouts/ListLayouts";
-import {
-	buildItemUrl,
-	buildPageUrl,
-	generatePostsPageSchema,
-} from "@/utils/structuredData";
-import pkg from "~/package.json";
+import { getEnglishPosts, sortPostsByDate } from "@/content-utils/posts"
+import Layout from "@/layouts/Layout.astro"
+import ListLayouts from "@/layouts/ListLayouts"
+import { buildItemUrl, buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData"
+import pkg from "~/package.json"
 
 // 모든 영어 포스트 가져오기
-const posts = await getEnglishPosts();
-const sortedPosts = sortPostsByDate(posts);
+const posts = await getEnglishPosts()
+const sortedPosts = sortPostsByDate(posts)
 
-const title = pkg.title;
-const description = pkg.description;
+const title = pkg.title
+const description = pkg.description
 
 // 구조화된 데이터 생성
 const jsonLd = generatePostsPageSchema({
-	title,
-	description,
-	url: buildPageUrl("/en", "/posts"),
-	keywords: "posts, articles, collection",
-	inLanguage: "en",
-	itemListElements: sortedPosts.map((post, index) => ({
-		"@type": "ListItem",
-		url: buildItemUrl(`/en/posts/${post.slug}`),
-		position: index + 1,
-		item: {
-			"@type": "Article",
-			name: post.data.title,
-			url: buildItemUrl(`/en/posts/${post.slug}`),
-		},
-	})),
-});
+  title,
+  description,
+  url: buildPageUrl("/en", "/posts"),
+  keywords: "posts, articles, collection",
+  inLanguage: "en",
+  itemListElements: sortedPosts.map((post, index) => ({
+    "@type": "ListItem",
+    url: buildItemUrl(`/en/posts/${post.slug}`),
+    position: index + 1,
+    item: {
+      "@type": "Article",
+      name: post.data.title,
+      url: buildItemUrl(`/en/posts/${post.slug}`),
+    },
+  })),
+})
 ---
 
 <Layout title={title} description={description} lang="en" jsonLd={jsonLd}>
