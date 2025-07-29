@@ -50,7 +50,6 @@ jobs:
           GSC_PROPERTY_ID=${{ secrets.GSC_PROPERTY_ID }}
           GSC_SITE_URL=${{ secrets.GSC_SITE_URL }}
           GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          GOOGLE_TAG_ID=${{ secrets.GOOGLE_TAG_ID }}
           EOF
         working-directory: ${{ env.BUILD_PATH }}
 
