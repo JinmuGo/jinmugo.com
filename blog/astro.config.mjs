@@ -15,8 +15,6 @@ import remarkEmbedCard from "./src/utils/remark-embed-card";
 
 import { transformerNotationDiff, transformerNotationHighlight } from "@shikijs/transformers";
 
-import yeskunallumami from "@yeskunall/astro-umami";
-
 // https://astro.build/config
 export default defineConfig({
   site: process.env.NODE_ENV === "development" ? "http://localhost:4321" : pkg.homepage,
@@ -49,7 +47,7 @@ export default defineConfig({
   devToolbar: {
     enabled: process.env.NODE_ENV === "development",
   },
-  integrations: [react(), sitemap(), icon(), mdx(), yeskunallumami({ id: process.env.UMAMI_ID})],
+  integrations: [react(), sitemap(), icon(), mdx()],
 
   vite: {
     plugins: tailwindcss(),

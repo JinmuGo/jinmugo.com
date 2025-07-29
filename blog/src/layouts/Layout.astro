@@ -1,6 +1,7 @@
 ---
 import BaseHead from "@/components/BaseHead.astro"
 import GoogleTag from "@/components/GoogleTag.astro"
+import Umami from "@/components/Umami.astro"
 import Container from "@/layouts/Container.astro"
 import type { Post } from "@/types/content"
 import StructuredData from "@/utils/structuredData.astro"
@@ -24,6 +25,7 @@ const ogImage = Astro.props.ogImage
     <BaseHead title={title} description={description} image={image} ogImage={ogImage} />
     {jsonLd && <StructuredData schema={jsonLd} />}
     <GoogleTag />
+    <Umami />
   </head>
   <body class="text-foreground font-sans dark:bg-gray-950">
     <Header frontmatter={frontmatter} pathname={pathname} client:load />

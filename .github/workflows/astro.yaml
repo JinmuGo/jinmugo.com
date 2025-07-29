@@ -51,7 +51,6 @@ jobs:
           GSC_SITE_URL=${{ secrets.GSC_SITE_URL }}
           GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
           GOOGLE_TAG_ID=${{ secrets.GOOGLE_TAG_ID }}
-          UMAMI_ID=${{ secrets.UMAMI_ID }}
           EOF
         working-directory: ${{ env.BUILD_PATH }}
 
