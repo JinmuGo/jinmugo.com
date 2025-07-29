@@ -20,6 +20,7 @@
     "astro": "astro",
     "postbuild": "node scripts/submit-to-gsc.js && node scripts/submit-urls-to-gsc.js",
     "translate": "node --env-file=.env scripts/translate.js",
+    "translate:staged": "node --env-file=.env scripts/translate.js --staged-only",
     "format": "biome format --write .",
     "lint": "biome lint .",
     "lint:fix": "biome lint --apply .",

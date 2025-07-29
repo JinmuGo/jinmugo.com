@@ -4,3 +4,19 @@ pre-commit:
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
       run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
       stage_fixed: true
+    translate-korean-posts:
+      glob: "blog/blog_obsidian/**/*.md"
+      run: |
+        # 한국어 파일만 필터링 (영어 번역 파일 제외)
+        korean_files=$(echo "{staged_files}" | grep -E '\.md$' | grep -v '\.en\.md$' || true)
+        if [ -n "$korean_files" ]; then
+          echo "한국어 마크다운 파일이 변경되었습니다. 번역을 시작합니다..."
+          cd blog && npm run translate:staged
+          # 번역된 파일들을 staged에 추가
+          translated_files=$(find blog_obsidian -name "*.en.md" -newer .git/index 2>/dev/null || true)
+          if [ -n "$translated_files" ]; then
+            echo "번역된 파일들을 staged에 추가합니다:"
+            echo "$translated_files"
+            git add $translated_files
+          fi
+        fi

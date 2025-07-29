@@ -1,5 +1,6 @@
 // REF: https://github.com/MaxKim-J/maxkim-j.github.io
 
+import { execSync } from "node:child_process"
 import fs from "node:fs/promises"
 import path from "node:path"
 
@@ -9,6 +10,17 @@ const TARGET_LANG = "en"
 const CONTENT_DIR_PATH = path.resolve("blog_obsidian")
 
 /* global URLSearchParams */
+
+// Get staged files from git
+const getStagedFiles = () => {
+  try {
+    const output = execSync("git diff --cached --name-only", { encoding: "utf8" })
+    return output.trim().split("\n").filter(Boolean)
+  } catch (error) {
+    console.warn("Git staged files를 가져오는데 실패했습니다:", error.message)
+    return []
+  }
+}
 
 // Recursive function to find all .md files in a directory
 const findMdFilesRecursively = async (dirPath) => {
@@ -51,36 +63,50 @@ const isDraft = async (filePath) => {
   return false
 }
 
-const validateTranslateNecessity = async ({ lang }) => {
-  // Recursively find all .md files in the blog_obsidian directory
-  const allMdFiles = await findMdFilesRecursively(CONTENT_DIR_PATH)
+const validateTranslateNecessity = async ({ lang, stagedOnly = false }) => {
+  let targetFiles = []
 
-  // Get relative paths for easier comparison
-  const allMdFilesRelative = allMdFiles.map((file) => path.relative(CONTENT_DIR_PATH, file))
+  if (stagedOnly) {
+    // staged된 파일들 중에서 한국어 마크다운 파일만 필터링
+    const stagedFiles = getStagedFiles()
+    const koreanMdFiles = stagedFiles.filter(
+      (file) =>
+        file.includes("blog_obsidian") && file.endsWith(".md") && !file.endsWith(`.${lang}.md`),
+    )
+    // blog/blog_obsidian/ 경로에서 blog_obsidian/ 부분만 추출
+    targetFiles = koreanMdFiles
+      .map((file) => {
+        const match = file.match(/blog_obsidian\/(.+)/)
+        return match ? match[1] : null
+      })
+      .filter(Boolean)
+  } else {
+    // 기존 로직: 모든 파일 검사
+    const allMdFiles = await findMdFilesRecursively(CONTENT_DIR_PATH)
+    const allMdFilesRelative = allMdFiles.map((file) => path.relative(CONTENT_DIR_PATH, file))
+    const allOriginalBlogContents = allMdFilesRelative.filter(
+      (file) => !file.endsWith(`.${lang}.md`),
+    )
+    const allTranslatedBlogContents = allMdFilesRelative
+      .filter((file) => file.endsWith(`.${lang}.md`))
+      .map((file) => file.replace(`.${lang}.md`, ".md"))
 
-  // Filter original Korean content (files that don't end with .{lang}.md)
-  const allOriginalBlogContents = allMdFilesRelative.filter((file) => !file.endsWith(`.${lang}.md`))
+    targetFiles = allOriginalBlogContents.filter(
+      (file) => !allTranslatedBlogContents.includes(file),
+    )
+  }
 
-  // Get translated files and map them back to original names
-  const allTranslatedBlogContents = allMdFilesRelative
-    .filter((file) => file.endsWith(`.${lang}.md`))
-    .map((file) => file.replace(`.${lang}.md`, ".md"))
-
-  // Find files that haven't been translated yet
-  const allNotYetTranslatedBlogContentsWithDrafts = allOriginalBlogContents.filter(
-    (file) => !allTranslatedBlogContents.includes(file),
-  )
-
-  const allNotYetTranslatedBlogContents = []
-  for (const file of allNotYetTranslatedBlogContentsWithDrafts) {
+  // Draft 파일 제외
+  const finalTargetFiles = []
+  for (const file of targetFiles) {
     if (!(await isDraft(file))) {
-      allNotYetTranslatedBlogContents.push(file)
+      finalTargetFiles.push(file)
     } else {
       console.info(`번역 스킵(draft: true): ${file}`)
     }
   }
 
-  return { allOriginalBlogContents, allNotYetTranslatedBlogContents }
+  return { allOriginalBlogContents: targetFiles, allNotYetTranslatedBlogContents: finalTargetFiles }
 }
 
 const parseMdxFileContent = async (contentName) => {
@@ -90,11 +116,15 @@ const parseMdxFileContent = async (contentName) => {
 }
 
 async function main() {
-  console.info("openAI API로 블로그 글 번역을 합니다.")
+  console.info("DeepL API로 블로그 글 번역을 합니다.")
+
+  // 커맨드 라인 인자로 stagedOnly 옵션 확인
+  const stagedOnly = process.argv.includes("--staged-only")
 
   const { allOriginalBlogContents, allNotYetTranslatedBlogContents } =
     await validateTranslateNecessity({
       lang: TARGET_LANG,
+      stagedOnly,
     })
 
   console.info(`전체 한국어 컨텐츠 ${allOriginalBlogContents.length}개`)
@@ -133,7 +163,7 @@ async function main() {
     try {
       const response = await fetch(url, options)
       const data = await response.json()
-      const translatedContent = data.translations[0].text.replace("---.", "---")
+      const translatedContent = data.translations[0].text.replaceAll("---.", "---")
       const translatedMdxPath = path.replace(/\.md$/, `.${TARGET_LANG}.md`)
       console.info(`${translatedMdxPath}에 번역 파일을 작성합니다.`)
 
