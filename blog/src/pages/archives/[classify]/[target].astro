@@ -61,9 +61,6 @@ function getContentBySlug(allContent: (Post | Memo)[], classify: string, target:
         ...allContent
           .filter((item) => item.data.tags?.includes(target))
           .map((item) => ({ ...item, type: item.type })),
-        ...allContent
-          .filter((item) => item.data.tags?.includes(target))
-          .map((item) => ({ ...item, type: item.type })),
       ]
     case "year":
       return [
