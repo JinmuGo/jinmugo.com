@@ -3,12 +3,15 @@ packages:
   - blog
 
 onlyBuiltDependencies:
-  - "@prisma/client"
-  - "@tailwindcss/oxide"
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@tailwindcss/oxide'
   - aws-sdk
   - esbuild
   - msgpackr-extract
+  - prisma
   - sharp
+  - workerd
 
 patchedDependencies:
-  "@r4ai/remark-callout": patches/@r4ai__remark-callout.patch
+  '@r4ai/remark-callout': patches/@r4ai__remark-callout.patch

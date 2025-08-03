@@ -3,38 +3,21 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "wrangler build",
-    "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
-    "start": "wrangler dev",
-    "cf-typegen": "wrangler types",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio",
-    "postinstall": "prisma generate",
-    "db:sync-posts": "pnpm dlx tsx scripts/sync-posts.ts",
-    "db:sync-posts-d1": "pnpm dlx tsx scripts/sync-posts-d1.ts",
-    "db:migrate-d1": "wrangler d1 execute blog-db --file=./schema.sql",
-    "db:push-d1": "prisma db push --schema=./schema.prisma",
     "format": "biome format --write .",
     "lint": "biome lint .",
     "lint:fix": "biome lint --apply .",
-    "check": "biome check ."
+    "check": "biome check .",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:db:reset": "supabase db reset",
+    "supabase:functions:deploy": "supabase functions deploy",
+    "supabase:functions:serve": "supabase functions serve"
   },
   "dependencies": {
-    "@fuma-comment/server": "^1.3.0",
-    "@prisma/adapter-d1": "^6.12.0",
-    "@prisma/client": "^6.12.0",
-    "better-auth": "^1.3.3",
-    "chanfana": "^2.6.3",
-    "hono": "4.8.5",
-    "prisma": "^6.12.0",
-    "zod": "^3.24.1"
+    "@supabase/supabase-js": "^2.53.0"
   },
   "devDependencies": {
-    "@types/node": "22.13.0",
-    "@types/service-worker-mock": "^2.0.4",
-    "wrangler": "^4.26.0"
+    "@types/node": "22.13.0"
   }
 }

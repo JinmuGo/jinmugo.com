@@ -3,6 +3,7 @@ import FormattedDate from "@/components/FormattedDate.astro"
 import Prose from "@/components/Prose.astro"
 import Layout from "@/layouts/Layout.astro"
 import type { Memo } from "@/types/content"
+import { UserSection } from "@/widget/Comment/UserSection"
 
 interface Props {
   frontmatter: Memo
@@ -20,6 +21,7 @@ const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko"
   lang={lang}
   ogImage={`/memos/${slug}/og.png`}
 >
+      <Prose>
   <main>
     <article>
       <header class="space-y-1 pb-5">
@@ -44,9 +46,9 @@ const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko"
           </div>
         </div>
       </header>
-      <Prose>
         <slot />
-      </Prose>
     </article>
   </main>
+      </Prose>
+      <UserSection client:load slug={slug} frontmatter={frontmatter} />
 </Layout>

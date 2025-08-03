@@ -38,8 +38,8 @@ export default function CommandPalette({ lang, open, setOpen }: CommandPalettePr
     return () => document.removeEventListener("keydown", down)
   }, [setOpen])
 
-  const handleSelect = (slug: string, category: string) => {
-    window.location.href = `${lang === "en" ? "/en" : ""}/posts/${category}/${slug}`
+  const handleSelect = (slug: string) => {
+    window.location.href = `${lang === "en" ? "/en" : ""}/posts/${slug}`
     setOpen(false)
   }
 
@@ -64,7 +64,7 @@ export default function CommandPalette({ lang, open, setOpen }: CommandPalettePr
             <Command.Item
               key={post.slug}
               value={`${post.title} ${post.summary}`}
-              onSelect={() => handleSelect(post.slug, post.category)}
+              onSelect={() => handleSelect(post.slug)}
               className="cmdk-item"
             >
               <div className="item-content">

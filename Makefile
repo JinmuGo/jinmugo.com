@@ -24,3 +24,7 @@ lint:
 lint-fix:
 	pnpm lint:fix
 .PHONY: lint-fix
+
+format:
+	pnpm format
+.PHONY: format

@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "@fuma-comment/react/preset.css";
 @import "./cmdk.css";
 @import "./prose.css";
 @import "tw-animate-css";

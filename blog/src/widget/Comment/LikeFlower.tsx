@@ -1,8 +1,8 @@
 import type React from "react"
 import { Fragment, useCallback, useState } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { useLike } from "@/lib/supabase-utils"
 import type { MemoMetadata, PostMetadata } from "@/types/content"
-import { useAsyncEffect } from "@/utils/useAsyncEffect"
 
 // 기본 상수들 (원본 값 그대로 사용)
 const STROKE_COLOR = "#231815"
@@ -162,52 +162,49 @@ const FlowerPetal: React.FC<{
 }
 
 interface FlowerProps {
-  readonly like: () => Promise<number>
   readonly slug: string
   readonly frontmatter?: PostMetadata | MemoMetadata
+  readonly maxLikesPerIP?: number
 }
 
-export const Flower: React.FC<FlowerProps> = ({ like, slug, frontmatter }) => {
+export const Flower: React.FC<FlowerProps> = ({ slug, frontmatter, maxLikesPerIP = 5 }) => {
   const [animationStyle, setAnimationStyle] = useState("")
-  const [userLikes, setUserLikesAction] = useState<number>(0)
-
-  useAsyncEffect(async () => {
-    const res = await fetch(`/api/like/${slug}/me`).then((res) => res.json())
-
-    setUserLikesAction(res.you)
-  }, [slug])
+  const { myLikes, isLoading, addLike } = useLike(slug)
 
   const handleSvgClick = useCallback(async () => {
-    if (!frontmatter?.slug || userLikes === -1) {
+    if (!frontmatter?.slug || myLikes === -1) {
       return
     }
-    if (userLikes < maxClicks) {
-      const cnt = await like()
-      if (cnt === -1) {
+
+    // IP별 최대 좋아요 수 제한 확인
+    if (myLikes >= maxLikesPerIP) {
+      return
+    }
+
+    if (myLikes < maxClicks) {
+      const success = await addLike()
+
+      if (!success) {
         return
       }
 
-      setUserLikesAction((prev) => 1 + prev)
-
-      if (userLikes === maxClicks - 1) {
+      if (myLikes === maxClicks - 1) {
         setAnimationStyle("shakeAndGrow 1.2s ease-in-out")
       }
     } else {
-      setAnimationStyle("")
-      setTimeout(() => {
-        setAnimationStyle("shakeAndGrow 1.2s ease-in-out")
-      }, 10)
+      setAnimationStyle("shakeAndGrow 1.2s ease-in-out")
     }
-  }, [frontmatter, userLikes, like])
+  }, [frontmatter, myLikes, maxLikesPerIP, addLike])
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <button
           type="button"
-          className="w-9 h-9 cursor-pointer transition-transform hover:scale-105 bg-transparent border-none p-0"
+          className="w-10 h-10 cursor-pointer transition-transform hover:scale-105 bg-transparent border-none p-0"
           onClick={() => void handleSvgClick()}
           aria-label="Like flower"
+          disabled={isLoading}
         >
           <svg
             viewBox="0 0 375 349"
@@ -222,7 +219,7 @@ export const Flower: React.FC<FlowerProps> = ({ like, slug, frontmatter }) => {
                 <FlowerPetal
                   key={`petal-${index}-${d.slice(0, 10)}`}
                   d={d}
-                  userLikes={userLikes}
+                  userLikes={myLikes}
                   idx={index}
                 />
               ))}
@@ -287,7 +284,13 @@ export const Flower: React.FC<FlowerProps> = ({ like, slug, frontmatter }) => {
           </svg>
         </button>
       </TooltipTrigger>
-      <TooltipContent>재밌게 보셨나요?! 꽃을 피워 주세요~</TooltipContent>
+      <TooltipContent>
+        {isLoading
+          ? "처리 중..."
+          : myLikes >= maxLikesPerIP
+            ? `최대 ${maxLikesPerIP}번까지만 좋아요를 누를 수 있습니다!`
+            : `재밌게 보셨나요?! 꽃을 피워 주세요~ (${myLikes}/${maxLikesPerIP})`}
+      </TooltipContent>
     </Tooltip>
   )
 }
