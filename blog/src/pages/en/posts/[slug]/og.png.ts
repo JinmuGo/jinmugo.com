@@ -16,7 +16,6 @@ export async function GET({ params }: { params: Params }) {
   const element = OpenGraphImage({
     title: post.data.title,
     summary: post.data.summary,
-    category: post.data.category,
   })
 
   const png = await PNG(element)
