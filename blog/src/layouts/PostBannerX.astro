@@ -53,7 +53,7 @@ const jsonLd = generatePostsPageSchema({
             {category}
           </a> / <FormattedDate date={date} />
           <div>
-            <PageViewIsland slug={slug} />
+            <PageViewIsland slug={slug} client:load />
             <AICollaborationBadge withAI={withAI} lang={lang} />
           </div>
         </div>

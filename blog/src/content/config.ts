@@ -21,7 +21,6 @@ const postCollection = defineCollection({
     summary: z.string().optional(),
     draft: z.boolean().default(false),
     lastmod: z.coerce.date().optional(),
-    bannerOnlyText: z.boolean().default(false),
     series: z.string().optional(),
     seriesOrder: z.number().optional(),
     withAI: z.boolean().optional(),

@@ -31,7 +31,7 @@ export default defineConfig({
         provider: fontProviders.google(),
         name: "Geist",
         cssVariable: "--font-geist",
-        fallbacks: ["Asta Sans"],
+        fallbacks: ["var(--font-asta)"],
         weights: [300, 400, 700]
       },
     ],

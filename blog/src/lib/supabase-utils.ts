@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
+import { useAsyncEffect } from "@/utils/useAsyncEffect"
 
 // Supabase API 공통 유틸리티 함수들
 
@@ -305,8 +306,8 @@ export const useViewCount = (slug: string) => {
   }, [slug])
 
   // 초기 로드
-  useEffect(() => {
-    void incrementAndFetch()
+  useAsyncEffect(async () => {
+    await incrementAndFetch()
   }, [incrementAndFetch])
 
   return {
