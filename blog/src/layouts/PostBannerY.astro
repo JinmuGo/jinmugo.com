@@ -37,7 +37,6 @@ const jsonLd = generatePostsPageSchema({
   jsonLd={jsonLd}
   ogImage={`/posts/${slug}/og.png`}
 >
-  <Prose>
     <header
       class="space-y-1 pb-5 md:flex md:flex-row-reverse md:justify-between items-end"
     >
@@ -52,7 +51,7 @@ const jsonLd = generatePostsPageSchema({
           <PageViewIsland slug={slug} client:load />
           <AICollaborationBadge withAI={withAI} lang={lang} />
         </div>
-        <h1 class="text-3xl md:text-4xl">{title}</h1>
+        <h1 class="font-bold text-xl md:text-2xl">{title}</h1>
         <p>{summary}</p>
         <div class="text-sm text-gray-500 dark:text-gray-300">
           <a href={`/archives/category/${category}`} class="underline">
@@ -61,6 +60,7 @@ const jsonLd = generatePostsPageSchema({
         </div>
       </div>
     </header>
+  <Prose as="article">
     <slot />
   </Prose>
   <UserSection client:load slug={slug} frontmatter={frontmatter} />

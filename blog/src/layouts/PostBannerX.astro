@@ -35,7 +35,6 @@ const jsonLd = generatePostsPageSchema({
   jsonLd={jsonLd}
   ogImage={`/posts/${slug}/og.png`}
 >
-  <Prose>
     <header class="space-y-1 pb-5 text-center">
       <div class="w-11/12 mx-auto">
         <Image
@@ -45,8 +44,8 @@ const jsonLd = generatePostsPageSchema({
           alt={`${title} 배너`}
         />
       </div>
-      <div id="post-title" class="pt-10">
-        <h1 class="text-3xl md:text-4xl">{title}</h1>
+      <div id="post-title" class="pt-5">
+        <h1 class="text-xl md:text-2xl font-bold">{title}</h1>
         <p>{summary}</p>
         <div class="text-sm text-gray-500 dark:text-gray-300">
           <a href={`/archives/category/${category}`} class="underline">
@@ -59,6 +58,7 @@ const jsonLd = generatePostsPageSchema({
         </div>
       </div>
     </header>
+  <Prose as="article">
     <slot />
   </Prose>
   <UserSection client:load slug={slug} frontmatter={frontmatter} />
