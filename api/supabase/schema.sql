@@ -1,11 +1,22 @@
 -- Simplified Supabase PostgreSQL Schema
 -- Only includes features actually used in the blog
 
--- Post table
+-- Post table (extended for blog posts and memos)
 CREATE TABLE IF NOT EXISTS "posts" (
     "id" SERIAL PRIMARY KEY,
     "slug" TEXT UNIQUE NOT NULL,
-    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    "title" TEXT,
+    "date" TIMESTAMP WITH TIME ZONE,
+    "draft" BOOLEAN DEFAULT false,
+    "tags" TEXT[],
+    "lastmod" TIMESTAMP WITH TIME ZONE,
+    "category" TEXT,
+    "withAI" BOOLEAN DEFAULT false,
+    "summary" TEXT,
+    "type" TEXT DEFAULT 'post' CHECK (type IN ('post', 'memo')),
+    "content" TEXT,
+    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- IP-based post likes table (for anonymous users)
@@ -32,6 +43,9 @@ CREATE INDEX IF NOT EXISTS "idx_ip_post_likes_post_id" ON "ip_post_likes"("post_
 CREATE INDEX IF NOT EXISTS "idx_ip_post_likes_ip_address" ON "ip_post_likes"("ip_address");
 CREATE INDEX IF NOT EXISTS "idx_post_views_post_id" ON "post_views"("post_id");
 CREATE INDEX IF NOT EXISTS "idx_post_views_ip_address" ON "post_views"("ip_address");
+CREATE INDEX IF NOT EXISTS "idx_posts_type" ON "posts"("type");
+CREATE INDEX IF NOT EXISTS "idx_posts_category" ON "posts"("category");
+CREATE INDEX IF NOT EXISTS "idx_posts_tags" ON "posts" USING GIN("tags");
 
 -- Enable Row Level Security
 ALTER TABLE "posts" ENABLE ROW LEVEL SECURITY;
@@ -62,4 +76,5 @@ END;
 $$ language 'plpgsql';
 
 -- Create triggers for updated_at
-CREATE TRIGGER update_ip_post_likes_updated_at BEFORE UPDATE ON "ip_post_likes" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column(); 
+CREATE TRIGGER update_ip_post_likes_updated_at BEFORE UPDATE ON "ip_post_likes" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_posts_updated_at BEFORE UPDATE ON "posts" FOR EACH ROW EXECUTE FUNCTION update_updated_at_column(); 
