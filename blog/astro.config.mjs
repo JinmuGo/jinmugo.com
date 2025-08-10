@@ -23,16 +23,10 @@ export default defineConfig({
     fonts: [
       {
         provider: fontProviders.google(),
-        name: "Asta Sans",
-        cssVariable: "--font-asta",
-        weights: [300, 400, 700]
-      },
-      {
-        provider: fontProviders.google(),
         name: "Geist",
         cssVariable: "--font-geist",
-        fallbacks: ["var(--font-asta)"],
-        weights: [300, 400, 700]
+        fallbacks: ["Pretendard"],
+        weights: [300, 400, 600]
       },
     ],
   },
