@@ -7,7 +7,7 @@ import pkg from "~/package.json"
 
 export const GET: APIRoute = async (context) => {
   const posts = (await getEnglishPosts()).map((post: Post) => ({
-    link: `/en/posts/${post.data.category}/${post.slug}`,
+    link: `/en/posts/${post.slug}`,
     title: post.data.title,
     pubDate: post.data.date,
     description: post.data.summary,
