@@ -11,12 +11,10 @@ CREATE TABLE IF NOT EXISTS "posts" (
     "tags" TEXT[],
     "lastmod" TIMESTAMP WITH TIME ZONE,
     "category" TEXT,
-    "withAI" BOOLEAN DEFAULT false,
-    "summary" TEXT,
-    "type" TEXT DEFAULT 'post' CHECK (type IN ('post', 'memo')),
-    "content" TEXT,
-    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      "summary" TEXT,
+  "type" TEXT DEFAULT 'post' CHECK (type IN ('post', 'memo')),
+  "created_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- IP-based post likes table (for anonymous users)

@@ -43,7 +43,7 @@ serve(async (req) => {
       .select(
         includeContent
           ? "*"
-          : "id, slug, title, date, draft, tags, lastmod, category, withAI, summary, type, created_at, updated_at",
+          : "id, slug, title, date, draft, tags, lastmod, category, summary, type, created_at, updated_at",
       )
       .eq("slug", slug)
       .single();

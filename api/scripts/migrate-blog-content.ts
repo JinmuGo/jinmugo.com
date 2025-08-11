@@ -20,7 +20,6 @@ interface FrontMatter {
   tags?: string[];
   lastmod?: string;
   category?: string;
-  withAI?: boolean;
   summary?: string;
 }
 
@@ -32,10 +31,8 @@ interface BlogPost {
   tags?: string[];
   lastmod?: string;
   category?: string;
-  withAI?: boolean;
   summary?: string;
   type: "post" | "memo";
-  content: string;
 }
 
 // 디렉토리에서 모든 .md 파일을 재귀적으로 찾기
@@ -79,10 +76,8 @@ function extractBlogPost(filePath: string, type: "post" | "memo"): BlogPost | nu
       tags: frontMatter.tags || [],
       lastmod: frontMatter.lastmod,
       category: frontMatter.category,
-      withAI: frontMatter.withAI || false,
       summary: frontMatter.summary,
       type,
-      content: markdownContent.trim(),
     };
   } catch (error) {
     console.error(`Error processing file ${filePath}:`, error);
@@ -104,10 +99,8 @@ async function upsertPost(post: BlogPost) {
           tags: post.tags,
           lastmod: post.lastmod ? new Date(post.lastmod).toISOString() : null,
           category: post.category,
-          withAI: post.withAI,
           summary: post.summary,
           type: post.type,
-          content: post.content,
         },
         {
           onConflict: "slug",

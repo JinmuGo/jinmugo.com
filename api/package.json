@@ -14,9 +14,7 @@
     "supabase:functions:deploy": "supabase functions deploy",
     "supabase:functions:serve": "supabase functions serve",
     "migrate:blog": "tsx scripts/migrate-blog-content.ts",
-    "migrate:remote": "tsx scripts/migrate-to-remote.ts",
-    "test:migration": "tsx scripts/test-migration.ts",
-    "test:remote": "tsx scripts/test-remote-migration.ts"
+    "migrate:remote": "tsx scripts/migrate-to-remote.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.53.0",

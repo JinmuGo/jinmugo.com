@@ -27,31 +27,36 @@ SUPABASE_ANON_KEY=your_supabase_anon_key_here
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
 ```
 
-### 3. Supabase 로컬 환경 시작
+### 3. 블로그 콘텐츠 마이그레이션
 
-```bash
-npm run supabase:start
-```
+#### 원격 Supabase DB 사용 (권장)
 
-### 4. 데이터베이스 스키마 적용
+1. **원격 DB 스키마 적용**:
+   - Supabase Dashboard > SQL Editor에서 `api/supabase/apply-schema-remote.sql` 실행
+   
+2. **마이그레이션 실행**:
+   ```bash
+   npm run migrate:remote
+   ```
 
-```bash
-npm run supabase:db:reset
-```
+#### 로컬 Supabase DB 사용
 
-### 5. 블로그 콘텐츠 마이그레이션
+1. **로컬 환경 시작**:
+   ```bash
+   npm run supabase:start
+   ```
 
-```bash
-npm run migrate:blog
-```
+2. **스키마 적용**:
+   ```bash
+   npm run supabase:db:reset
+   ```
 
-### 6. 마이그레이션 테스트
+3. **마이그레이션 실행**:
+   ```bash
+   npm run migrate:blog
+   ```
 
-```bash
-npm run test:migration
-```
-
-### 7. Edge Functions 서빙 (선택사항)
+### 4. Edge Functions 서빙 (선택사항)
 
 ```bash
 npm run supabase:functions:serve
@@ -65,8 +70,8 @@ npm run supabase:functions:serve
 | `npm run supabase:stop` | Supabase 로컬 환경 중지 |
 | `npm run supabase:status` | Supabase 상태 확인 |
 | `npm run supabase:db:reset` | 데이터베이스 리셋 |
-| `npm run migrate:blog` | 블로그 콘텐츠 마이그레이션 |
-| `npm run test:migration` | 마이그레이션 결과 테스트 |
+| `npm run migrate:blog` | 로컬 DB 블로그 콘텐츠 마이그레이션 |
+| `npm run migrate:remote` | 원격 DB 블로그 콘텐츠 마이그레이션 |
 | `npm run supabase:functions:deploy` | Edge Functions 배포 |
 
 ## API 엔드포인트
@@ -99,12 +104,11 @@ CREATE TABLE "posts" (
     "tags" TEXT[],
     "lastmod" TIMESTAMP WITH TIME ZONE,
     "category" TEXT,
-    "withAI" BOOLEAN DEFAULT false,
-    "summary" TEXT,
-    "type" TEXT DEFAULT 'post' CHECK (type IN ('post', 'memo')),
-    "content" TEXT,
-    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    
+      "summary" TEXT,
+  "type" TEXT DEFAULT 'post' CHECK (type IN ('post', 'memo')),
+  "created_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
 
@@ -171,6 +175,26 @@ npm run supabase:functions:deploy
 1. **환경 변수 오류**: `.env` 파일이 올바르게 설정되었는지 확인
 2. **포트 충돌**: 다른 서비스가 54321-54329 포트를 사용하고 있는지 확인
 3. **데이터베이스 연결 오류**: Supabase 로컬 환경이 실행 중인지 확인
+4. **원격 DB 연결 오류**: SUPABASE_URL과 SUPABASE_SERVICE_ROLE_KEY가 올바른지 확인
+
+### 마이그레이션 확인
+
+Supabase Dashboard에서 직접 확인:
+
+```sql
+-- 모든 포스트 조회
+SELECT * FROM posts WHERE type = 'post' ORDER BY date DESC;
+
+-- 모든 메모 조회  
+SELECT * FROM posts WHERE type = 'memo' ORDER BY date DESC;
+
+-- 태그별 포스트 수 조회
+SELECT unnest(tags) as tag, COUNT(*) as count 
+FROM posts 
+WHERE tags IS NOT NULL 
+GROUP BY tag 
+ORDER BY count DESC;
+```
 
 ### 로그 확인
 
