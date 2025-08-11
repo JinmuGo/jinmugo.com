@@ -9,7 +9,7 @@ interface EmbedCardProps {
 
 export default function EmbedCard({ title, image, description, url }: EmbedCardProps) {
   return (
-    <a className="no-underline" href={url}>
+    <a className="no-underline text-text-light dark:text-text-dark" href={url}>
       <Card className="w-full h-32 my-4 flex-row items-stretch p-0 rounded-md gap-4 overflow-hidden">
         {/* 카드 헤더: 이미지 영역 */}
         <CardHeader className="basis-1/3 px-0 py-0 h-32 shrink-0 flex items-center justify-center">

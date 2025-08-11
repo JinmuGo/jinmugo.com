@@ -43,8 +43,8 @@
   --color-primary-900: oklch(40.8% 0.123 38.172deg);
   --color-primary-950: oklch(26.6% 0.079 36.259deg);
 
-  --color-text-light: oklch(0.3942 0 0);
-  --color-text-dark: oklch(0.7572 0 0);
+  --color-text-light: #5C6165;
+  --color-text-dark: #BFBDB6;
 }
 
 html[data-theme="light"] {
@@ -69,4 +69,8 @@ html[data-theme="dark"] {
     color: var(--shiki-dark);
     background-color: var(--shiki-dark-bg);
   }
+}
+
+body {
+  text-rendering: optimizeLegibility;
 }

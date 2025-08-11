@@ -8,6 +8,7 @@ onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - aws-sdk
   - esbuild
+  - lefthook
   - msgpackr-extract
   - prisma
   - sharp

@@ -1,6 +1,5 @@
 ---
 import { Image } from "astro:assets"
-import AICollaborationBadge from "@/components/AICollaborationBadge.astro"
 import FormattedDate from "@/components/FormattedDate.astro"
 import { PageViewIsland } from "@/components/PageViewIsland"
 import Prose from "@/components/Prose.astro"
@@ -15,7 +14,7 @@ interface Props {
 }
 
 const { frontmatter, bannerImage } = Astro.props
-const { title, date, summary, category, slug, withAI, tags } = frontmatter
+const { title, date, summary, category, slug, tags } = frontmatter
 const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko"
 
 const jsonLd = generatePostsPageSchema({
@@ -53,7 +52,6 @@ const jsonLd = generatePostsPageSchema({
           </a> / <FormattedDate date={date} />
           <div>
             <PageViewIsland slug={slug} client:load />
-            <AICollaborationBadge withAI={withAI} lang={lang} />
           </div>
         </div>
       </div>

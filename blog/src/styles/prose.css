@@ -1,16 +1,29 @@
 @layer components {
 	.prose-custom {
-		@apply text-text-light dark:text-text-dark;
-		@apply prose prose-lg xl:prose-xl dark:prose-invert;
+		@apply prose dark:prose-invert prose-lg  ;
 		@apply mx-auto max-w-none;
 		@apply mt-14;
-		@apply not-prose-headings:font-light;
+		/* @apply not-prose-headings:font-light; */
 
 		/* Code styling */
 		@apply [&_a_code]:text-primary-400;
-		@apply [&_code:not(pre_code)]:text-primary-500;
+		@apply [&_code:not(pre_code)]:text-primary-400;
+		@apply [&_a:hover]:text-primary-400;
 
 		/* Image styling */
 		@apply [&_img]:mx-auto;
+
+		/* color palette */
+		--tw-prose-body: var(--color-text-light);
+		--tw-prose-headings: var(--color-text-light);
+		--tw-prose-bold: var(--color-text-light);
+	}
+
+	html[data-theme="dark"] {
+		.prose-custom {
+			--tw-prose-body: var(--color-text-dark);
+			--tw-prose-headings: var(--color-text-dark);
+			--tw-prose-bold: var(--color-text-dark);
+		}
 	}
 }

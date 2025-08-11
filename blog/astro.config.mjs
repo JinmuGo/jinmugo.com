@@ -57,7 +57,6 @@ export default defineConfig({
     },
     rehypePlugins: [
       rehypeSlug,
-      rehypeAutolinkHeadings,
     ],
     remarkPlugins: [
       [

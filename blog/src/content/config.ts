@@ -16,15 +16,18 @@ const postCollection = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
-    tags: z.array(z.string()).optional(),
-    category: categorySchema.optional(),
-    summary: z.string().optional(),
-    draft: z.boolean().default(false),
-    lastmod: z.coerce.date().optional(),
-    series: z.string().optional(),
-    seriesOrder: z.number().optional(),
-    withAI: z.boolean().optional(),
-    banner: z.string().optional(),
+    // null 허용 + 기본값 []
+    tags: z.preprocess((v: unknown) => v ?? undefined, z.array(z.string()).optional().default([])),
+    // null 허용
+    category: categorySchema.nullish(),
+    summary: z.string().nullish(),
+    // null을 undefined로 변환 후 기본값 false 적용
+    draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
+    // null 허용
+    lastmod: z.preprocess((v: unknown) => v ?? undefined, z.coerce.date().optional()),
+    series: z.string().nullish(),
+    seriesOrder: z.preprocess((v: unknown) => v ?? undefined, z.number().optional()),
+    banner: z.string().nullish(),
   }),
 })
 
@@ -33,11 +36,14 @@ const memoCollection = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
-    draft: z.boolean().default(false),
-    tags: z.array(z.string()).optional(),
-    category: categorySchema.optional(),
-    summary: z.string().optional(),
-    lastmod: z.coerce.date().optional(),
+    // null을 undefined로 변환 후 기본값 false 적용
+    draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
+    // null 허용 + 기본값 []
+    tags: z.preprocess((v: unknown) => v ?? undefined, z.array(z.string()).optional().default([])),
+    // null 허용
+    category: categorySchema.nullish(),
+    summary: z.string().nullish(),
+    lastmod: z.preprocess((v: unknown) => v ?? undefined, z.coerce.date().optional()),
   }),
 })
 
