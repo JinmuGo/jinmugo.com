@@ -16,11 +16,13 @@ const jsonLd = generatePageSchema({
 const app = await getEnglishApp()
 const { name, bio, avatar } = app[0].data
 const { Content } = await app[0].render()
+const title = "About"
+const description = "About Jinmu"
 ---
 
 <Layout
-  title="About"
-  description="About Jinmu"
+  title={title}
+  description={description}
   image={avatar}
   lang="en"
   jsonLd={jsonLd}
