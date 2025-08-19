@@ -9,6 +9,30 @@
 - **조회수 추적**: 포스트별 조회수 카운팅
 - **RESTful API**: 블로그 콘텐츠 조회 및 관리 API
 
+## CI/CD 워크플로우
+
+### 자동 마이그레이션
+
+이 프로젝트는 GitHub Actions를 통해 자동 마이그레이션을 지원합니다:
+
+#### Published 콘텐츠 마이그레이션 (권장)
+- **워크플로우**: `Published Content Migration`
+- **트리거**: `blog/blog_obsidian/` 디렉토리의 `.md` 파일 변경 시
+- **동작**: draft가 false인 파일만 감지하여 API DB에 자동 마이그레이션
+- **배포**: 마이그레이션 후 Edge Functions 자동 배포
+
+
+
+### 수동 실행
+
+GitHub Actions 탭에서 워크플로우를 수동으로 실행할 수 있습니다:
+
+#### Published 콘텐츠 마이그레이션 (권장)
+- `Published Content Migration` 워크플로우 선택
+- `force_migrate: true`로 설정하면 모든 published 콘텐츠를 강제 마이그레이션
+
+
+
 ## 빠른 시작
 
 ### 1. 의존성 설치
@@ -36,7 +60,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
    
 2. **마이그레이션 실행**:
    ```bash
-   npm run migrate:remote
+   npm run migrate:published
    ```
 
 #### 로컬 Supabase DB 사용
@@ -53,7 +77,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
 
 3. **마이그레이션 실행**:
    ```bash
-   npm run migrate:blog
+   npm run migrate:published
    ```
 
 ### 4. Edge Functions 서빙 (선택사항)
@@ -70,8 +94,8 @@ npm run supabase:functions:serve
 | `npm run supabase:stop` | Supabase 로컬 환경 중지 |
 | `npm run supabase:status` | Supabase 상태 확인 |
 | `npm run supabase:db:reset` | 데이터베이스 리셋 |
-| `npm run migrate:blog` | 로컬 DB 블로그 콘텐츠 마이그레이션 |
-| `npm run migrate:remote` | 원격 DB 블로그 콘텐츠 마이그레이션 |
+| `npm run migrate:published` | Published 콘텐츠만 마이그레이션 (draft=false) |
+| `npm run migrate:changed` | 변경된 파일만 마이그레이션 (draft=false) |
 | `npm run supabase:functions:deploy` | Edge Functions 배포 |
 
 ## API 엔드포인트

@@ -19,3 +19,6 @@ pnpm-debug.log*
 
 # biome
 .biome/
+
+# Supabase temp files
+api/supabase/.temp/

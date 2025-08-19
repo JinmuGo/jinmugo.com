@@ -28,3 +28,7 @@ lint-fix:
 format:
 	pnpm format
 .PHONY: format
+
+migrate-published:
+	cd api && pnpm run migrate:published
+.PHONY: migrate-published

@@ -13,8 +13,8 @@
     "supabase:db:reset": "supabase db reset",
     "supabase:functions:deploy": "supabase functions deploy",
     "supabase:functions:serve": "supabase functions serve",
-    "migrate:blog": "tsx scripts/migrate-blog-content.ts",
-    "migrate:remote": "tsx scripts/migrate-to-remote.ts"
+    "migrate:published": "tsx --env-file .env scripts/migrate-published-content.ts",
+    "migrate:changed": "tsx --env-file .env scripts/migrate-changed-files.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.53.0",

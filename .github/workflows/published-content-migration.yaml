@@ -1,0 +1,143 @@
+name: Published Content Migration
+
+# Published 블로그 콘텐츠 자동 마이그레이션 워크플로우
+# blog_obsidian 디렉토리의 마크다운 파일이 변경되면 draft가 false인 것들만 API DB에 마이그레이션
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "blog/blog_obsidian/**/*.md"
+      - "blog/blog_obsidian/**/*.en.md"
+  workflow_dispatch:
+    inputs:
+      force_migrate:
+        description: "Force migration of all published content"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+env:
+  BUILD_PATH: "./blog"
+
+jobs:
+  detect-changes:
+    name: Detect Blog Changes
+    runs-on: ubuntu-latest
+    outputs:
+      has-changes: ${{ steps.changes.outputs.any_changed }}
+      changed-files: ${{ steps.changes.outputs.all_changed_files }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changes in blog_obsidian
+        id: changes
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            blog_changes:
+              - 'blog/blog_obsidian/**/*.md'
+              - 'blog/blog_obsidian/**/*.en.md'
+
+  migrate-published-content:
+    name: Migrate Published Content to API DB
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has-changes == 'true' || github.event.inputs.force_migrate == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Common Environment
+        uses: ./.github/actions/common-steps
+
+      - name: Create API .env file
+        run: |
+          cat > api/.env << EOF
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          EOF
+
+      - name: Install API dependencies
+        run: pnpm install
+        working-directory: api
+
+      - name: Show changed files
+        run: |
+          echo "Changed files:"
+          echo "${{ needs.detect-changes.outputs.changed-files }}"
+        if: needs.detect-changes.outputs.has-changes == 'true'
+
+      - name: Migrate published content to remote DB
+        run: |
+          if [ "${{ needs.detect-changes.outputs.has-changes }}" == "true" ]; then
+            echo "${{ needs.detect-changes.outputs.changed-files }}" > changed_files.txt
+            pnpm run migrate:changed
+          else
+            pnpm run migrate:published
+          fi
+        working-directory: api
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          CHANGED_FILES: ${{ needs.detect-changes.outputs.changed-files }}
+
+      - name: Verify migration
+        run: |
+          echo "Published content migration completed successfully!"
+          echo "Only draft=false content has been migrated to the API database."
+        if: success()
+
+  deploy-functions:
+    name: Deploy Edge Functions
+    runs-on: ubuntu-latest
+    needs: migrate-published-content
+    if: success() && (needs.migrate-published-content.result == 'success' || github.event.inputs.force_migrate == 'true')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Common Environment
+        uses: ./.github/actions/common-steps
+
+      - name: Install Supabase CLI
+        run: |
+          curl -fsSL https://supabase.com/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Create API .env file
+        run: |
+          cat > api/.env << EOF
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          EOF
+
+      - name: Install API dependencies
+        run: pnpm install
+        working-directory: api
+
+      - name: Deploy Edge Functions
+        run: pnpm run supabase:functions:deploy
+        working-directory: api
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      - name: Verify deployment
+        run: |
+          echo "Edge functions deployed successfully!"
+        if: success() 
