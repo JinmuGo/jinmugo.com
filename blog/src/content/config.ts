@@ -21,7 +21,7 @@ const postCollection = defineCollection({
     tags: z.preprocess((v: unknown) => v ?? undefined, z.array(z.string()).optional().default([])),
     // null 허용
     category: categorySchema.nullish(),
-    summary: z.string().nullish(),
+    summary: z.string().or(z.undefined()),
     // null을 undefined로 변환 후 기본값 false 적용
     draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
     // null 허용
@@ -43,7 +43,7 @@ const memoCollection = defineCollection({
     tags: z.preprocess((v: unknown) => v ?? undefined, z.array(z.string()).optional().default([])),
     // null 허용
     category: categorySchema.nullish(),
-    summary: z.string().nullish(),
+    summary: z.string().or(z.undefined()),
     lastmod: z.preprocess((v: unknown) => v ?? undefined, z.coerce.date().optional()),
   }),
 })
