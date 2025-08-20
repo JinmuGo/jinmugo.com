@@ -55,7 +55,10 @@ const isDraft = async (filePath) => {
     const fileContent = await fs.readFile(absolutePath, "utf8")
     const frontmatterMatch = fileContent.match(/^---\n([\s\S]*?)\n---/)
     if (frontmatterMatch?.[1]) {
-      return frontmatterMatch[1].includes("draft: true")
+      const frontmatter = frontmatterMatch[1]
+      // draft: true 또는 draft:true 패턴을 정확히 매칭
+      const draftMatch = frontmatter.match(/^draft:\s*true$/m)
+      return !!draftMatch
     }
   } catch (error) {
     console.warn(`Warning: Could not read file ${filePath} to check draft status:`, error.message)
