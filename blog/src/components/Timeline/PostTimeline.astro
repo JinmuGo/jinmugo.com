@@ -11,6 +11,10 @@ import TimelineTitle from "./TimelineTitle.astro"
 
 const { posts, memos = [] } = Astro.props
 
+// 현재 경로가 영어 버전인지 확인
+const isEnglish = Astro.url.pathname.startsWith("/en")
+const basePath = isEnglish ? "/en" : ""
+
 // 모든 콘텐츠를 날짜순으로 정렬
 const allContent = [...posts, ...memos].sort(
   (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
@@ -20,7 +24,7 @@ const allContent = [...posts, ...memos].sort(
 <Timeline>
   {
     allContent.map((item: Post | Memo, index: number) => {
-      const itemUrl = item.type === 'post' ? `/posts/${item.slug}` : `/memos/${item.slug}`;
+      const itemUrl = `${basePath}${item.type === 'post' ? '/posts' : '/memos'}/${item.slug}`;
       const formattedDate = item.data.date.toISOString().split("T")[0]; // yyyy-MM-dd 형식
       const isLatest = index === 0;
 
