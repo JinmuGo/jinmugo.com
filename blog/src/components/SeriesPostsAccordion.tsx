@@ -85,7 +85,7 @@ export function SeriesPostsAccordion({
                   </span>
                 )}
                 <a
-                  href={`/posts/${post.category}/${post}`}
+                  href={`/posts/${post.slug}`}
                   className={[
                     "truncate",
                     index === currentPostIndex

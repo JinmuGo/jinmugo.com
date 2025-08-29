@@ -23,9 +23,7 @@ export default function ListLayouts({ posts, title, postType }: ListLayoutProps)
         {filteredBlogPosts.map((post) => (
           <li key={post.slug} className="flex justify-between items-center py-3">
             <a
-              href={
-                postType === "post" ? `/posts/${post.category}/${post.slug}` : `/memos/${post.slug}`
-              }
+              href={`/${postType}s/${post.slug}`}
               className="text-base sm:text-lg font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
             >
               {post.title}
