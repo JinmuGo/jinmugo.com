@@ -71,7 +71,6 @@ serve(async (req) => {
     }
 
     let newCount: number;
-    let totalLikes: number;
 
     if (existingLike) {
       // Update existing like count
@@ -111,7 +110,7 @@ serve(async (req) => {
       throw ipLikesError;
     }
 
-    totalLikes = ipLikes.reduce((sum, like) => sum + like.count, 0);
+    const totalLikes = ipLikes.reduce((sum, like) => sum + like.count, 0);
 
     return new Response(
       JSON.stringify({
@@ -126,7 +125,7 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       },
     );
-  } catch (error) {
+  } catch (_error) {
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

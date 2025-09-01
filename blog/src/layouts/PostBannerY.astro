@@ -34,11 +34,11 @@ const pageSchema = generatePostsPageSchema({
 const breadcrumbSchema = generateBreadcrumbSchema([
   {
     name: lang === "en" ? "Home" : "홈",
-    item: Astro.url.origin + "/" + (lang === "en" ? "en/" : ""),
+    item: `${Astro.url.origin}/${lang === "en" ? "en/" : ""}`,
   },
   {
     name: lang === "en" ? "Posts" : "포스트",
-    item: Astro.url.origin + "/" + (lang === "en" ? "en/" : "") + "posts",
+    item: `${Astro.url.origin}/${lang === "en" ? "en/" : ""}posts`,
   },
   { name: title, item: Astro.url.href },
 ])
