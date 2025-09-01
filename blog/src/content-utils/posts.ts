@@ -53,3 +53,33 @@ export async function getLatestEnglishPosts(limit: number = 3) {
   const posts = await getEnglishPosts()
   return limitPosts(sortPostsByDate(posts), limit)
 }
+
+export async function getRelatedPosts(current: Post, limit: number = 4) {
+  const isEnglish = current.slug.endsWith("en") || (current.id ?? "").includes("/en/")
+  const all = isEnglish ? await getEnglishPosts() : await getKoreanPosts()
+  const currentTags = new Set((current.data.tags ?? []).map((tag) => tag.toLowerCase()))
+  const currentCategory = (current.data.category ?? "").toLowerCase()
+
+  const scored = all
+    .filter((p) => p.slug !== current.slug)
+    .map((p) => {
+      const tags = new Set((p.data.tags ?? []).map((t) => t.toLowerCase()))
+      let score = 0
+      for (const tag of currentTags) {
+        if (tags.has(tag)) score += 2
+      }
+      if ((p.data.category ?? "").toLowerCase() === currentCategory) score += 1
+      const dateDiff = Math.abs(
+        new Date(p.data.date).getTime() - new Date(current.data.date).getTime(),
+      )
+      const recencyBoost =
+        Math.max(0, 1_000_000_000 - Math.min(dateDiff, 1_000_000_000)) / 1_000_000_000
+      score += recencyBoost
+      return { post: p, score }
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((x) => x.post)
+
+  return scored
+}

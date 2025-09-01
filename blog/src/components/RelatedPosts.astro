@@ -1,0 +1,28 @@
+---
+import { getRelatedPosts } from "@/content-utils/posts"
+import type { Post, PostMetadata } from "@/types/content"
+
+interface Props {
+  current: Post
+}
+
+const { current } = Astro.props as Props
+const related = await getRelatedPosts(current, 4)
+---
+
+{related.length > 0 && (
+  <aside class="mt-10">
+    <h2 class="text-lg font-semibold mb-3">{Astro.url.pathname.startsWith("/en") ? "Related posts" : "함께 읽으면 좋아요"}</h2>
+    <ul class="grid gap-3 md:grid-cols-2">
+      {related.map((p) => (
+        <li class="group border rounded p-3 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
+          <a href={`/${p.data.category}/${p.slug}`} class="block">
+            <div class="font-medium group-hover:underline">{p.data.title}</div>
+            {p.data.summary && <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">{p.data.summary}</p>}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}
+

@@ -7,6 +7,7 @@ import PostBannerY from "@/layouts/PostBannerY.astro"
 import PostDefault from "@/layouts/PostDefault.astro"
 import type { Post } from "@/types/content"
 import { getBannerImageBySlug } from "@/utils/banner.astro"
+import RelatedPosts from "@/components/RelatedPosts.astro"
 
 export async function getStaticPaths() {
   const posts = await getEnglishPosts()
@@ -44,6 +45,7 @@ if (bannerImage) {
   layout === "PostDefault" && (
     <PostDefault frontmatter={frontmatterWithSlug}>
       <Content components={components} />
+      <RelatedPosts current={entry} />
     </PostDefault>
   )
 }
@@ -52,6 +54,7 @@ if (bannerImage) {
   layout === "PostBannerX" && (
     <PostBannerX frontmatter={frontmatterWithSlug} bannerImage={bannerImage!}>
       <Content components={components} />
+      <RelatedPosts current={entry} />
     </PostBannerX>
   )
 }
@@ -60,6 +63,7 @@ if (bannerImage) {
   layout === "PostBannerY" && (
     <PostBannerY frontmatter={frontmatterWithSlug} bannerImage={bannerImage!}>
       <Content components={components} />
+      <RelatedPosts current={entry} />
     </PostBannerY>
   )
 }
