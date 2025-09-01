@@ -14,8 +14,14 @@ const jsonLd = generatePageSchema({
 })
 
 const app = await getKoreanApp()
-const { name, bio, avatar } = app[0].data
-const { Content } = await app[0].render()
+const fallback = {
+  name: pkg.author,
+  bio: pkg.description,
+  avatar: "/avatar.webp",
+}
+const hasContent = app.length > 0
+const { name, bio, avatar } = hasContent ? app[0].data : fallback
+const Content = hasContent ? (await app[0].render()).Content : undefined
 const title = "About"
 const description = "About Jinmu"
 ---
@@ -29,13 +35,7 @@ const description = "About Jinmu"
 >
   <>
     <div class="relative w-full mx-auto aspect-square sm:aspect-[16/9]">
-      <Image
-        src={avatar}
-        alt={name}
-        width={1200}
-        height={300}
-        loading="eager"
-      />
+      <Image src={avatar} alt={name} width={1200} height={300} loading="eager" />
       <div class="absolute bottom-6 left-6 text-white drop-shadow-lg">
         <h1
           class="text-3xl leading-9 font-extrabold tracking-tight text-gray-50 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-200"
@@ -49,8 +49,10 @@ const description = "About Jinmu"
         </h2>
       </div>
     </div>
+    {Content && (
     <div class="prose dark:prose-invert max-w-none pt-8 pb-8 xl:col-span-2">
       <Content />
     </div>
+    )}
   </>
 </Layout>

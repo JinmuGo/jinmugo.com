@@ -14,8 +14,14 @@ const jsonLd = generatePageSchema({
 })
 
 const app = await getEnglishApp()
-const { name, bio, avatar } = app[0].data
-const { Content } = await app[0].render()
+const fallback = {
+  name: pkg.author,
+  bio: pkg.description,
+  avatar: "/avatar.webp",
+}
+const hasContent = app.length > 0
+const { name, bio, avatar } = hasContent ? app[0].data : fallback
+const Content = hasContent ? (await app[0].render()).Content : undefined
 const title = "About"
 const description = "About Jinmu"
 ---
@@ -43,8 +49,10 @@ const description = "About Jinmu"
         </h2>
       </div>
     </div>
+    {Content && (
     <div class="prose dark:prose-invert max-w-none pt-8 pb-8 xl:col-span-2">
       <Content />
     </div>
+    )}
   </>
 </Layout>
