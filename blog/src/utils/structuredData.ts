@@ -44,6 +44,22 @@ export const generateStructuredData = <T extends Record<string, unknown>>(data: 
   ...data,
 })
 
+export interface BreadcrumbItem {
+  name: string
+  item: string
+}
+
+export const generateBreadcrumbSchema = (items: BreadcrumbItem[]) =>
+  generateStructuredData({
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((breadcrumbItem, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: breadcrumbItem.name,
+      item: breadcrumbItem.item,
+    })),
+  })
+
 // 기본 페이지 스키마 생성 함수
 export const generatePageSchema = (options: PageSchemaOptions) => {
   const {

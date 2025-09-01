@@ -5,8 +5,12 @@ import { PageViewIsland } from "@/components/PageViewIsland"
 import Prose from "@/components/Prose.astro"
 import Layout from "@/layouts/Layout.astro"
 import type { PostMetadata } from "@/types/content"
-import { buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData"
-import { UserSection } from "@/widget/Comment/UserSection"
+import {
+  buildPageUrl,
+  generateBreadcrumbSchema,
+  generatePostsPageSchema,
+} from "@/utils/structuredData"
+import UserSection from "@/widget/Comment/UserSection.astro"
 
 interface Props {
   frontmatter: PostMetadata
@@ -17,13 +21,25 @@ const { frontmatter, bannerImage } = Astro.props
 const { title, date, summary, category, slug, tags } = frontmatter
 const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko"
 
-const jsonLd = generatePostsPageSchema({
+const pageSchema = generatePostsPageSchema({
   title: title,
   description: summary || title,
   url: buildPageUrl("", `/${category}/${slug}`),
   keywords: tags?.join(", ") || "",
   inLanguage: lang,
 })
+
+const breadcrumbSchema = generateBreadcrumbSchema([
+  {
+    name: lang === "en" ? "Home" : "홈",
+    item: Astro.url.origin + "/" + (lang === "en" ? "en/" : ""),
+  },
+  {
+    name: lang === "en" ? "Posts" : "포스트",
+    item: Astro.url.origin + "/" + (lang === "en" ? "en/" : "") + "posts",
+  },
+  { name: title, item: Astro.url.href },
+])
 ---
 
 <Layout
@@ -31,7 +47,7 @@ const jsonLd = generatePostsPageSchema({
   title={title}
   description={summary || title}
   lang={lang}
-  jsonLd={jsonLd}
+  jsonLd={[pageSchema, breadcrumbSchema]}
   ogImage={`/posts/${slug}/og.png`}
 >
     <header class="space-y-1 pb-5 text-center">
@@ -59,5 +75,5 @@ const jsonLd = generatePostsPageSchema({
   <Prose as="article">
     <slot />
   </Prose>
-  <UserSection client:load slug={slug} frontmatter={frontmatter} />
+  <UserSection slug={slug} frontmatter={frontmatter} />
 </Layout>
