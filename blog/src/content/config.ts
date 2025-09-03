@@ -10,6 +10,7 @@ const categorySchema = z.enum([
   "health",
   "tech",
   "network",
+  "linux",
 ])
 
 const postCollection = defineCollection({
