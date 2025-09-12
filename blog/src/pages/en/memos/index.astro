@@ -3,14 +3,13 @@ import { getEnglishMemos, sortMemosByDate } from "@/content-utils/memos"
 import Layout from "@/layouts/Layout.astro"
 import ListLayouts from "@/layouts/ListLayouts"
 import { buildItemUrl, buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData"
-import pkg from "~/package.json"
 
 // 모든 영어 메모 가져오기
 const memos = await getEnglishMemos()
 const sortedMemos = sortMemosByDate(memos)
 
-const title = pkg.title
-const description = pkg.description
+const title = "Memos"
+const description = "Memo collection"
 
 // 구조화된 데이터 생성
 const jsonLd = generatePostsPageSchema({

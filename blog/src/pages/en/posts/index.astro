@@ -3,14 +3,13 @@ import { getEnglishPosts, sortPostsByDate } from "@/content-utils/posts"
 import Layout from "@/layouts/Layout.astro"
 import ListLayouts from "@/layouts/ListLayouts"
 import { buildItemUrl, buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData"
-import pkg from "~/package.json"
 
 // 모든 영어 포스트 가져오기
 const posts = await getEnglishPosts()
 const sortedPosts = sortPostsByDate(posts)
 
-const title = pkg.title
-const description = pkg.description
+const title = "Posts"
+const description = "Post collection"
 
 // 구조화된 데이터 생성
 const jsonLd = generatePostsPageSchema({
@@ -38,7 +37,7 @@ const jsonLd = generatePostsPageSchema({
       ...post.data,
       slug: post.slug,
     }))}
-    title={title}
+    title={"Posts"}
     postType="post"
     client:load
   />
