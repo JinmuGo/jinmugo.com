@@ -48,16 +48,24 @@ export default function HeaderSlider({
   useEffect(() => {
     const postbody = document.querySelector("#prose")
 
+    const handleScroll = () => {
+      setIsHovered(false)
+    }
+
+    const handleMouseMove = () => {
+      setIsHovered(false)
+    }
+
     if (postbody) {
-      postbody.addEventListener("scroll", () => {
-        setIsHovered(false)
-      })
+      postbody.addEventListener("scroll", handleScroll)
+      postbody.addEventListener("mousemove", handleMouseMove)
     }
 
     return () => {
-      postbody?.removeEventListener("scroll", () => {
-        setIsHovered(false)
-      })
+      if (postbody) {
+        postbody.removeEventListener("scroll", handleScroll)
+        postbody.removeEventListener("mousemove", handleMouseMove)
+      }
     }
   }, [])
 
