@@ -6,7 +6,8 @@ import { getKoreanPosts } from "@/content-utils/posts"
 import Layout from "@/layouts/Layout.astro"
 import { countBy } from "@/lib/utils"
 import type { Memo, Post } from "@/types/content"
-import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
+import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
+import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
 
 const posts = await getKoreanPosts()
 const memos = await getKoreanMemos()
@@ -26,7 +27,14 @@ const description = "Archives by category, tag, and year."
 
 const url = buildPageUrl("", "/archives")
 
-const jsonLd = generatePageSchema({
+// Breadcrumb 항목 생성
+const breadcrumbItems = generateBreadcrumbItems({
+  pathname: "/archives",
+  origin: url.replace("/archives", ""),
+  lang: "ko",
+})
+
+const pageSchema = generatePageSchema({
   type: "CollectionPage",
   title,
   description,
@@ -34,6 +42,9 @@ const jsonLd = generatePageSchema({
   keywords: "archives, category, tag, year, collection",
   inLanguage: "ko",
 })
+
+const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
+const jsonLd = [pageSchema, breadcrumbSchema]
 ---
 
 <Layout 

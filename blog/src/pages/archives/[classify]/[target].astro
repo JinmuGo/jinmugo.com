@@ -1,10 +1,12 @@
 ---
+import Breadcrumb from "@/components/Breadcrumb.astro"
 import MemoLabel from "@/components/MemoLabel.astro"
 import { getKoreanMemos } from "@/content-utils/memos"
 import { getKoreanPosts } from "@/content-utils/posts"
 import Layout from "@/layouts/Layout.astro"
 import type { Memo, Post } from "@/types/content"
-import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
+import { generateArchiveBreadcrumbs } from "@/utils/breadcrumbUtils"
+import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
 
 export async function getStaticPaths() {
   const posts = await getKoreanPosts()
@@ -80,7 +82,17 @@ const contentWithSlug = getContentBySlug(allContent, classify ?? "", decodeTarge
 const title = `${capitalizeFirst(decodeTarget ?? "")} - ${capitalizeFirst(classify ?? "")}`
 const description = `Archives of ${capitalizeFirst(decodeTarget ?? "")} in ${capitalizeFirst(classify ?? "")}`
 const url = buildPageUrl("", `/archives/${classify}/${decodeTarget}`)
-const jsonLd = generatePageSchema({
+
+// Breadcrumb 항목 생성
+const breadcrumbItems = generateArchiveBreadcrumbs({
+  pathname: `/archives/${classify}/${target}`,
+  origin: Astro.url.origin,
+  lang: "ko",
+  classify: classify ?? "",
+  target: decodeTarget ?? "",
+})
+
+const pageSchema = generatePageSchema({
   type: "CollectionPage",
   title,
   description,
@@ -88,6 +100,9 @@ const jsonLd = generatePageSchema({
   keywords: `archives, ${classify}, ${decodeTarget}`,
   inLanguage: "ko",
 })
+
+const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
+const jsonLd = [pageSchema, breadcrumbSchema]
 ---
 
 <Layout 
@@ -96,6 +111,7 @@ const jsonLd = generatePageSchema({
   lang="ko"
   jsonLd={jsonLd}
 >
+  <Breadcrumb items={breadcrumbItems} />
   <div class="min-h-screen px-2 sm:px-4">
     <div class="space-y-2 py-6 md:space-y-1">
       <h1
