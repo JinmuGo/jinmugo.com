@@ -1,8 +1,11 @@
 ---
+import Breadcrumb from "@/components/Breadcrumb.astro"
 import FormattedDate from "@/components/FormattedDate.astro"
 import Prose from "@/components/Prose.astro"
 import Layout from "@/layouts/Layout.astro"
 import type { Memo } from "@/types/content"
+import { generateContentBreadcrumbs } from "@/utils/breadcrumbUtils"
+import { generateBreadcrumbSchema } from "@/utils/structuredData"
 import UserSection from "@/widget/Comment/UserSection.astro"
 
 interface Props {
@@ -12,6 +15,18 @@ interface Props {
 const { frontmatter } = Astro.props
 const { title, date, summary, category, slug } = frontmatter
 const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko"
+
+// Breadcrumb 항목 생성
+const breadcrumbItems = generateContentBreadcrumbs({
+  pathname: Astro.url.pathname,
+  origin: Astro.url.origin,
+  lang,
+  title,
+  category,
+  contentType: "memo",
+})
+
+const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
 ---
 
 <Layout
@@ -19,9 +34,10 @@ const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko"
   title={title}
   description={summary || title}
   lang={lang}
+  jsonLd={breadcrumbSchema}
   ogImage={`/memos/${slug}/og.png`}
 >
-      <Prose>
+  <Breadcrumb items={breadcrumbItems} />
   <main>
     <article>
       <header class="space-y-1 pb-5">
@@ -46,9 +62,10 @@ const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko"
           </div>
         </div>
       </header>
+      <Prose as="article">
         <slot />
+      </Prose>
     </article>
   </main>
-      </Prose>
       <UserSection slug={slug} frontmatter={frontmatter} />
 </Layout>
