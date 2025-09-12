@@ -7,8 +7,7 @@ on:
   push:
     branches: ["main"]
     paths:
-      - "blog/blog_obsidian/**/*.md"
-      - "blog/blog_obsidian/**/*.en.md"
+      - "blog/blog_obsidian"  # submodule commit hash 변경 감지
   workflow_dispatch:
     inputs:
       force_migrate:
@@ -25,25 +24,60 @@ env:
 
 jobs:
   detect-changes:
-    name: Detect Blog Changes
+    name: Detect Submodule Changes
     runs-on: ubuntu-latest
     outputs:
-      has-changes: ${{ steps.changes.outputs.any_changed }}
-      changed-files: ${{ steps.changes.outputs.all_changed_files }}
+      has-changes: ${{ steps.submodule-changes.outputs.changed }}
+      changed-files: ${{ steps.get-changed-files.outputs.files }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
+          submodules: recursive
 
-      - name: Detect changes in blog_obsidian
-        id: changes
-        uses: dorny/paths-filter@v4
-        with:
-          filters: |
-            blog_changes:
-              - 'blog/blog_obsidian/**/*.md'
-              - 'blog/blog_obsidian/**/*.en.md'
+      - name: Check submodule changes
+        id: submodule-changes
+        run: |
+          # submodule의 commit hash가 변경되었는지 확인
+          if git diff HEAD~1 HEAD --name-only | grep -q "^blog/blog_obsidian$"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Submodule blog_obsidian has changed"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No submodule changes detected"
+          fi
+
+      - name: Get changed files from submodule
+        id: get-changed-files
+        if: steps.submodule-changes.outputs.changed == 'true'
+        run: |
+          cd blog/blog_obsidian
+          
+          # 이전 commit hash 가져오기
+          cd ../..
+          PREV_HASH=$(git show HEAD~1:blog/blog_obsidian | head -1 | cut -d' ' -f2)
+          CURR_HASH=$(git rev-parse HEAD:blog/blog_obsidian)
+          
+          echo "Previous hash: $PREV_HASH"
+          echo "Current hash: $CURR_HASH"
+          
+          cd blog/blog_obsidian
+          
+          # 두 commit 사이의 변경된 .md 파일들 찾기
+          CHANGED_FILES=$(git diff --name-only $PREV_HASH $CURR_HASH | grep '\.md$' | head -50)
+          
+          if [ -n "$CHANGED_FILES" ]; then
+            # 파일 경로를 blog/blog_obsidian/ prefix와 함께 출력
+            echo "$CHANGED_FILES" | sed 's|^|blog/blog_obsidian/|' > /tmp/changed_files.txt
+            FILES=$(cat /tmp/changed_files.txt | tr '\n' ' ')
+            echo "files=$FILES" >> $GITHUB_OUTPUT
+            echo "Changed markdown files:"
+            echo "$FILES"
+          else
+            echo "files=" >> $GITHUB_OUTPUT
+            echo "No markdown files changed"
+          fi
 
   migrate-published-content:
     name: Migrate Published Content to API DB
