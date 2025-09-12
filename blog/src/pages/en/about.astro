@@ -1,17 +1,30 @@
 ---
 import { Image } from "astro:assets"
+import Breadcrumb from "@/components/Breadcrumb.astro"
 import { getEnglishApp } from "@/content-utils/apps"
 import Layout from "@/layouts/Layout.astro"
-import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
+import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
+import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
 import pkg from "~/package.json"
 
-const jsonLd = generatePageSchema({
+// Breadcrumb 항목 생성
+const breadcrumbItems = generateBreadcrumbItems({
+  pathname: "/en/about",
+  origin: pkg.homepage,
+  lang: "en",
+  title: "About",
+})
+
+const pageSchema = generatePageSchema({
   title: "About",
   description: "About Jinmu",
   url: buildPageUrl(pkg.homepage, "/en/about"),
   keywords: "about, author, profile",
   inLanguage: "en",
 })
+
+const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
+const jsonLd = [pageSchema, breadcrumbSchema]
 
 const app = await getEnglishApp()
 const fallback = {
@@ -33,6 +46,7 @@ const description = "About Jinmu"
   lang="en"
   jsonLd={jsonLd}
 >
+  <Breadcrumb items={breadcrumbItems} class="mb-4" />
   <>
     <div class="relative w-full mx-auto aspect-square sm:aspect-[16/9]">
       <Image src={avatar} alt={name} width={1200} height={300} />

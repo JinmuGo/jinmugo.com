@@ -1,17 +1,29 @@
 ---
 import { Image } from "astro:assets"
 import { getKoreanApp } from "@/content-utils/apps"
-import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
+import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
+import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
 import pkg from "~/package.json"
 import Layout from "../layouts/Layout.astro"
 
-const jsonLd = generatePageSchema({
+// Breadcrumb 항목 생성
+const breadcrumbItems = generateBreadcrumbItems({
+  pathname: "/about",
+  origin: buildPageUrl(pkg.homepage, ""),
+  lang: "ko",
+  title: "About",
+})
+
+const pageSchema = generatePageSchema({
   title: "About",
   description: "About Jinmu",
   url: buildPageUrl(pkg.homepage, "/about"),
   keywords: "about, author, profile",
   inLanguage: "ko",
 })
+
+const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
+const jsonLd = [pageSchema, breadcrumbSchema]
 
 const app = await getKoreanApp()
 const fallback = {
