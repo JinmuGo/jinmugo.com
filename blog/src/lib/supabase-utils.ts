@@ -137,6 +137,9 @@ export const viewApi = {
   // 조회수 증가
   incrementPostView: async (slug: string): Promise<ApiResponse> => {
     try {
+      if (import.meta.env.PUBLIC_ENV === "development") {
+        return { success: true }
+      }
       const response = await fetch(`${SUPABASE_URL}/functions/v1/increment-post-view/${slug}`, {
         method: "POST",
         headers: getHeaders(),
