@@ -46,6 +46,13 @@ async function submitUrlToGSC(auth, url, urlType) {
     console.log(`📊 ${urlType} Response body: ${responseText}`)
 
     if (!response.ok) {
+      // 429 응답 시 바로 종료
+      if (response.status === 429) {
+        console.error(`❌ Rate limit exceeded (429). Stopping submission.`)
+        console.error(`   Please wait before retrying.`)
+        process.exit(0)
+      }
+
       if (response.status === 403) {
         console.error(`❌ ${urlType} 권한 오류: 서비스 계정이 사이트에 대한 권한이 없습니다.`)
         console.error("해결 방법:")

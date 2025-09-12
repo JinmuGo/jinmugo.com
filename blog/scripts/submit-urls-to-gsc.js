@@ -111,6 +111,14 @@ async function submitUrlsToGSC(urls) {
 
           if (!response.ok) {
             const errorText = await response.text()
+
+            // 429 응답 시 바로 종료
+            if (response.status === 429) {
+              console.error(`❌ Rate limit exceeded (429). Stopping submission.`)
+              console.error(`   Please wait before retrying.`)
+              process.exit(0)
+            }
+
             const errorData = JSON.parse(errorText)
 
             if (
