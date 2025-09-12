@@ -105,7 +105,7 @@ export default function HeaderSlider({
           }
         }}
         type="button"
-        className={`transition-all duration-300 w-full h-full flex justify-between items-center absolute ${(isHovered || isEndofContent) && isSlideOpen ? "-translate-y-full opacity-100" : "translate-y-0 opacity-0"}
+        className={`transition-all duration-300 w-full h-full justify-between items-center absolute ${(isHovered || isEndofContent) && isSlideOpen ? "-translate-y-full opacity-100 flex" : "translate-y-0 opacity-0 hidden"}
         }`}
       >
         <div className="w-full cursor-pointer mx-auto flex items-center justify-center max-w-3xl lg:max-w-4xl xl:max-w-5xl px-4 sm:px-6 xl:px-0">

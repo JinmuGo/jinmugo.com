@@ -1,9 +1,15 @@
 @layer components {
 	.prose-custom {
-		@apply prose dark:prose-invert prose-lg  ;
+		@apply prose dark:prose-invert;
 		@apply mx-auto max-w-none;
 		@apply mt-14;
-		/* @apply not-prose-headings:font-light; */
+		@apply text-sm md:text-lg leading-6 md:leading-7.5;
+    @apply prose-h2:text-xl prose-h2:md:text-2xl prose-h2:lg:text-3xl;
+    @apply prose-h3:text-lg prose-h3:md:text-xl prose-h3:lg:text-2xl;
+    @apply prose-h4:text-base prose-h4:md:text-lg prose-h4:lg:text-xl;
+    @apply prose-h5:text-sm prose-h5:md:text-base prose-h5:lg:text-lg;
+    @apply prose-h6:text-xs prose-h6:md:text-sm prose-h6:lg:text-sm;
+    @apply prose-headings:mb-3 prose-headings:md:mb-4;
 
 		/* Code styling */
 		@apply [&_a_code]:text-primary-400;
