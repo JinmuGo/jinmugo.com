@@ -12,6 +12,7 @@ onlyBuiltDependencies:
   - msgpackr-extract
   - prisma
   - sharp
+  - supabase
   - workerd
 
 patchedDependencies:

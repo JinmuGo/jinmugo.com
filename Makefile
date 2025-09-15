@@ -14,7 +14,7 @@ install:
 .PHONY: install
 
 fclean:
-	rm -rf node_modules
+	find . -name "node_modules" -type d -exec rm -rf {} +
 .PHONY: fclean
 
 lint:

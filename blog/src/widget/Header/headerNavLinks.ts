@@ -29,7 +29,7 @@ const headerNavLinks: HeaderNavLink[] = [
       {
         href: "/posts",
         title: "Posts",
-        description: "Posts about Thing's of my life",
+        description: "Posts",
         shortCut: "p",
       },
       {
