@@ -2,7 +2,15 @@
   "root": false,
   "extends": "//",
   "files": {
-    "includes": ["**/*.ts", "**/*.js", "**/*.json", "**/*.prisma", "!**/*.d.ts"]
+    "includes": [
+      "**/*.ts",
+      "**/*.json",
+      "**/*.prisma",
+      "!**/*.d.ts",
+      "!scripts/**/*.js",
+      "!scripts/**/*.js.map",
+      "!scripts/**/*.d.ts.map"
+    ]
   },
   "formatter": {
     "indentStyle": "space",

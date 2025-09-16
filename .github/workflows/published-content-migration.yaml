@@ -1,7 +1,7 @@
 name: Published Content Migration
 
 # Published 블로그 콘텐츠 자동 마이그레이션 워크플로우
-# blog_obsidian 디렉토리의 마크다운 파일이 변경되면 draft가 false인 것들만 API DB에 마이그레이션
+# blog_obsidian 디렉토리의 마크다운 파일이 변경되면 draft가 false인 것들만 PocketBase DB에 마이그레이션
 
 on:
   push:
@@ -80,7 +80,7 @@ jobs:
           fi
 
   migrate-published-content:
-    name: Migrate Published Content to API DB
+    name: Migrate Published Content to PocketBase DB
     runs-on: ubuntu-latest
     needs: detect-changes
     if: needs.detect-changes.outputs.has-changes == 'true' || github.event.inputs.force_migrate == 'true'
@@ -96,9 +96,9 @@ jobs:
       - name: Create API .env file
         run: |
           cat > api/.env << EOF
-          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          PB_URL=${{ secrets.PB_URL }}
+          PB_TOKEN=${{ secrets.PB_TOKEN }}
+          NODE_ENV=production
           EOF
 
       - name: Install API dependencies
@@ -111,7 +111,7 @@ jobs:
           echo "${{ needs.detect-changes.outputs.changed-files }}"
         if: needs.detect-changes.outputs.has-changes == 'true'
 
-      - name: Migrate published content to remote DB
+      - name: Migrate published content to PocketBase DB
         run: |
           if [ "${{ needs.detect-changes.outputs.has-changes }}" == "true" ]; then
             echo "${{ needs.detect-changes.outputs.changed-files }}" > changed_files.txt
@@ -121,57 +121,15 @@ jobs:
           fi
         working-directory: api
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          PB_URL: ${{ secrets.PB_URL }}
+          PB_TOKEN: ${{ secrets.PB_TOKEN }}
+          NODE_ENV: production
           CHANGED_FILES: ${{ needs.detect-changes.outputs.changed-files }}
 
       - name: Verify migration
         run: |
           echo "Published content migration completed successfully!"
-          echo "Only draft=false content has been migrated to the API database."
+          echo "Only draft=false content has been migrated to the PocketBase database."
         if: success()
 
-  deploy-functions:
-    name: Deploy Edge Functions
-    runs-on: ubuntu-latest
-    needs: migrate-published-content
-    if: success() && (needs.migrate-published-content.result == 'success' || github.event.inputs.force_migrate == 'true')
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Setup Common Environment
-        uses: ./.github/actions/common-steps
-
-      - name: Install Supabase CLI
-        run: |
-          curl -fsSL https://supabase.com/install.sh | sh
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Create API .env file
-        run: |
-          cat > api/.env << EOF
-          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          EOF
-
-      - name: Install API dependencies
-        run: pnpm install
-        working-directory: api
-
-      - name: Deploy Edge Functions
-        run: pnpm run supabase:functions:deploy
-        working-directory: api
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-
-      - name: Verify deployment
-        run: |
-          echo "Edge functions deployed successfully!"
-        if: success() 
+  # PocketBase는 별도 배포가 필요없으므로 Edge Functions 배포 단계 제거 

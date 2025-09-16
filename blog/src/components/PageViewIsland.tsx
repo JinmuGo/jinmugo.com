@@ -1,4 +1,4 @@
-import { useViewCount } from "@/lib/supabase-utils"
+import { useViewCount } from "@/lib/pocketbase-utils"
 
 export function PageViewIsland({ slug }: { slug: string }) {
   const { viewCount, isLoading, error } = useViewCount(slug)

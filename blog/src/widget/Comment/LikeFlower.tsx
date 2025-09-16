@@ -1,7 +1,7 @@
 import type React from "react"
 import { Fragment, useCallback, useState } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { useLike } from "@/lib/supabase-utils"
+import { useLike } from "@/lib/pocketbase-utils"
 import type { MemoMetadata, PostMetadata } from "@/types/content"
 
 // 기본 상수들 (원본 값 그대로 사용)
@@ -169,7 +169,7 @@ interface FlowerProps {
 
 export const Flower: React.FC<FlowerProps> = ({ slug, frontmatter, maxLikesPerIP = 5 }) => {
   const [animationStyle, setAnimationStyle] = useState("")
-  const { myLikes, isLoading, addLike } = useLike(slug)
+  const { myLikes, totalLikes, error, isLoading, addLike } = useLike(slug)
 
   const handleSvgClick = useCallback(async () => {
     if (!frontmatter?.slug || myLikes === -1) {
@@ -197,100 +197,106 @@ export const Flower: React.FC<FlowerProps> = ({ slug, frontmatter, maxLikesPerIP
   }, [frontmatter, myLikes, maxLikesPerIP, addLike])
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          type="button"
-          className="w-10 h-10 cursor-pointer transition-transform hover:scale-105 bg-transparent border-none p-0"
-          onClick={() => void handleSvgClick()}
-          aria-label="Like flower"
-          disabled={isLoading}
-        >
-          <svg
-            viewBox="0 0 375 349"
-            xmlns="http://www.w3.org/2000/svg"
-            style={{ animation: animationStyle }}
-            aria-label="Like flower icon"
+    <>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            className="w-10 h-10 cursor-pointer transition-transform hover:scale-105 bg-transparent border-none p-0"
+            onClick={() => void handleSvgClick()}
+            aria-label="Like flower"
+            disabled={isLoading}
           >
-            <title>Like flower</title>
-            <FlowerSvgHeader />
-            <g clipPath="url(#clip0)">
-              {petalPaths.map((d, index) => (
-                <FlowerPetal
-                  key={`petal-${index}-${d.slice(0, 10)}`}
-                  d={d}
-                  userLikes={myLikes}
-                  idx={index}
-                />
-              ))}
-              <g>
-                <ellipse
-                  fill={FLOWER_STAMEN_COLOR}
-                  stroke={STROKE_COLOR}
-                  strokeMiterlimit={STROKE_MITERLIMIT}
-                  strokeWidth={STROKE_WIDTH}
-                  cx="125.23"
-                  cy="118.67"
-                  rx="6.47"
-                  ry="10.78"
-                />
-                <ellipse
-                  fill={FLOWER_STAMEN_COLOR}
-                  stroke={STROKE_COLOR}
-                  strokeMiterlimit={STROKE_MITERLIMIT}
-                  strokeWidth={STROKE_WIDTH}
-                  cx="99.13"
-                  cy="127.56"
-                  rx="6.47"
-                  ry="10.78"
-                  transform="translate(-62.35 132.37) rotate(-53.85)"
-                />
-                <ellipse
-                  fill={FLOWER_STAMEN_COLOR}
-                  stroke={STROKE_COLOR}
-                  strokeMiterlimit={STROKE_MITERLIMIT}
-                  strokeWidth={STROKE_WIDTH}
-                  cx="99.13"
-                  cy="151.47"
-                  rx="6.47"
-                  ry="10.78"
-                  transform="translate(-64.92 228.01) rotate(-81.81)"
-                />
+            <svg
+              viewBox="0 0 375 349"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ animation: animationStyle }}
+              aria-label="Like flower icon"
+            >
+              <title>Like flower</title>
+              <FlowerSvgHeader />
+              <g clipPath="url(#clip0)">
+                {petalPaths.map((d, index) => (
+                  <FlowerPetal
+                    key={`petal-${index}-${d.slice(0, 10)}`}
+                    d={d}
+                    userLikes={myLikes}
+                    idx={index}
+                  />
+                ))}
+                <g>
+                  <ellipse
+                    fill={FLOWER_STAMEN_COLOR}
+                    stroke={STROKE_COLOR}
+                    strokeMiterlimit={STROKE_MITERLIMIT}
+                    strokeWidth={STROKE_WIDTH}
+                    cx="125.23"
+                    cy="118.67"
+                    rx="6.47"
+                    ry="10.78"
+                  />
+                  <ellipse
+                    fill={FLOWER_STAMEN_COLOR}
+                    stroke={STROKE_COLOR}
+                    strokeMiterlimit={STROKE_MITERLIMIT}
+                    strokeWidth={STROKE_WIDTH}
+                    cx="99.13"
+                    cy="127.56"
+                    rx="6.47"
+                    ry="10.78"
+                    transform="translate(-62.35 132.37) rotate(-53.85)"
+                  />
+                  <ellipse
+                    fill={FLOWER_STAMEN_COLOR}
+                    stroke={STROKE_COLOR}
+                    strokeMiterlimit={STROKE_MITERLIMIT}
+                    strokeWidth={STROKE_WIDTH}
+                    cx="99.13"
+                    cy="151.47"
+                    rx="6.47"
+                    ry="10.78"
+                    transform="translate(-64.92 228.01) rotate(-81.81)"
+                  />
+                </g>
+                <g>
+                  <path
+                    fill={FLOWER_CENTER_COLOR}
+                    stroke={STROKE_COLOR}
+                    strokeMiterlimit={STROKE_MITERLIMIT}
+                    strokeWidth={STROKE_WIDTH}
+                    d="M126.24,140.79v11.44s46.12,18.28,47.07,52.18l37.62-10.77s-31.9-39.27-84.69-52.85Z"
+                  />
+                  <path
+                    fill={FLOWER_CENTER_COLOR}
+                    stroke={STROKE_COLOR}
+                    strokeMiterlimit={STROKE_MITERLIMIT}
+                    strokeWidth={STROKE_WIDTH}
+                    d="M123.89,151.24s42,15.89,49.57,51.89"
+                  />
+                  <path
+                    fill={FLOWER_CENTER_COLOR}
+                    stroke={STROKE_COLOR}
+                    strokeMiterlimit={STROKE_MITERLIMIT}
+                    strokeWidth={STROKE_WIDTH}
+                    d="M126.24,140.79s64.96,23.22,83.74,50.87"
+                  />
+                </g>
               </g>
-              <g>
-                <path
-                  fill={FLOWER_CENTER_COLOR}
-                  stroke={STROKE_COLOR}
-                  strokeMiterlimit={STROKE_MITERLIMIT}
-                  strokeWidth={STROKE_WIDTH}
-                  d="M126.24,140.79v11.44s46.12,18.28,47.07,52.18l37.62-10.77s-31.9-39.27-84.69-52.85Z"
-                />
-                <path
-                  fill={FLOWER_CENTER_COLOR}
-                  stroke={STROKE_COLOR}
-                  strokeMiterlimit={STROKE_MITERLIMIT}
-                  strokeWidth={STROKE_WIDTH}
-                  d="M123.89,151.24s42,15.89,49.57,51.89"
-                />
-                <path
-                  fill={FLOWER_CENTER_COLOR}
-                  stroke={STROKE_COLOR}
-                  strokeMiterlimit={STROKE_MITERLIMIT}
-                  strokeWidth={STROKE_WIDTH}
-                  d="M126.24,140.79s64.96,23.22,83.74,50.87"
-                />
-              </g>
-            </g>
-          </svg>
-        </button>
-      </TooltipTrigger>
-      <TooltipContent>
-        {isLoading
-          ? "처리 중..."
-          : myLikes >= maxLikesPerIP
-            ? `최대 ${maxLikesPerIP}번까지만 좋아요를 누를 수 있습니다!`
-            : `재밌게 보셨나요?! 꽃을 피워 주세요~ (${myLikes}/${maxLikesPerIP})`}
-      </TooltipContent>
-    </Tooltip>
+            </svg>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {isLoading
+            ? "처리 중..."
+            : myLikes >= maxLikesPerIP
+              ? `최대 ${maxLikesPerIP}번까지만 좋아요를 누를 수 있습니다!`
+              : `재밌게 보셨나요?! 꽃을 피워 주세요~ (${myLikes}/${maxLikesPerIP})`}
+        </TooltipContent>
+      </Tooltip>
+      <div className="flex flex-col">
+        <p className="select-none text-sm font-regular">{totalLikes === -1 ? "..." : totalLikes}</p>
+        {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+      </div>
+    </>
   )
 }

@@ -7,23 +7,38 @@
     "lint": "biome lint .",
     "lint:fix": "biome lint --apply .",
     "check": "biome check .",
-    "supabase:start": "supabase start",
-    "supabase:stop": "supabase stop",
-    "supabase:status": "supabase status",
-    "supabase:db:reset": "supabase db reset",
-    "supabase:functions:deploy": "supabase functions deploy",
-    "supabase:functions:serve": "supabase functions serve",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "dev": "tsx --env-file .env src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
     "migrate:published": "tsx --env-file .env scripts/migrate-published-content.ts",
-    "migrate:changed": "tsx --env-file .env scripts/migrate-changed-files.ts"
+    "migrate:changed": "tsx --env-file .env scripts/migrate-changed-files.ts",
+    "docker:build": "docker build -t jinmu-api .",
+    "docker:run": "docker run -p 3001:3001 --env-file .env jinmu-api",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:clean": "docker system prune -f && docker volume prune -f"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.53.0",
-    "gray-matter": "^4.0.3"
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^4.18.2",
+    "gray-matter": "^4.0.3",
+    "pocketbase": "^0.24.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
     "@types/node": "22.13.0",
-    "dotenv": "^17.2.1",
-    "supabase": "^2.40.7",
-    "tsx": "^4.19.2"
+    "@types/supertest": "^6.0.3",
+    "@vitest/ui": "^3.2.4",
+    "supertest": "^7.1.4",
+    "tsx": "^4.19.2",
+    "typescript": "^5.3.3",
+    "vitest": "^3.2.4"
   }
 }

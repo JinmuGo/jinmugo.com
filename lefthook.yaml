@@ -4,6 +4,12 @@ pre-commit:
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
       run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
       stage_fixed: true
+    api-test:
+      glob: "api/**/*.{js,ts}"
+      run: |
+        echo "🧪 API 파일이 변경되었습니다. 테스트를 실행합니다..."
+        cd api && pnpm test
+      fail_text: "API 테스트가 실패했습니다. 커밋을 중단합니다."
     translate-korean-posts:
       glob: "blog/blog_obsidian/**/*.md"
       run: |

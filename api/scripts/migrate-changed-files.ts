@@ -1,19 +1,11 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { createClient } from "@supabase/supabase-js";
 import matter from "gray-matter";
+import PocketBase from "pocketbase";
 
-// Supabase 클라이언트 설정
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-// 환경 변수가 없으면 시뮬레이션 모드로 실행
-const isSimulationMode = !supabaseUrl || !supabaseServiceKey;
-
-if (isSimulationMode) {
-}
-
-const supabase = isSimulationMode ? null : createClient(supabaseUrl, supabaseServiceKey);
+// PocketBase 클라이언트 설정
+const pbUrl = process.env.PB_URL || "http://127.0.0.1:8090";
+const pb = new PocketBase(pbUrl);
 
 interface BlogPost {
   slug: string;
@@ -61,41 +53,34 @@ function extractBlogPost(filePath: string, type: "post" | "memo"): BlogPost | nu
   }
 }
 
-// Supabase에 포스트 삽입 또는 업데이트
-async function upsertPost(post: BlogPost) {
+// PocketBase에 포스트 삽입 또는 업데이트
+async function upsertPost(post: BlogPost): Promise<boolean> {
   try {
-    if (isSimulationMode) {
-      return true;
+    // 기존 포스트 확인
+    const existingPosts = await pb.collection("posts").getList(1, 1, {
+      filter: `slug = "${post.slug}"`,
+    });
+
+    const postData = {
+      slug: post.slug,
+      title: post.title || "",
+      date: post.date ? new Date(post.date).toISOString() : "",
+      draft: post.draft || false,
+      tags: post.tags || [],
+      lastmod: post.lastmod ? new Date(post.lastmod).toISOString() : "",
+      category: post.category || "",
+      summary: post.summary || "",
+      type: post.type,
+    };
+
+    if (existingPosts.items.length > 0) {
+      // 업데이트
+      await pb.collection("posts").update(existingPosts.items[0].id, postData);
+    } else {
+      // 생성
+      await pb.collection("posts").create(postData);
     }
 
-    if (!supabase) {
-      return false;
-    }
-
-    const { error } = await supabase
-      .from("posts")
-      .upsert(
-        {
-          slug: post.slug,
-          title: post.title,
-          date: post.date ? new Date(post.date).toISOString() : null,
-          draft: post.draft,
-          tags: post.tags,
-          lastmod: post.lastmod ? new Date(post.lastmod).toISOString() : null,
-          category: post.category,
-          summary: post.summary,
-          type: post.type,
-        },
-        {
-          onConflict: "slug",
-        },
-      )
-      .select()
-      .single();
-
-    if (error) {
-      return false;
-    }
     return true;
   } catch (_error) {
     return false;
@@ -113,6 +98,26 @@ function getPostType(filePath: string): "post" | "memo" | null {
   }
 
   return null;
+}
+
+// 디렉토리에서 모든 .md 파일을 재귀적으로 찾기 (전체 마이그레이션용)
+function findMarkdownFiles(dir: string): string[] {
+  const files: string[] = [];
+
+  const items = fs.readdirSync(dir);
+
+  for (const item of items) {
+    const fullPath = path.join(dir, item);
+    const stat = fs.statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      files.push(...findMarkdownFiles(fullPath));
+    } else if (item.endsWith(".md") && !item.endsWith(".en.md")) {
+      files.push(fullPath);
+    }
+  }
+
+  return files;
 }
 
 // 메인 마이그레이션 함수
@@ -202,26 +207,6 @@ async function migrateChangedFiles() {
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
-}
-
-// 디렉토리에서 모든 .md 파일을 재귀적으로 찾기 (전체 마이그레이션용)
-function findMarkdownFiles(dir: string): string[] {
-  const files: string[] = [];
-
-  const items = fs.readdirSync(dir);
-
-  for (const item of items) {
-    const fullPath = path.join(dir, item);
-    const stat = fs.statSync(fullPath);
-
-    if (stat.isDirectory()) {
-      files.push(...findMarkdownFiles(fullPath));
-    } else if (item.endsWith(".md") && !item.endsWith(".en.md")) {
-      files.push(fullPath);
-    }
-  }
-
-  return files;
 }
 
 // 스크립트 실행

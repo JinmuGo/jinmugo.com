@@ -1,44 +1,33 @@
 # API 서버
 
-이 프로젝트는 블로그의 백엔드 API를 제공하는 Supabase 기반 서버입니다.
+이 프로젝트는 블로그의 백엔드 API를 제공하는 PocketBase 기반 서버입니다.
 
 ## 기능
 
-- **블로그 콘텐츠 관리**: Obsidian 마크다운 파일을 Supabase DB로 마이그레이션
+- **블로그 콘텐츠 관리**: Obsidian 마크다운 파일을 PocketBase DB로 마이그레이션
 - **좋아요 시스템**: IP 기반 익명 좋아요 기능
 - **조회수 추적**: 포스트별 조회수 카운팅
 - **RESTful API**: 블로그 콘텐츠 조회 및 관리 API
 
-## CI/CD 워크플로우
+## 아키텍처
 
-### 자동 마이그레이션
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │───▶│  Express API    │───▶│   PocketBase    │
+│  (Astro Blog)   │    │    Server       │    │   Database      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
 
-이 프로젝트는 GitHub Actions를 통해 자동 마이그레이션을 지원합니다:
-
-#### Published 콘텐츠 마이그레이션 (권장)
-- **워크플로우**: `Published Content Migration`
-- **트리거**: `blog/blog_obsidian/` 디렉토리의 `.md` 파일 변경 시
-- **동작**: draft가 false인 파일만 감지하여 API DB에 자동 마이그레이션
-- **배포**: 마이그레이션 후 Edge Functions 자동 배포
-
-
-
-### 수동 실행
-
-GitHub Actions 탭에서 워크플로우를 수동으로 실행할 수 있습니다:
-
-#### Published 콘텐츠 마이그레이션 (권장)
-- `Published Content Migration` 워크플로우 선택
-- `force_migrate: true`로 설정하면 모든 published 콘텐츠를 강제 마이그레이션
-
-
+- **Express API Server**: RESTful API 엔드포인트 제공
+- **PocketBase**: 데이터베이스 및 실시간 기능 제공
+- **마이그레이션 스크립트**: Obsidian → PocketBase 자동 동기화
 
 ## 빠른 시작
 
 ### 1. 의존성 설치
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### 2. 환경 변수 설정
@@ -46,150 +35,220 @@ npm install
 `.env` 파일을 생성하고 다음을 설정하세요:
 
 ```bash
-SUPABASE_URL=your_supabase_url_here
-SUPABASE_ANON_KEY=your_supabase_anon_key_here
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
+# PocketBase 설정
+PB_URL=http://127.0.0.1:8090
+
+# API 서버 설정
+PORT=3001
+NODE_ENV=development
+CORS_ORIGIN=*
+
+# PocketBase 관리자 설정 (Docker Compose 사용 시)
+PB_ADMIN_EMAIL=admin@example.com
+PB_ADMIN_PASSWORD=changeme123
+
+# PocketBase 인증 토큰 (필요한 경우)
+# PB_TOKEN=your_token_here
 ```
 
-### 3. 블로그 콘텐츠 마이그레이션
-
-#### 원격 Supabase DB 사용 (권장)
-
-1. **원격 DB 스키마 적용**:
-   - Supabase Dashboard > SQL Editor에서 `api/supabase/apply-schema-remote.sql` 실행
-   
-2. **마이그레이션 실행**:
-   ```bash
-   npm run migrate:published
-   ```
-
-#### 로컬 Supabase DB 사용
-
-1. **로컬 환경 시작**:
-   ```bash
-   npm run supabase:start
-   ```
-
-2. **스키마 적용**:
-   ```bash
-   npm run supabase:db:reset
-   ```
-
-3. **마이그레이션 실행**:
-   ```bash
-   npm run migrate:published
-   ```
-
-### 4. Edge Functions 서빙 (선택사항)
+### 3. PocketBase 시작
 
 ```bash
-npm run supabase:functions:serve
+pnpm run pocketbase:start
 ```
+
+PocketBase 관리자 대시보드가 `http://localhost:8090/_/`에서 실행됩니다.
+
+### 4. 데이터베이스 스키마 설정
+
+PocketBase 관리자 대시보드에서 다음 컬렉션들을 생성하세요:
+
+#### posts 컬렉션
+- `slug` (Text, Required, Unique)
+- `title` (Text)
+- `date` (DateTime)
+- `draft` (Bool, Default: false)
+- `tags` (JSON)
+- `lastmod` (DateTime)
+- `category` (Text)
+- `summary` (Text)
+- `type` (Select: post, memo, Default: post)
+
+#### post_likes 컬렉션
+- `ip_address` (Text, Required)
+- `post_id` (Relation to posts, Required)
+- `count` (Number, Default: 1, Min: 1, Max: 5)
+
+#### post_views 컬렉션
+- `post_id` (Relation to posts, Required)
+- `ip_address` (Text)
+- `viewed_at` (DateTime, Default: NOW)
+
+### 5. API 서버 시작
+
+```bash
+pnpm run dev
+```
+
+API 서버가 `http://localhost:3001`에서 실행됩니다.
+
+### 6. 블로그 콘텐츠 마이그레이션
+
+```bash
+pnpm run migrate:published
+```
+
+## Docker 사용법
+
+### 단독 실행 (API 디렉토리에서)
+
+```bash
+# Docker 이미지 빌드
+pnpm run docker:build
+
+# 컨테이너 실행
+pnpm run docker:run
+```
+
+### Docker Compose 사용 (권장)
+
+```bash
+# 환경 변수 설정
+cp env.example .env
+
+# 서비스 시작 (PocketBase + API)
+pnpm run docker:up
+
+# 로그 확인
+pnpm run docker:logs
+
+# 서비스 중지
+pnpm run docker:down
+
+# Docker 정리
+pnpm run docker:clean
+```
+
+**주의사항**: 
+- 이 프로젝트는 pnpm workspace를 사용합니다
+- Docker 빌드는 `api/` 디렉토리에서 실행됩니다
+- Dockerfile은 standalone 모드로 작동하도록 설정되어 있습니다
 
 ## 주요 스크립트
 
 | 스크립트 | 설명 |
 |---------|------|
-| `npm run supabase:start` | Supabase 로컬 환경 시작 |
-| `npm run supabase:stop` | Supabase 로컬 환경 중지 |
-| `npm run supabase:status` | Supabase 상태 확인 |
-| `npm run supabase:db:reset` | 데이터베이스 리셋 |
-| `npm run migrate:published` | Published 콘텐츠만 마이그레이션 (draft=false) |
-| `npm run migrate:changed` | 변경된 파일만 마이그레이션 (draft=false) |
-| `npm run supabase:functions:deploy` | Edge Functions 배포 |
+| `pnpm run dev` | 개발 모드로 API 서버 시작 |
+| `pnpm run build` | TypeScript 빌드 |
+| `pnpm run start` | 프로덕션 모드로 서버 시작 |
+| `pnpm run pocketbase:start` | PocketBase 서버 시작 |
+| `pnpm run pocketbase:stop` | PocketBase 서버 중지 |
+| `pnpm run migrate:published` | Published 콘텐츠만 마이그레이션 (draft=false) |
+| `pnpm run migrate:changed` | 변경된 파일만 마이그레이션 (draft=false) |
+| `pnpm run docker:build` | Docker 이미지 빌드 |
+| `pnpm run docker:up` | Docker Compose로 서비스 시작 |
+| `pnpm run docker:down` | Docker Compose 서비스 중지 |
 
 ## API 엔드포인트
 
 ### 블로그 콘텐츠 API
 
-- `GET /functions/v1/get-posts` - 포스트 목록 조회
-- `GET /functions/v1/get-post-by-slug/{slug}` - 특정 포스트 조회
-- `GET /functions/v1/get-tags-and-categories` - 태그 및 카테고리 조회
+- `GET /api/posts` - 포스트 목록 조회
+  - Query params: `type`, `category`, `tag`, `limit`, `offset`, `includeContent`
+- `GET /api/posts/:slug` - 특정 포스트 조회
+- `GET /api/posts/meta/tags-and-categories` - 태그 및 카테고리 조회
 
 ### 상호작용 API
 
-- `POST /functions/v1/like-post-ip/{slug}` - 포스트 좋아요
-- `GET /functions/v1/get-my-ip-like/{slug}` - 내 좋아요 수 조회
-- `GET /functions/v1/get-total-likes/{slug}` - 총 좋아요 수 조회
-- `POST /functions/v1/increment-post-view/{slug}` - 조회수 증가
-- `GET /functions/v1/get-post-view/{slug}` - 조회수 조회
+- `POST /api/likes/:slug` - 포스트 좋아요 추가
+- `GET /api/likes/:slug/my-likes` - 내 좋아요 수 조회
+- `GET /api/likes/:slug/total` - 총 좋아요 수 조회
+- `POST /api/views/:slug` - 조회수 증가
+- `GET /api/views/:slug` - 조회수 조회
 
-## 데이터베이스 스키마
+### 헬스체크
 
-### posts 테이블
+- `GET /health` - 서버 상태 확인
 
-```sql
-CREATE TABLE "posts" (
-    "id" SERIAL PRIMARY KEY,
-    "slug" TEXT UNIQUE NOT NULL,
-    "title" TEXT,
-    "date" TIMESTAMP WITH TIME ZONE,
-    "draft" BOOLEAN DEFAULT false,
-    "tags" TEXT[],
-    "lastmod" TIMESTAMP WITH TIME ZONE,
-    "category" TEXT,
-    
-      "summary" TEXT,
-  "type" TEXT DEFAULT 'post' CHECK (type IN ('post', 'memo')),
-  "created_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+## 데이터베이스 구조
+
+### posts 컬렉션
+
+```javascript
+{
+  "id": "string",
+  "slug": "string",
+  "title": "string",
+  "date": "datetime",
+  "draft": "boolean",
+  "tags": ["string"],
+  "lastmod": "datetime",
+  "category": "string",
+  "summary": "string",
+  "type": "post|memo",
+  "created": "datetime",
+  "updated": "datetime"
+}
 ```
 
-### ip_post_likes 테이블
+### post_likes 컬렉션
 
-```sql
-CREATE TABLE "ip_post_likes" (
-    "id" SERIAL PRIMARY KEY,
-    "ip_address" INET NOT NULL,
-    "post_id" INTEGER NOT NULL REFERENCES "posts"("id") ON DELETE CASCADE,
-    "count" INTEGER DEFAULT 1 CHECK (count >= 1 AND count <= 5),
-    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE("ip_address", "post_id")
-);
+```javascript
+{
+  "id": "string",
+  "ip_address": "string",
+  "post_id": "string",
+  "count": "number",
+  "created": "datetime",
+  "updated": "datetime"
+}
 ```
 
-### post_views 테이블
+### post_views 컬렉션
 
-```sql
-CREATE TABLE "post_views" (
-    "id" SERIAL PRIMARY KEY,
-    "post_id" INTEGER NOT NULL REFERENCES "posts"("id") ON DELETE CASCADE,
-    "ip_address" INET,
-    "viewed_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+```javascript
+{
+  "id": "string",
+  "post_id": "string",
+  "ip_address": "string",
+  "viewed_at": "datetime",
+  "created": "datetime",
+  "updated": "datetime"
+}
 ```
 
 ## 개발 가이드
 
-### 새로운 Edge Function 추가
+### 새로운 API 엔드포인트 추가
 
-1. `supabase/functions/` 디렉토리에 새 함수 생성
-2. TypeScript로 작성 (Deno 런타임)
-3. CORS 헤더 설정
-4. 에러 핸들링 추가
+1. `src/routes/` 디렉토리에 새 라우터 파일 생성
+2. `src/server.ts`에서 라우터 등록
+3. PocketBase 컬렉션 스키마 업데이트 (필요한 경우)
 
 ### 마이그레이션 스크립트 수정
 
-`scripts/migrate-blog-content.ts`를 수정하여 새로운 필드나 로직을 추가할 수 있습니다.
-
-### 테스트
-
-`scripts/test-migration.ts`를 참고하여 새로운 테스트를 작성할 수 있습니다.
+`scripts/migrate-published-content.ts`를 수정하여 새로운 필드나 로직을 추가할 수 있습니다.
 
 ## 배포
 
 ### 로컬 테스트
 
 ```bash
-npm run supabase:functions:serve
+pnpm run dev
 ```
 
-### 프로덕션 배포
+### 프로덕션 빌드 및 시작
 
 ```bash
-npm run supabase:functions:deploy
+pnpm run build
+pnpm start
+```
+
+### Docker 배포
+
+```bash
+# 프로덕션 환경에서
+pnpm run docker:up
 ```
 
 ## 문제 해결
@@ -197,38 +256,42 @@ npm run supabase:functions:deploy
 ### 일반적인 문제들
 
 1. **환경 변수 오류**: `.env` 파일이 올바르게 설정되었는지 확인
-2. **포트 충돌**: 다른 서비스가 54321-54329 포트를 사용하고 있는지 확인
-3. **데이터베이스 연결 오류**: Supabase 로컬 환경이 실행 중인지 확인
-4. **원격 DB 연결 오류**: SUPABASE_URL과 SUPABASE_SERVICE_ROLE_KEY가 올바른지 확인
+2. **포트 충돌**: 다른 서비스가 3001, 8090 포트를 사용하고 있는지 확인
+3. **PocketBase 연결 오류**: PocketBase 서버가 실행 중인지 확인
+4. **마이그레이션 오류**: PocketBase 컬렉션 스키마가 올바르게 설정되었는지 확인
+5. **pnpm workspace 오류**: 루트 디렉토리에서 `pnpm install` 실행
 
 ### 마이그레이션 확인
 
-Supabase Dashboard에서 직접 확인:
+PocketBase 관리자 대시보드에서 직접 확인:
 
-```sql
--- 모든 포스트 조회
-SELECT * FROM posts WHERE type = 'post' ORDER BY date DESC;
-
--- 모든 메모 조회  
-SELECT * FROM posts WHERE type = 'memo' ORDER BY date DESC;
-
--- 태그별 포스트 수 조회
-SELECT unnest(tags) as tag, COUNT(*) as count 
-FROM posts 
-WHERE tags IS NOT NULL 
-GROUP BY tag 
-ORDER BY count DESC;
-```
+1. `http://localhost:8090/_/` 접속
+2. Collections > posts에서 데이터 확인
+3. 필터 기능으로 type별 데이터 조회
 
 ### 로그 확인
 
 ```bash
-# Supabase 로그 확인
-supabase logs
+# API 서버 로그
+pnpm run dev
 
-# 특정 함수 로그 확인
-supabase logs --function function-name
+# Docker 로그
+pnpm run docker:logs
+
+# PocketBase 로그는 터미널에서 직접 확인 가능
 ```
+
+## PocketBase vs Supabase 비교
+
+| 기능 | PocketBase | Supabase |
+|-----|-----------|----------|
+| 설치 | 단일 바이너리 | Docker/클라우드 |
+| 데이터베이스 | SQLite | PostgreSQL |
+| 실시간 | 내장 | 내장 |
+| 인증 | 내장 | 내장 |
+| 파일 저장소 | 내장 | 내장 |
+| 확장성 | 중간 | 높음 |
+| 복잡성 | 낮음 | 중간 |
 
 ## 라이센스
 

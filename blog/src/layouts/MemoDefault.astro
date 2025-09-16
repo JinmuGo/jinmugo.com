@@ -1,6 +1,7 @@
 ---
 import Breadcrumb from "@/components/Breadcrumb.astro"
 import FormattedDate from "@/components/FormattedDate.astro"
+import { PageViewIsland } from "@/components/PageViewIsland"
 import Prose from "@/components/Prose.astro"
 import Layout from "@/layouts/Layout.astro"
 import type { Memo } from "@/types/content"
@@ -59,6 +60,9 @@ const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
             }
             {category && " / "}
             <FormattedDate date={date} />
+          </div>
+          <div class="flex items-center gap-2">
+            <PageViewIsland client:load slug={slug} />
           </div>
         </div>
       </header>

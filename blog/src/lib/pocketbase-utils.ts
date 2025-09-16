@@ -1,29 +1,24 @@
 import { useCallback, useEffect, useState } from "react"
 import { useAsyncEffect } from "@/utils/useAsyncEffect"
 
-// Supabase API 공통 유틸리티 함수들
+// API 공통 유틸리티 함수들 - Express + PocketBase 기반으로 변경
 
-const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL
-const SUPABASE_ANON_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3001"
 
 // 공통 헤더
 const getHeaders = () => ({
   "Content-Type": "application/json",
-  Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
 })
 
 // 공통 에러 처리
 const handleApiError = (error: unknown, status?: number): string => {
-  if (status === 404) {
-    return "API 엔드포인트를 찾을 수 없습니다. 데이터베이스 스키마를 확인해주세요."
+  if (typeof error === "string") {
+    return error
   }
   if (error instanceof Error) {
     return error.message
   }
-  if (typeof error === "string") {
-    return error
-  }
-  return "Unknown error occurred"
+  return status ? `HTTP Error: ${status}` : "Unknown error occurred"
 }
 
 // API 응답 타입
@@ -33,12 +28,14 @@ interface ApiResponse<T = unknown> {
   error?: string
 }
 
-// API 응답 데이터 타입들
+// 좋아요 관련 데이터 타입
 interface LikeData {
   count?: number
-  total?: number
+  total_likes?: number
+  ip_address?: string
 }
 
+// 조회수 관련 데이터 타입
 interface ViewData {
   views?: number
 }
@@ -48,7 +45,7 @@ export const likeApi = {
   // IP 기반 좋아요 추가
   likePostIP: async (slug: string, count: number = 1): Promise<ApiResponse> => {
     try {
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/like-post-ip/${slug}`, {
+      const response = await fetch(`${API_BASE_URL}/api/likes/${slug}`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({ count }),
@@ -71,7 +68,7 @@ export const likeApi = {
   // IP 기반 좋아요 조회
   getMyIPLike: async (slug: string): Promise<ApiResponse<LikeData>> => {
     try {
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/get-my-ip-like/${slug}`, {
+      const response = await fetch(`${API_BASE_URL}/api/likes/${slug}/my-likes`, {
         headers: getHeaders(),
       })
 
@@ -90,9 +87,9 @@ export const likeApi = {
   },
 
   // 총 좋아요 수 조회
-  getTotalLikes: async (slug: string): Promise<ApiResponse<LikeData>> => {
+  getTotalLikes: async (slug: string): Promise<ApiResponse<{ total: number }>> => {
     try {
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/get-total-likes/${slug}`, {
+      const response = await fetch(`${API_BASE_URL}/api/likes/${slug}/total`, {
         headers: getHeaders(),
       })
 
@@ -109,27 +106,6 @@ export const likeApi = {
       return { error: handleApiError(error) }
     }
   },
-
-  // 디버깅용: 좋아요 상태 확인
-  debugLikes: async (slug: string): Promise<ApiResponse> => {
-    try {
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/debug-likes/${slug}`, {
-        headers: getHeaders(),
-      })
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error("🔍 디버그 API 에러:", errorText)
-        return { error: handleApiError(errorText, response.status) }
-      }
-
-      const result = await response.json()
-      return result
-    } catch (error) {
-      console.error("🔍 디버그 API 예외:", error)
-      return { error: handleApiError(error) }
-    }
-  },
 }
 
 // 조회수 관련 API
@@ -140,7 +116,7 @@ export const viewApi = {
       if (import.meta.env.PUBLIC_ENV === "development") {
         return { success: true }
       }
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/increment-post-view/${slug}`, {
+      const response = await fetch(`${API_BASE_URL}/api/views/${slug}`, {
         method: "POST",
         headers: getHeaders(),
       })
@@ -160,7 +136,7 @@ export const viewApi = {
   // 조회수 조회
   getPostView: async (slug: string): Promise<ApiResponse<ViewData>> => {
     try {
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/get-post-view/${slug}`, {
+      const response = await fetch(`${API_BASE_URL}/api/views/${slug}`, {
         headers: getHeaders(),
       })
 
@@ -180,25 +156,27 @@ export const viewApi = {
 // 커스텀 훅: 좋아요 관리
 export const useLike = (slug: string) => {
   const [myLikes, setMyLikes] = useState<number>(0)
-  const [totalLikes, setTotalLikes] = useState<number>(-1)
-  const [isLoading, setIsLoading] = useState(false)
+  const [totalLikes, setTotalLikes] = useState<number>(0)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
-  // 내 좋아요 수 조회
+  // 내 좋아요 조회
   const fetchMyLikes = useCallback(async () => {
     try {
       const result = await likeApi.getMyIPLike(slug)
       if (result.error) {
         console.error("🌸 내 좋아요 조회 에러:", result.error)
         setError(result.error)
+        setMyLikes(-1)
         return
       }
-      const count = result.data?.count ?? 0
-      setMyLikes(count)
+
+      setMyLikes(result.data?.count ?? 0)
       setError(null)
     } catch (error) {
       console.error("🌸 내 좋아요 조회 예외:", error)
       setError(handleApiError(error))
+      setMyLikes(-1)
     }
   }, [slug])
 
@@ -211,8 +189,8 @@ export const useLike = (slug: string) => {
         setError(result.error)
         return
       }
-      const total = result.data?.total ?? 0
-      setTotalLikes(total)
+
+      setTotalLikes(result.data?.total ?? 0)
       setError(null)
     } catch (error) {
       console.error("🌸 총 좋아요 조회 예외:", error)
@@ -276,47 +254,44 @@ export const useLike = (slug: string) => {
 // 커스텀 훅: 조회수 관리
 export const useViewCount = (slug: string) => {
   const [viewCount, setViewCount] = useState<number>(-1)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
-  // 조회수 증가 및 조회
-  const incrementAndFetch = useCallback(async () => {
+  useAsyncEffect(async () => {
+    if (!slug) {
+      return
+    }
+
     setIsLoading(true)
     setError(null)
 
     try {
       // 조회수 증가
-      const incrementResult = await viewApi.incrementPostView(slug)
-      if (incrementResult.error) {
-        setError(incrementResult.error)
-        return
-      }
+      await viewApi.incrementPostView(slug)
 
       // 조회수 조회
-      const viewResult = await viewApi.getPostView(slug)
-      if (viewResult.error) {
-        setError(viewResult.error)
+      const result = await viewApi.getPostView(slug)
+      if (result.error) {
+        console.error("📊 조회수 조회 에러:", result.error)
+        setError(result.error)
+        setViewCount(-1)
         return
       }
 
-      setViewCount(viewResult.data?.views ?? 0)
+      setViewCount(result.data?.views ?? 0)
       setError(null)
     } catch (error) {
+      console.error("📊 조회수 관리 예외:", error)
       setError(handleApiError(error))
+      setViewCount(-1)
     } finally {
       setIsLoading(false)
     }
   }, [slug])
 
-  // 초기 로드
-  useAsyncEffect(async () => {
-    await incrementAndFetch()
-  }, [incrementAndFetch])
-
   return {
     viewCount,
     isLoading,
     error,
-    refresh: incrementAndFetch,
   }
 }
