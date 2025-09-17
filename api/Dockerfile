@@ -14,7 +14,7 @@ WORKDIR /app
 COPY package.json ./
 
 # 임시로 pnpm-lock.yaml 생성 (standalone 모드)
-RUN pnpm install --frozen-lockfile || pnpm install
+RUN pnpm install --no-frozen-lockfile || pnpm install
 
 # 소스 코드 복사
 COPY . .
@@ -50,6 +50,10 @@ USER nodeuser
 
 # 포트 노출
 EXPOSE 3001
+
+# 헬스체크 추가 (Node.js 내장 사용)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"
 
 # 애플리케이션 실행
 CMD ["node", "dist/server.js"] 

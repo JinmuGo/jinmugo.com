@@ -59,6 +59,12 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 });
 
 // 서버 시작
-app.listen(PORT, () => {});
+app.listen(PORT, () => {
+  console.log(`🚀 API Server is running on port ${PORT}`);
+  console.log(`📊 Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`🗄️  PocketBase URL: ${process.env.PB_URL || "http://127.0.0.1:8090"}`);
+  console.log(`🌐 CORS Origin: ${process.env.CORS_ORIGIN || "*"}`);
+  console.log(`✅ Health check: http://localhost:${PORT}/health`);
+});
 
 export default app;

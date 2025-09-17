@@ -54,8 +54,14 @@ Thumbs.db
 README.md
 
 # Docker 관련
-Dockerfile*
 .dockerignore
+
+# 개발 및 테스트 파일
+*.test.ts
+*.spec.ts
+test/
+tests/
+__tests__/
 
 # 개발 도구
 .eslintrc*
