@@ -31,6 +31,17 @@ app.use((req, _res, next) => {
   next();
 });
 
+// Root path 라우터
+app.get("/", (req, res) => {
+  const corsOrigin = process.env.CORS_ORIGIN;
+
+  if (corsOrigin && corsOrigin !== "*") {
+    res.send(`jinmu.me blog API server - configured for ${corsOrigin}`);
+  } else {
+    res.send("jinmu.me blog API server");
+  }
+});
+
 // 라우트 설정
 app.use("/api/posts", postsRouter);
 app.use("/api/likes", likesRouter);
