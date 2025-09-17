@@ -1,62 +1,69 @@
 ---
 import FormattedDate from "@/components/FormattedDate.astro"
+import { getEnglishMemos, getKoreanMemos } from "@/content-utils/memos"
 import { getEnglishPosts, getKoreanPosts } from "@/content-utils/posts"
-import type { Post } from "@/types/content"
+import type { Memo, Post } from "@/types/content"
 
 interface Props {
-  current: Post
+  current: Post | Memo
 }
 
 const { current } = Astro.props as Props
 
-// 현재 포스트가 영어인지 한국어인지 확인
+// 현재 콘텐츠가 영어인지 한국어인지 확인
 const isEnglish = current.slug.endsWith("en") || (current.id ?? "").includes("/en/")
-const allPosts = isEnglish ? await getEnglishPosts() : await getKoreanPosts()
+
+let allContents: (Post | Memo)[]
+if (current.type === "post") {
+  allContents = isEnglish ? await getEnglishPosts() : await getKoreanPosts()
+} else {
+  allContents = isEnglish ? await getEnglishMemos() : await getKoreanMemos()
+}
 
 // 날짜순으로 정렬 (최신순)
-const sortedPosts = allPosts.sort(
-  (a: Post, b: Post) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+const sortedContents = allContents.sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
 )
 
-const currentIndex = sortedPosts.findIndex((post: Post) => post.slug === current.slug)
+const currentIndex = sortedContents.findIndex((content) => content.slug === current.slug)
 
-const prevPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null
-const nextPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null
+const prevContent = currentIndex > 0 ? sortedContents[currentIndex - 1] : null
+const nextContent = currentIndex < sortedContents.length - 1 ? sortedContents[currentIndex + 1] : null
 ---
 
-{(prevPost || nextPost) && (
+{(prevContent || nextContent) && (
   <aside class="pt-6 border-t border-gray-200 dark:border-gray-800">
     <div class="flex flex-col gap-3 md:flex-row md:gap-4">
       {/* 이전 글 */}
-      {prevPost && (
+      {prevContent && (
         <article class="group flex-1 relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-all hover:-translate-x-0.5 hover:ring-1 hover:ring-primary-200 dark:hover:ring-primary-800/40 hover:bg-gradient-to-r hover:from-primary-50/60 hover:to-transparent dark:hover:from-primary-900/30 dark:hover:to-transparent">
-          <a href={`/posts/${prevPost.slug}`} class="block h-full">
+          <a href={`/${prevContent.type === "post" ? "posts" : "memos"}/${prevContent.slug}`} class="block h-full">
             <div class="flex items-center gap-2 mb-2">
               <svg class="w-4 h-4 text-primary-500 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
               </svg>
               <span class="text-xs font-medium text-primary-600 dark:text-primary-400">이전 글</span>
             </div>
-            
+
             <h3 class="font-semibold text-base text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors leading-tight mb-2">
-              {prevPost.data.title}
+              {prevContent.data.title}
             </h3>
-            
+
             <div class="flex-1 min-h-[3rem] flex items-end">
               <div class="w-full">
-                {prevPost.data.summary && (
+                {prevContent.data.summary && (
                   <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-1 leading-relaxed mb-2">
-                    {prevPost.data.summary}
+                    {prevContent.data.summary}
                   </p>
                 )}
-                
+
                 <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                  {prevPost.data.category && (
+                  {prevContent.data.category && (
                     <span class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-medium text-gray-700 dark:text-gray-300">
-                      {prevPost.data.category}
+                      {prevContent.data.category}
                     </span>
                   )}
-                  <FormattedDate date={prevPost.data.date} />
+                  <FormattedDate date={prevContent.data.date} />
                 </div>
               </div>
             </div>
@@ -65,35 +72,35 @@ const nextPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentInde
       )}
 
       {/* 다음 글 */}
-      {nextPost && (
+      {nextContent && (
         <article class="group flex-1 relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-all hover:-translate-x-0.5 hover:ring-1 hover:ring-primary-200 dark:hover:ring-primary-800/40 hover:bg-gradient-to-r hover:from-primary-50/60 hover:to-transparent dark:hover:from-primary-900/30 dark:hover:to-transparent">
-          <a href={`/posts/${nextPost.slug}`} class="block h-full">
+          <a href={`/${nextContent.type === "post" ? "posts" : "memos"}/${nextContent.slug}`} class="block h-full">
             <div class="flex items-center gap-2 mb-2 justify-end">
               <span class="text-xs font-medium text-primary-600 dark:text-primary-400">다음 글</span>
               <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
               </svg>
             </div>
-            
+
             <h3 class="font-semibold text-base text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors leading-tight mb-2 text-right">
-              {nextPost.data.title}
+              {nextContent.data.title}
             </h3>
-            
+
             <div class="flex-1 min-h-[3rem] flex items-end">
               <div class="w-full">
-                {nextPost.data.summary && (
+                {nextContent.data.summary && (
                   <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-1 leading-relaxed mb-2 text-right">
-                    {nextPost.data.summary}
+                    {nextContent.data.summary}
                   </p>
                 )}
-                
+
                 <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                  {nextPost.data.category && (
+                  {nextContent.data.category && (
                     <span class="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs font-medium text-gray-700 dark:text-gray-300">
-                      {nextPost.data.category}
+                      {nextContent.data.category}
                     </span>
                   )}
-                  <FormattedDate date={nextPost.data.date} />
+                  <FormattedDate date={nextContent.data.date} />
                 </div>
               </div>
             </div>
