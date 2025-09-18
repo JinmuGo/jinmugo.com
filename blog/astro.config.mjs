@@ -9,6 +9,8 @@ import mdx from "@astrojs/mdx";
 
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import removeConsole from 'vite-plugin-remove-console';
+
 
 import remarkCallout from "@r4ai/remark-callout";
 import remarkEmbedCard from "./src/utils/remark-embed-card";
@@ -36,7 +38,7 @@ export default defineConfig({
   integrations: [react(), sitemap(), icon(), mdx()],
 
   vite: {
-    plugins: tailwindcss(),
+    plugins: [tailwindcss(), removeConsole()],
   },
 
   markdown: {
