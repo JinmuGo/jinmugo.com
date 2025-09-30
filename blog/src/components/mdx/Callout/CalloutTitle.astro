@@ -4,15 +4,16 @@ import { callouts } from "./callout.astro"
 
 export interface Props {
   type: string
-  isFoldable: boolean
+  isFoldable: boolean | string
   className?: string
 }
 const { type, isFoldable, className } = Astro.props
 const callout = callouts[type as keyof typeof callouts] ?? callouts.note
+const isFoldableBool = isFoldable === true || isFoldable === "true"
 ---
 
 {
-  isFoldable ? (
+  isFoldableBool ? (
     <summary
       class={`flex flex-row items-center gap-2 font-bold ${callout.className.title} ${className ?? ""}`}
     >

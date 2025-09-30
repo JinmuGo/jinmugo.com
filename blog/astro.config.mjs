@@ -8,7 +8,6 @@ import pkg from "./package.json";
 import mdx from "@astrojs/mdx";
 
 import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import removeConsole from 'vite-plugin-remove-console';
 
 
@@ -69,8 +68,7 @@ export default defineConfig({
               tagName: "callout-root",
               properties: {
                 type: callout.type,
-                isFoldable: callout.isFoldable.toString(),
-                defaultFolded: callout.defaultFolded?.toString(),
+                isFoldable: callout.isFoldable.toString()
               },
             };
           },
