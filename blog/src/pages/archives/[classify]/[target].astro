@@ -1,5 +1,4 @@
 ---
-import Breadcrumb from "@/components/Breadcrumb.astro"
 import MemoLabel from "@/components/MemoLabel.astro"
 import { getKoreanMemos } from "@/content-utils/memos"
 import { getKoreanPosts } from "@/content-utils/posts"
@@ -111,7 +110,6 @@ const jsonLd = [pageSchema, breadcrumbSchema]
   lang="ko"
   jsonLd={jsonLd}
 >
-  <Breadcrumb items={breadcrumbItems} />
   <div class="min-h-screen px-2 sm:px-4">
     <div class="space-y-2 py-6 md:space-y-1">
       <h1
