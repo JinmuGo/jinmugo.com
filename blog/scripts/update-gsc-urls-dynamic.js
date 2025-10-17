@@ -24,7 +24,7 @@ async function getPostUrlMappings() {
   try {
     // Astro 빌드 후 생성되는 sitemap에서 URL 정보를 추출
     const { readFileSync, existsSync } = await import("node:fs")
-    const sitemapPath = join(process.cwd(), "dist", "sitemap-0.xml")
+    const sitemapPath = join(process.cwd(), "dist", "sitemap.xml")
 
     if (!existsSync(sitemapPath)) {
       console.log("⚠️  Sitemap not found, using static mappings")

@@ -20,7 +20,7 @@ if (!GOOGLE_APPLICATION_CREDENTIALS || !GSC_SITE_URL) {
 async function getNewUrls() {
   try {
     // sitemap.xml 파일을 읽어서 URL 목록을 추출
-    const sitemapPath = join(process.cwd(), "dist", "sitemap-0.xml")
+    const sitemapPath = join(process.cwd(), "dist", "sitemap.xml")
 
     if (!existsSync(sitemapPath)) {
       console.log("⚠️  Sitemap not found, skipping URL submission")

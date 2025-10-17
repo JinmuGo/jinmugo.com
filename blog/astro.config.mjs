@@ -1,5 +1,4 @@
 import react from "@astrojs/react";
-import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 import icon from "astro-icon";
@@ -34,7 +33,7 @@ export default defineConfig({
   devToolbar: {
     enabled: process.env.NODE_ENV === "development",
   },
-  integrations: [react(), sitemap(), icon(), mdx()],
+  integrations: [react(), icon(), mdx()],
 
   vite: {
     plugins: [tailwindcss(), removeConsole()],

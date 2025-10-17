@@ -2,13 +2,16 @@ import { getCollection } from "astro:content"
 import { filterEnglishContent, filterKoreanContent } from "@/content-utils/content"
 import type { Memo } from "@/types/content"
 
+const slug = (memo: Memo) => memo.slug.split("/").pop() ?? ""
+
 /**
  * 한국어 메모들을 가져오는 함수
  */
 export async function getKoreanMemos() {
   return (await getCollection("memo", filterKoreanContent)).map((memo: Memo) => ({
     ...memo,
-    slug: memo.slug.split("/").pop() ?? "",
+    slug: slug(memo),
+    href: `/memos/${slug(memo)}`,
     type: "memo",
   }))
 }
@@ -19,7 +22,8 @@ export async function getKoreanMemos() {
 export async function getEnglishMemos() {
   return (await getCollection("memo", filterEnglishContent)).map((memo: Memo) => ({
     ...memo,
-    slug: memo.slug.split("/").pop()?.replace(/en$/, "") ?? "",
+    slug: slug(memo).replace(/en$/, ""),
+    href: `/memos/${slug(memo)}`,
     type: "memo",
   }))
 }

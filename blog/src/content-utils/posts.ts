@@ -2,13 +2,16 @@ import { getCollection } from "astro:content"
 import { filterEnglishContent, filterKoreanContent } from "@/content-utils/content"
 import type { Post } from "@/types/content"
 
+const slug = (post: Post) => post.slug.split("/").pop() ?? ""
+
 /**
  * 한국어 포스트들을 가져오는 함수
  */
 export async function getKoreanPosts() {
   return (await getCollection("post", filterKoreanContent)).map((post: Post) => ({
     ...post,
-    slug: post.slug.split("/").pop() ?? "",
+    slug: slug(post),
+    href: `/posts/${slug(post)}`,
     type: "post",
   }))
 }
@@ -19,7 +22,8 @@ export async function getKoreanPosts() {
 export async function getEnglishPosts() {
   return (await getCollection("post", filterEnglishContent)).map((post: Post) => ({
     ...post,
-    slug: post.slug.split("/").pop()?.replace(/en$/, "") ?? "",
+    slug: slug(post).replace(/en$/, ""),
+    href: `/posts/${slug(post)}`,
     type: "post",
   }))
 }

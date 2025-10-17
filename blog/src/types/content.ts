@@ -10,6 +10,7 @@ type ContentType = "post" | "memo"
 interface BaseMetadata {
   title: string
   date: Date
+  lastmod?: Date
   draft: boolean
   tags?: string[]
   category?: string
