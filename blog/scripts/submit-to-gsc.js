@@ -40,7 +40,6 @@ async function submitUrlToGSC(auth, url, urlType) {
     )
 
     console.log(`📊 ${urlType} Response status: ${response.status}`)
-    console.log(`📊 ${urlType} Response headers:`, Object.fromEntries(response.headers.entries()))
 
     const responseText = await response.text()
     console.log(`📊 ${urlType} Response body: ${responseText}`)
