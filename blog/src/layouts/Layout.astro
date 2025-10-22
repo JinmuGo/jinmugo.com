@@ -16,12 +16,14 @@ const image = Astro.props.image
 const lang = Astro.props.lang ?? "ko"
 const jsonLd = Astro.props.jsonLd
 const ogImage = Astro.props.ogImage
+const type = Astro.props.type ?? "website"
+const tags = Astro.props.tags ?? frontmatter?.tags
 ---
 
 <!doctype html>
 <html lang={lang}>
   <head>
-    <BaseHead title={title} description={description} image={image} ogImage={ogImage} />
+    <BaseHead title={title} description={description} image={image} ogImage={ogImage} type={type} tags={tags} />
     {jsonLd && <StructuredData schema={jsonLd} />}
     <GoogleTag />
     <Umami />

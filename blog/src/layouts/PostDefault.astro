@@ -8,8 +8,8 @@ import type { PostMetadata } from "@/types/content"
 import { generateContentBreadcrumbs } from "@/utils/breadcrumbUtils"
 import {
   buildPageUrl,
+  generateBlogPostingSchema,
   generateBreadcrumbSchema,
-  generatePostsPageSchema,
 } from "@/utils/structuredData"
 import UserSection from "@/widget/Comment/UserSection.astro"
 
@@ -18,15 +18,22 @@ interface Props {
 }
 
 const { frontmatter } = Astro.props
-const { title, date, summary, category, slug, tags } = frontmatter
+const { title, date, summary, category, slug, tags, href } = frontmatter
 const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko"
 
-const pageSchema = generatePostsPageSchema({
+const pageSchema = generateBlogPostingSchema({
   title: title,
   description: summary || title,
-  url: buildPageUrl("", `/${category}/${slug}`),
+  url: href,
   keywords: tags?.join(", ") || "",
   inLanguage: lang,
+  datePublished: date.toISOString(),
+  dateModified: date.toISOString(),
+  authorName: "Jinmu",
+  authorUrl: "https://jinmu.me/about",
+  wordCount: frontmatter.wordCount,
+  readingTime: frontmatter.readingTime,
+  imageUrl: frontmatter.image ? `${Astro.url.origin}${frontmatter.image}` : undefined,
 })
 
 // Breadcrumb 항목 생성
@@ -49,6 +56,8 @@ const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
   lang={lang}
   jsonLd={[pageSchema, breadcrumbSchema]}
   ogImage={`/posts/${slug}/og.png`}
+  type="article"
+  tags={tags}
 >
   <Breadcrumb items={breadcrumbItems}/>
   <header class="space-y-1 mb-20">

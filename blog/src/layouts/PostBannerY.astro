@@ -1,14 +1,16 @@
 ---
 import { Image } from "astro:assets"
+import Breadcrumb from "@/components/Breadcrumb.astro"
 import FormattedDate from "@/components/FormattedDate.astro"
 import { PageViewIsland } from "@/components/PageViewIsland"
 import Prose from "@/components/Prose.astro"
 import Layout from "@/layouts/Layout.astro"
 import type { PostMetadata } from "@/types/content"
+import { generateContentBreadcrumbs } from "@/utils/breadcrumbUtils"
 import {
   buildPageUrl,
+  generateBlogPostingSchema,
   generateBreadcrumbSchema,
-  generatePostsPageSchema,
 } from "@/utils/structuredData"
 import UserSection from "@/widget/Comment/UserSection.astro"
 
@@ -18,30 +20,37 @@ interface Props {
 }
 
 const { frontmatter, bannerImage } = Astro.props
-const { title, date, summary, category, slug, tags } = frontmatter
+const { title, date, summary, category, slug, tags, href } = frontmatter
 
 const { width, height } = bannerImage
 const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko"
 
-const pageSchema = generatePostsPageSchema({
+const pageSchema = generateBlogPostingSchema({
   title: title,
   description: summary || title,
-  url: buildPageUrl("", `/${category}/${slug}`),
+  url: href,
   keywords: tags?.join(", ") || "",
   inLanguage: lang,
+  datePublished: date.toISOString(),
+  dateModified: date.toISOString(),
+  authorName: "Jinmu",
+  authorUrl: "https://jinmu.me/about",
+  wordCount: frontmatter.wordCount,
+  readingTime: frontmatter.readingTime,
+  imageUrl: bannerImage ? `${Astro.url.origin}/posts/${slug}/banner.webp` : undefined,
 })
 
-const breadcrumbSchema = generateBreadcrumbSchema([
-  {
-    name: lang === "en" ? "Home" : "홈",
-    item: `${Astro.url.origin}/${lang === "en" ? "en/" : ""}`,
-  },
-  {
-    name: lang === "en" ? "Posts" : "포스트",
-    item: `${Astro.url.origin}/${lang === "en" ? "en/" : ""}posts`,
-  },
-  { name: title, item: Astro.url.href },
-])
+// Breadcrumb 항목 생성
+const breadcrumbItems = generateContentBreadcrumbs({
+  pathname: Astro.url.pathname,
+  origin: Astro.url.origin,
+  lang,
+  title,
+  category,
+  contentType: "post",
+})
+
+const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
 ---
 
 <Layout
@@ -51,7 +60,10 @@ const breadcrumbSchema = generateBreadcrumbSchema([
   lang={lang}
   jsonLd={[pageSchema, breadcrumbSchema]}
   ogImage={`/posts/${slug}/og.png`}
+  type="article"
+  tags={tags}
 >
+  <Breadcrumb items={breadcrumbItems}/>
     <header
       class="space-y-1 pb-5 md:flex md:flex-row-reverse md:justify-between items-end"
     >
