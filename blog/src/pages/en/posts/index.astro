@@ -31,7 +31,7 @@ const jsonLd = generatePostsPageSchema({
 })
 ---
 
-<Layout title={title} description={description} lang="en" jsonLd={jsonLd}>
+<Layout title={title} description={description} lang="en" jsonLd={jsonLd} type="website">
   <ListLayouts
     posts={sortedPosts.map((post) => ({
       ...post.data,

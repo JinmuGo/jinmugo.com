@@ -16,16 +16,17 @@ export async function getStaticPaths() {
       params: {
         slug: entry.slug,
       },
-      props: { entry, slug: entry.slug },
+      props: { entry, slug: entry.slug, href: entry.href },
     }
   })
 }
 
-const { entry, slug }: { entry: Post; slug: string } = Astro.props
+const { entry, slug, href }: { entry: Post; slug: string; href: string } = Astro.props
 const { Content } = await entry.render()
 const frontmatterWithSlug = {
   ...entry.data,
   slug,
+  href,
 }
 const bannerImage = getBannerImageBySlug(slug)
 let layout: PostLayoutType = "PostDefault"

@@ -10,7 +10,7 @@ const pathSegments = pathname.split("/").filter(Boolean)
 const lang = pathSegments[0] === "en" ? "en" : "ko"
 ---
 
-<Layout title={title} description={description} lang={lang}>
+<Layout title={title} description={description} lang={lang} type="website">
   <NotFoundPage lang={lang} />
 </Layout>
 

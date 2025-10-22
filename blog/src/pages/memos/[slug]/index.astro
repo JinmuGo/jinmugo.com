@@ -13,15 +13,16 @@ export async function getStaticPaths() {
       params: {
         slug: entry.slug,
       },
-      props: { entry, slug: entry.slug },
+      props: { entry, slug: entry.slug, href: entry.href },
     }
   })
 }
 
-const { entry, slug }: { entry: Memo; slug: string } = Astro.props
+const { entry, slug, href }: { entry: Memo; slug: string; href: string } = Astro.props
 const frontmatterWithSlug = {
   ...entry.data,
   slug,
+  href,
 }
 
 const { Content } = await entry.render()
