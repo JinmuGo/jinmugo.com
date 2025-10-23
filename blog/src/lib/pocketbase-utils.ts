@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react"
-import { useAsyncEffect } from "@/utils/useAsyncEffect"
 
 // API 공통 유틸리티 함수들 - Express + PocketBase 기반으로 변경
 
@@ -254,44 +253,62 @@ export const useLike = (slug: string) => {
 // 커스텀 훅: 조회수 관리
 export const useViewCount = (slug: string) => {
   const [viewCount, setViewCount] = useState<number>(-1)
-  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
-  useAsyncEffect(async () => {
-    if (!slug) {
-      return
-    }
-
+  const fetchViewCount = useCallback(async () => {
+    if (!slug) return
     setIsLoading(true)
     setError(null)
-
     try {
-      // 조회수 증가
-      await viewApi.incrementPostView(slug)
-
-      // 조회수 조회
       const result = await viewApi.getPostView(slug)
       if (result.error) {
         console.error("📊 조회수 조회 에러:", result.error)
         setError(result.error)
         setViewCount(-1)
-        return
+        return false
       }
-
       setViewCount(result.data?.views ?? 0)
       setError(null)
+      return true
     } catch (error) {
-      console.error("📊 조회수 관리 예외:", error)
+      console.error("📊 조회수 조회 예외:", error)
       setError(handleApiError(error))
       setViewCount(-1)
+      return false
     } finally {
       setIsLoading(false)
     }
+  }, [slug])
+
+  const incrementViewCount = useCallback(async () => {
+    if (!slug) return false
+    try {
+      const result = await viewApi.incrementPostView(slug)
+      if (result.error) {
+        console.error("📊 조회수 증가 에러:", result.error)
+        setError(result.error)
+        return false
+      }
+      return true
+    } catch (error) {
+      console.error("📊 조회수 증가 예외:", error)
+      setError(handleApiError(error))
+      return false
+    }
+  }, [slug])
+
+  // slug 변경 시 초기화
+  useEffect(() => {
+    setViewCount(-1)
+    setError(null)
   }, [slug])
 
   return {
     viewCount,
     isLoading,
     error,
+    fetchViewCount,
+    incrementViewCount,
   }
 }
