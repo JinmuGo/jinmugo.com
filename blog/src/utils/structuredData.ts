@@ -56,7 +56,11 @@ export const generateBreadcrumbSchema = (items: BreadcrumbItem[]) =>
       "@type": "ListItem",
       position: index + 1,
       name: breadcrumbItem.name,
-      item: breadcrumbItem.item,
+      item: {
+        "@type": "WebPage",
+        "@id": breadcrumbItem.item,
+        url: breadcrumbItem.item,
+      },
     })),
   })
 
