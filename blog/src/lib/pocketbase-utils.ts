@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
+import { useAsyncEffect } from "@/utils/useAsyncEffect"
 
 // API 공통 유틸리티 함수들 - Express + PocketBase 기반으로 변경
 
@@ -132,8 +133,8 @@ export const viewApi = {
     }
   },
 
-  // 조회수 조회
-  getPostView: async (slug: string): Promise<ApiResponse<ViewData>> => {
+  // 조회수 조회 (Cache-Aside 패턴 지원)
+  getPostView: async (slug: string): Promise<ApiResponse<ViewData & { cached?: boolean }>> => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/views/${slug}`, {
         headers: getHeaders(),
@@ -145,6 +146,12 @@ export const viewApi = {
       }
 
       const result = await response.json()
+
+      // Cache-Aside 패턴에서 캐시 상태 정보 추가
+      if (result.data?.cached !== undefined) {
+        console.log(`📊 조회수 조회 (${result.data.cached ? "캐시" : "DB"}):`, result.data.views)
+      }
+
       return result
     } catch (error) {
       return { error: handleApiError(error) }
@@ -257,7 +264,9 @@ export const useViewCount = (slug: string) => {
   const [error, setError] = useState<string | null>(null)
 
   const fetchViewCount = useCallback(async () => {
-    if (!slug) return
+    if (!slug) {
+      return
+    }
     setIsLoading(true)
     setError(null)
     try {
@@ -282,7 +291,9 @@ export const useViewCount = (slug: string) => {
   }, [slug])
 
   const incrementViewCount = useCallback(async () => {
-    if (!slug) return false
+    if (!slug) {
+      return false
+    }
     try {
       const result = await viewApi.incrementPostView(slug)
       if (result.error) {
@@ -299,9 +310,14 @@ export const useViewCount = (slug: string) => {
   }, [slug])
 
   // slug 변경 시 초기화
-  useEffect(() => {
-    setViewCount(-1)
-    setError(null)
+  useAsyncEffect(async () => {
+    void (async () => {
+      if (!slug) {
+        return
+      }
+      setViewCount(-1)
+      setError(null)
+    })()
   }, [slug])
 
   return {

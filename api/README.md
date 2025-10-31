@@ -116,11 +116,23 @@ pnpm run docker:run
 # 환경 변수 설정
 cp env.example .env
 
-# 서비스 시작 (PocketBase + API)
+# 전체 서비스 시작 (Redis + API + PocketBase)
 pnpm run docker:up
+
+# Redis만 시작
+pnpm run docker:redis
+
+# API만 시작
+pnpm run docker:api
+
+# 서비스 상태 확인
+pnpm run docker:status
 
 # 로그 확인
 pnpm run docker:logs
+
+# 서비스 재시작
+pnpm run docker:restart
 
 # 서비스 중지
 pnpm run docker:down
@@ -148,6 +160,22 @@ pnpm run docker:clean
 | `pnpm run docker:build` | Docker 이미지 빌드 |
 | `pnpm run docker:up` | Docker Compose로 서비스 시작 |
 | `pnpm run docker:down` | Docker Compose 서비스 중지 |
+| `pnpm run docker:redis` | Redis만 시작 |
+| `pnpm run docker:api` | API만 시작 |
+| `pnpm run docker:status` | 서비스 상태 확인 |
+| `pnpm run docker:restart` | 서비스 재시작 |
+
+### Redis 관리 스크립트
+
+| 스크립트 | 설명 |
+|---------|------|
+| `pnpm run redis:migrate` | PocketBase → Redis 마이그레이션 |
+| `pnpm run redis:validate` | 마이그레이션 검증 |
+| `pnpm run redis:stats` | Redis 통계 조회 |
+| `pnpm run redis:backup` | Redis 데이터 백업 |
+| `pnpm run redis:restore` | Redis 데이터 복원 |
+| `pnpm run redis:cleanup` | 만료된 키 정리 |
+| `pnpm run redis:popular` | 인기 포스트 조회 |
 
 ## API 엔드포인트
 

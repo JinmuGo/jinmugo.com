@@ -4,6 +4,19 @@ import { pb } from "../../lib/pocketbase";
 import app from "../../server";
 import { mockPocketBaseResponse, testData } from "../helpers";
 
+// Redis 모킹
+vi.mock("../../lib/redis", () => ({
+  getRedisClient: vi.fn().mockResolvedValue({
+    get: vi.fn().mockResolvedValue(null),
+    setex: vi.fn().mockResolvedValue("OK"),
+    ping: vi.fn().mockResolvedValue("PONG"),
+  }),
+  getViewCacheKey: vi.fn().mockReturnValue("view_count:test-post"),
+  getViewCacheTTL: vi.fn().mockReturnValue(3600),
+  batchIncrementViews: vi.fn().mockResolvedValue(undefined),
+  closeRedis: vi.fn().mockResolvedValue(undefined),
+}));
+
 // PocketBase 모킹
 vi.mock("../../lib/pocketbase");
 

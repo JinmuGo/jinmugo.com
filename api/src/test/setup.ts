@@ -12,4 +12,6 @@ process.env.PORT = "0"; // 랜덤 포트 사용
 if (process.env.VITEST_LOG_LEVEL !== "verbose") {
   console.log = () => {};
   console.info = () => {};
+  console.warn = () => {};
+  console.error = () => {};
 }
