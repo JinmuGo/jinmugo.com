@@ -6,6 +6,7 @@ export interface Project {
   href: string
   subProject?: Project[] | undefined
   hasPreview?: boolean
+  obsidianPluginId?: string
 }
 
 export type ProjectSection = Record<string, Project[]>
@@ -181,6 +182,7 @@ export const projectsData: Project[] = [
     description:
       "obsidian plugin for allows users to quickly navigate to a specified 'parent' page by utilizing a custom property in the page's front matter.",
     href: "https://github.com/JinmuGo/obsidian-go-up",
+    obsidianPluginId: "go-up",
   },
   {
     name: "obsidian-theme-by-folder",
@@ -188,13 +190,7 @@ export const projectsData: Project[] = [
     person: 1,
     description: "Automatically switch Obsidian themes based on the folder of the opened note",
     href: "https://github.com/JinmuGo/obsidian-theme-by-folder",
-  },
-  {
-    name: "obsidian-markdown-flip",
-    section: "obsidian",
-    person: 1,
-    description: "flip markdown line types with smart shortcuts",
-    href: "https://github.com/JinmuGo/obsidian-markdown-flip",
+    obsidianPluginId: "theme-by-folder",
   },
   {
     name: "hey-oldlady",
@@ -204,8 +200,15 @@ export const projectsData: Project[] = [
     href: "https://github.com/ddol-mang/hey-oldlady",
   },
   {
+    name: "aimuse",
+    section: "hackathon",
+    person: 5,
+    description: "언제나 함께하는 AI 도슨트, AIMuse와 전시를 관람하세요 (우수상)",
+    href: "https://github.com/2025-IA-x-AI-Hackathon/Hack-gotowork",
+  },
+  {
     name: "sls",
-    section: "cli",
+    section: "CLI",
     person: 1,
     description: "sls is a smart fuzzy CLI selector for SSH config hosts",
     href: "https://github.com/JinmuGo/sls",

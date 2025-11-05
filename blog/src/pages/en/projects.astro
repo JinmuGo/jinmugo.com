@@ -1,4 +1,5 @@
 ---
+import { ObsidianDownloadCount } from "@/components/ObsidianDownloadCount"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import Layout from "@/layouts/Layout.astro"
 import { type Project, type ProjectSection, projectsData } from "@/utils/projectsData"
@@ -84,6 +85,9 @@ const jsonLd = generatePageSchema({
                     : project.person !== undefined
                       ? `(${project.person} people)`
                       : ""}
+                      {project.section === "obsidian" && project.obsidianPluginId && (
+                    <ObsidianDownloadCount client:load pluginId={project.obsidianPluginId} />
+                  )}
                 </a>
               )}
               <span class="text-gray-600 dark:text-gray-400">
