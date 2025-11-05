@@ -1,4 +1,4 @@
-# JinMu.me
+# Jinmu.me
 
 개인 블로그 및 API 서버 프로젝트입니다.
 
