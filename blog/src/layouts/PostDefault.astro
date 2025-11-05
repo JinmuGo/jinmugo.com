@@ -60,14 +60,20 @@ const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
   tags={tags}
 >
   <Breadcrumb items={breadcrumbItems}/>
-  <header class="space-y-1 mb-20">
-    <div id="post-title" class="pt-5 space-y-1">
-      <h1 class="font-bold text-xl xl:text-3xl">{title}</h1>
-      <div class="text-sm text-gray-500 dark:text-gray-300">
-        <a class="underline" href={`/archives/category/${category}`}>{category}</a>
-        / <FormattedDate date={date} />
+  <header class="space-y-3 mb-16 md:mb-20">
+    <div id="post-title" class="pt-6 space-y-3">
+      <h1 class="font-bold text-2xl md:text-3xl xl:text-4xl leading-tight tracking-tight text-gray-900 dark:text-gray-50">{title}</h1>
+      <div class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400 flex-wrap">
+        <a 
+          class="inline-flex items-center px-2.5 py-1 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors duration-200 font-medium" 
+          href={`/archives/category/${category}`}
+        >
+          {category}
+        </a>
+        <span class="text-gray-400 dark:text-gray-500">•</span>
+        <FormattedDate date={date} />
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 pt-1">
         <PageViewIsland client:load slug={slug} />
       </div>
     </div>

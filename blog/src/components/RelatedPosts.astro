@@ -28,7 +28,8 @@ const sortedContents = allContents.sort(
 const currentIndex = sortedContents.findIndex((content) => content.slug === current.slug)
 
 const prevContent = currentIndex > 0 ? sortedContents[currentIndex - 1] : null
-const nextContent = currentIndex < sortedContents.length - 1 ? sortedContents[currentIndex + 1] : null
+const nextContent =
+  currentIndex < sortedContents.length - 1 ? sortedContents[currentIndex + 1] : null
 ---
 
 {(prevContent || nextContent) && (

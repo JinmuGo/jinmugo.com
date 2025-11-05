@@ -3,26 +3,53 @@
 		@apply prose dark:prose-invert;
 		@apply mx-auto max-w-none;
 		@apply mt-14;
-		@apply text-sm md:text-lg leading-6 md:leading-7.5;
+		@apply text-base md:text-lg leading-7 md:leading-8;
     @apply prose-h2:text-xl prose-h2:md:text-2xl prose-h2:lg:text-3xl;
     @apply prose-h3:text-lg prose-h3:md:text-xl prose-h3:lg:text-2xl;
     @apply prose-h4:text-base prose-h4:md:text-lg prose-h4:lg:text-xl;
     @apply prose-h5:text-sm prose-h5:md:text-base prose-h5:lg:text-lg;
     @apply prose-h6:text-xs prose-h6:md:text-sm prose-h6:lg:text-sm;
-    @apply prose-headings:mb-3 prose-headings:md:mb-4;
+    @apply prose-headings:mb-4 prose-headings:md:mb-5 prose-headings:mt-8 prose-headings:md:mt-10;
+    @apply prose-headings:font-bold prose-headings:tracking-tight;
+		@apply prose-p:mb-5 prose-p:md:mb-6;
+		@apply prose-li:my-2;
+		@apply prose-ul:my-6 prose-ol:my-6;
 
 		/* Code styling */
-		@apply [&_a_code]:text-primary-400;
-		@apply [&_code:not(pre_code)]:text-primary-400;
-		@apply [&_a:hover]:text-primary-400;
+		@apply [&_a_code]:text-primary-500 dark:[&_a_code]:text-primary-400;
+		@apply [&_code:not(pre_code)]:text-primary-500 dark:[&_code:not(pre_code)]:text-primary-400;
+		@apply [&_code:not(pre_code)]:bg-gray-100 dark:[&_code:not(pre_code)]:bg-gray-800;
+		@apply [&_code:not(pre_code)]:px-1.5 [&_code:not(pre_code)]:py-0.5;
+		@apply [&_code:not(pre_code)]:rounded-md;
+		@apply [&_code:not(pre_code)]:text-sm;
+		@apply [&_code:not(pre_code)]:font-medium;
+		
+		/* Link styling */
+		@apply [&_a]:text-primary-500 dark:[&_a]:text-primary-400;
+		@apply [&_a]:underline [&_a]:underline-offset-2;
+		@apply [&_a:hover]:text-primary-600 dark:[&_a:hover]:text-primary-300;
+		@apply [&_a]:transition-colors [&_a]:duration-200;
 
 		/* Image styling */
-		@apply [&_img]:mx-auto;
+		@apply [&_img]:mx-auto [&_img]:rounded-lg [&_img]:shadow-md;
+		@apply [&_img]:my-8;
+
+		/* Blockquote styling */
+		@apply prose-blockquote:border-l-4 prose-blockquote:border-primary-500;
+		@apply prose-blockquote:bg-gray-50 dark:prose-blockquote:bg-gray-900/50;
+		@apply prose-blockquote:py-3 prose-blockquote:px-6;
+		@apply prose-blockquote:my-6;
+		@apply prose-blockquote:rounded-r-lg;
+
+		/* Pre/Code block styling */
+		@apply [&_pre]:my-6 [&_pre]:rounded-lg;
+		@apply [&_pre]:shadow-md;
 
 		/* color palette */
 		--tw-prose-body: var(--color-text-light);
 		--tw-prose-headings: var(--color-text-light);
 		--tw-prose-bold: var(--color-text-light);
+		--tw-prose-links: oklch(var(--color-primary-500));
 	}
 
 	html[data-theme="dark"] {
@@ -30,6 +57,7 @@
 			--tw-prose-body: var(--color-text-dark);
 			--tw-prose-headings: var(--color-text-dark);
 			--tw-prose-bold: var(--color-text-dark);
+			--tw-prose-links: oklch(var(--color-primary-400));
 		}
 	}
 }

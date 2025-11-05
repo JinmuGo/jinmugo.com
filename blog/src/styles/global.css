@@ -71,6 +71,74 @@ html[data-theme="dark"] {
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   text-rendering: optimizeLegibility;
+}
+
+/* 접근성: 포커스 스타일 개선 */
+*:focus-visible {
+  outline: 2px solid oklch(var(--color-primary-500));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* 부드러운 트랜지션을 위한 기본 설정 */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* 모션 감소 설정을 존중 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 커스텀 스크롤바 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(var(--color-primary-300));
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--color-primary-400));
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: oklch(var(--color-primary-700));
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--color-primary-600));
+}
+
+/* 텍스트 선택 스타일 */
+::selection {
+  background: oklch(var(--color-primary-200));
+  color: oklch(var(--color-primary-900));
+}
+
+html[data-theme="dark"] ::selection {
+  background: oklch(var(--color-primary-800));
+  color: oklch(var(--color-primary-100));
 }
