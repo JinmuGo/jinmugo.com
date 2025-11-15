@@ -1,7 +1,7 @@
 import type { InferGetStaticParamsType } from "astro"
 
 import { OpenGraphImage } from "@/components/og/image"
-import { getKoreanMemos } from "@/content-utils/memos"
+import { getKoreanMemos } from "@/utils/content/memos"
 
 import { PNG } from "@/utils/openGraph"
 

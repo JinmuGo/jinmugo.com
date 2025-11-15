@@ -1,8 +1,8 @@
 import rss from "@astrojs/rss"
 import type { APIRoute } from "astro"
-import { getKoreanMemos } from "@/content-utils/memos.ts"
-import { getKoreanPosts } from "@/content-utils/posts.ts"
 import type { Memo, Post } from "@/types/content"
+import { getKoreanMemos } from "@/utils/content/memos"
+import { getKoreanPosts } from "@/utils/content/posts"
 import pkg from "~/package.json"
 
 export const GET: APIRoute = async (context) => {

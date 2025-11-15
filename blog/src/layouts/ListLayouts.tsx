@@ -1,5 +1,5 @@
 import { useState } from "react"
-import SearchInput from "@/components/SearchInput"
+import SearchInput from "@/components/search/SearchInput"
 import type { MemoMetadata, PostMetadata } from "@/types/content"
 
 type ListLayoutProps = {

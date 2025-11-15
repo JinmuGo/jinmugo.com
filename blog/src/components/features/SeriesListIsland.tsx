@@ -1,8 +1,8 @@
 import type React from "react"
-import SeriesPostsAccordion from "@/components/SeriesPostsAccordion"
+import SeriesPostsAccordion from "@/components/features/SeriesPostsAccordion"
+import Title from "@/components/layout/Title"
 import { Accordion } from "@/components/ui/accordion"
 import type { Post } from "@/types/content"
-import Title from "./Title"
 
 interface Series {
   name: string

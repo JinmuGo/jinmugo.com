@@ -1,9 +1,9 @@
 ---
 import { Image } from "astro:assets"
-import Bleed from "@/components/Bleed.astro"
+import Bleed from "@/components/layout/Bleed.astro"
 import PostTimeline from "@/components/Timeline/PostTimeline.astro"
-import { getEnglishMemos, sortMemosByDate } from "@/content-utils/memos"
-import { getEnglishPosts, sortPostsByDate } from "@/content-utils/posts"
+import { getEnglishMemos, sortMemosByDate } from "@/utils/content/memos"
+import { getEnglishPosts, sortPostsByDate } from "@/utils/content/posts"
 import Layout from "@/layouts/Layout.astro"
 import { generatePageSchema } from "@/utils/structuredData"
 import pkg from "~/package.json"

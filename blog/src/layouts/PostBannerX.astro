@@ -1,54 +1,30 @@
 ---
 import { Image } from "astro:assets"
-import Breadcrumb from "@/components/Breadcrumb.astro"
-import FormattedDate from "@/components/FormattedDate.astro"
-import { PageViewIsland } from "@/components/PageViewIsland"
-import Prose from "@/components/Prose.astro"
+import Breadcrumb from "@/components/seo/Breadcrumb.astro"
+import FormattedDate from "@/components/content/FormattedDate.astro"
+import { PageViewIsland } from "@/components/features/PageViewIsland"
+import Prose from "@/components/layout/Prose.astro"
 import Layout from "@/layouts/Layout.astro"
 import type { PostMetadata } from "@/types/content"
-import { generateContentBreadcrumbs } from "@/utils/breadcrumbUtils"
-import {
-  buildPageUrl,
-  generateBlogPostingSchema,
-  generateBreadcrumbSchema,
-} from "@/utils/structuredData"
-import UserSection from "@/widget/Comment/UserSection.astro"
+import { generateContentSchemas } from "@/utils/contentSchemas"
+import UserSection from "@/components/app-shell/Comment/UserSection.astro"
 
 interface Props {
-  frontmatter: PostMetadata
-  bannerImage: ImageMetadata
+	frontmatter: PostMetadata
+	bannerImage: ImageMetadata
 }
 
 const { frontmatter, bannerImage } = Astro.props
-const { title, date, summary, category, slug, tags, href } = frontmatter
-const lang = Astro.url.pathname.startsWith("/en") ? "en" : "ko"
+const { title, date, summary, category, slug, tags } = frontmatter
 
-const pageSchema = generateBlogPostingSchema({
-  title: title,
-  description: summary || title,
-  url: href,
-  keywords: tags?.join(", ") || "",
-  inLanguage: lang,
-  datePublished: date.toISOString(),
-  dateModified: date.toISOString(),
-  authorName: "Jinmu",
-  authorUrl: "https://jinmu.me/about",
-  wordCount: frontmatter.wordCount,
-  readingTime: frontmatter.readingTime,
-  imageUrl: bannerImage ? `${Astro.url.origin}/posts/${slug}/banner.webp` : undefined,
+// Generate all schemas using consolidated utility
+const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentSchemas({
+	frontmatter,
+	pathname: Astro.url.pathname,
+	origin: Astro.url.origin,
+	contentType: "post",
+	imageUrl: bannerImage ? `${Astro.url.origin}/posts/${slug}/banner.webp` : undefined,
 })
-
-// Breadcrumb 항목 생성
-const breadcrumbItems = generateContentBreadcrumbs({
-  pathname: Astro.url.pathname,
-  origin: Astro.url.origin,
-  lang,
-  title,
-  category,
-  contentType: "post",
-})
-
-const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
 ---
 
 <Layout

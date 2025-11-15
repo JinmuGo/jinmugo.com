@@ -1,7 +1,7 @@
 import { format } from "date-fns"
-import { getEnglishMemos, getKoreanMemos } from "@/content-utils/memos"
-import { getEnglishPosts, getKoreanPosts } from "@/content-utils/posts"
 import type { Memo, Post } from "@/types/content"
+import { getEnglishMemos, getKoreanMemos } from "@/utils/content/memos"
+import { getEnglishPosts, getKoreanPosts } from "@/utils/content/posts"
 
 export async function GET() {
   const siteUrl = import.meta.env.SITE

@@ -1,7 +1,11 @@
 import { Command } from "cmdk"
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react"
+import type { Lang } from "@/types/utils"
 
-interface Post {
+/**
+ * Search result item from search-index.json
+ */
+interface SearchResultPost {
   slug: string
   category: string
   title: string
@@ -9,13 +13,13 @@ interface Post {
 }
 
 interface CommandPaletteProps {
-  lang: "ko" | "en"
+  lang: Lang
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
 }
 
 export default function CommandPalette({ lang, open, setOpen }: CommandPaletteProps) {
-  const [posts, setPosts] = useState<Post[]>([])
+  const [posts, setPosts] = useState<SearchResultPost[]>([])
 
   // 2. lang prop이 바뀔 때마다 해당 언어의 JSON 데이터를 다시 불러옵니다.
   useEffect(() => {

@@ -1,6 +1,6 @@
 import type { InferGetStaticParamsType } from "astro"
 import { OpenGraphImage } from "@/components/og/image"
-import { getEnglishPosts } from "@/content-utils/posts"
+import { getEnglishPosts } from "@/utils/content/posts"
 import { PNG } from "@/utils/openGraph"
 
 const posts = await getEnglishPosts()

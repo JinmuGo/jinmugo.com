@@ -1,0 +1,83 @@
+---
+interface Project {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  tags: string[];
+  period: string;
+  link?: string;
+}
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+<div class="space-y-1">
+  {projects.map((project) => (
+    <div
+      class="py-8 px-6 -mx-6 rounded-lg"
+    >
+      <!-- Header with Title and Period -->
+      <div class="flex items-start justify-between gap-4 mb-3">
+        <div class="flex-1">
+          <div class="flex items-center gap-3">
+            <h3 class="text-gray-900 dark:text-gray-100">
+              {project.title}
+            </h3>
+            {project.link ? (
+              <a
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                  class="rotate-45"
+                  xmlns="http://www.w3.org/2000/svg"
+                  role="img"
+                  aria-label="외부 링크 아이콘"
+                >
+                  <title>외부 링크 아이콘</title>
+                  <path
+                    d="M3.13523 8.84197C3.3241 9.04343 3.64052 9.05363 3.84197 8.86477L7.5 5.43536L11.158 8.86477C11.3595 9.05363 11.6759 9.04343 11.8648 8.84197C12.0536 8.64051 12.0434 8.32409 11.842 8.13523L7.84197 4.38523C7.64964 4.20492 7.35036 4.20492 7.15803 4.38523L3.15803 8.13523C2.95657 8.32409 2.94637 8.64051 3.13523 8.84197Z"
+                    fill="currentColor"
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </a>
+            ) : null}
+          </div>
+        </div>
+        <span class="text-sm text-gray-400 dark:text-gray-500 whitespace-nowrap">
+          {project.period}
+        </span>
+      </div>
+
+      <!-- Description -->
+      <p class="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+        {project.description}
+      </p>
+
+      <!-- Tags -->
+      <div class="flex flex-wrap gap-2">
+        {project.tags.map((tag) => (
+          <span
+            class="text-xs text-gray-500 dark:text-gray-400 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>
+

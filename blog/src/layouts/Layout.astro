@@ -1,11 +1,11 @@
 ---
-import BaseHead from "@/components/BaseHead.astro"
-import GoogleTag from "@/components/GoogleTag.astro"
-import Umami from "@/components/Umami.astro"
+import BaseHead from "@/components/seo/BaseHead.astro"
+import GoogleTag from "@/components/seo/GoogleTag.astro"
+import Umami from "@/components/seo/Umami.astro"
 import Container from "@/layouts/Container.astro"
 import type { Post } from "@/types/content"
 import StructuredData from "@/utils/structuredData.astro"
-import Header from "@/widget/Header/Header.tsx"
+import Header from "@/components/app-shell/Header/Header.tsx"
 
 const pathname = Astro.url.pathname
 
