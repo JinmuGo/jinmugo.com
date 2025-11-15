@@ -53,9 +53,16 @@ const appCollection = defineCollection({
   type: "content",
   schema: z.object({
     name: z.string(),
-    bio: z.string(),
-    avatar: z.string(),
-  }),
+    bio: z.string().optional(),
+    avatar: z.string().optional(),
+    // Portfolio 관련 필드들
+    philosophy: z.string().optional(),
+    contact: z.object({
+      email: z.string(),
+      github: z.string(),
+    }).optional(),
+    sections: z.array(z.any()).optional(),
+  }).passthrough(), // 정의되지 않은 필드도 허용
 })
 
 export const collections = {

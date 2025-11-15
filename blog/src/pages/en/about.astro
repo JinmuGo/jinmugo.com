@@ -1,12 +1,15 @@
 ---
-import { Image } from "astro:assets"
-import Breadcrumb from "@/components/seo/Breadcrumb.astro"
-import { getEnglishApp } from "@/utils/content/apps"
-import Layout from "@/layouts/Layout.astro"
-import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
-import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
-import pkg from "~/package.json"
-import PortfolioList from "@/components/content/PortfolioList.astro"
+import { Image } from "astro:assets";
+import Breadcrumb from "@/components/seo/Breadcrumb.astro";
+import { getEnglishApp } from "@/utils/content/apps";
+import Layout from "@/layouts/Layout.astro";
+import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils";
+import {
+  buildPageUrl,
+  generateBreadcrumbSchema,
+  generatePageSchema,
+} from "@/utils/structuredData";
+import pkg from "~/package.json";
 
 // Breadcrumb 항목 생성
 const breadcrumbItems = generateBreadcrumbItems({
@@ -14,7 +17,7 @@ const breadcrumbItems = generateBreadcrumbItems({
   origin: pkg.homepage,
   lang: "en",
   title: "About",
-})
+});
 
 const pageSchema = generatePageSchema({
   title: "About",
@@ -22,80 +25,22 @@ const pageSchema = generatePageSchema({
   url: buildPageUrl(pkg.homepage, "/en/about"),
   keywords: "about, author, profile",
   inLanguage: "en",
-})
+});
 
-const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
-const jsonLd = [pageSchema, breadcrumbSchema]
+const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
+const jsonLd = [pageSchema, breadcrumbSchema];
 
-const app = await getEnglishApp()
+const app = await getEnglishApp();
 const fallback = {
   name: pkg.author,
   bio: pkg.description,
   avatar: "/avatar.webp",
-}
-const hasContent = app.length > 0
-const { name, bio, avatar } = hasContent ? app[0].data : fallback
-const Content = hasContent ? (await app[0].render()).Content : undefined
-const title = "About"
-const description = "About Jinmu"
-
-// Dummy project data
-const projects = [
-  {
-    id: 1,
-    title: "E-commerce Platform",
-    description: "Modern e-commerce platform development project",
-    image: "/avatar.webp",
-    tags: ["React", "TypeScript", "Tailwind CSS"],
-    period: "2024.10 - 2024.12",
-    link: "https://example.com",
-  },
-  {
-    id: 2,
-    title: "Mobile Banking App",
-    description: "Mobile banking application with intuitive UX",
-    image: "/avatar.webp",
-    tags: ["React Native", "Node.js", "MongoDB"],
-    period: "2024.08 - 2024.10",
-    link: "https://example.com",
-  },
-  {
-    id: 3,
-    title: "Analytics Dashboard",
-    description: "Real-time data analysis and visualization dashboard",
-    image: "/avatar.webp",
-    tags: ["Vue.js", "D3.js", "Python"],
-    period: "2024.06 - 2024.08",
-    link: "https://example.com",
-  },
-  {
-    id: 4,
-    title: "Creative Studio Website",
-    description: "Creative studio portfolio website",
-    image: "/avatar.webp",
-    tags: ["Next.js", "Framer Motion", "Sanity"],
-    period: "2024.04 - 2024.06",
-    link: "https://example.com",
-  },
-  {
-    id: 5,
-    title: "Brand Identity System",
-    description: "Brand identity design system for startups",
-    image: "/avatar.webp",
-    tags: ["Figma", "Illustrator", "Design System"],
-    period: "2024.02 - 2024.04",
-    link: "https://example.com",
-  },
-  {
-    id: 6,
-    title: "AI Chat Interface",
-    description: "AI-based conversational interface development",
-    image: "/avatar.webp",
-    tags: ["React", "OpenAI", "WebSocket"],
-    period: "2023.12 - 2024.02",
-    link: "https://example.com",
-  },
-]
+};
+const hasContent = app.length > 0;
+const { name, bio, avatar } = hasContent ? app[0].data : fallback;
+const Content = hasContent ? (await app[0].render()).Content : undefined;
+const title = "About";
+const description = "About Jinmu";
 ---
 
 <Layout
@@ -106,193 +51,49 @@ const projects = [
   jsonLd={jsonLd}
   type="website"
 >
-  <Breadcrumb items={breadcrumbItems} class="mb-4" />
-  <>
-    <div class="relative w-full mx-auto aspect-square sm:aspect-[16/9]">
-      <Image src={avatar} alt={name} width={1200} height={300} />
-      <div class="absolute bottom-6 left-6 text-white drop-shadow-lg">
-        <h1
-          class="text-3xl leading-9 font-extrabold tracking-tight text-gray-50 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-200"
-        >
-          {name}
-        </h1>
-        <h2
-          class="text-sm sm:text-lg leading-8 font-medium text-gray-100 dark:text-gray-300"
-        >
-          {bio}
-        </h2>
-      </div>
+  <Breadcrumb items={breadcrumbItems} />
+  <div class="relative w-full mx-auto aspect-square sm:aspect-[16/9]">
+    <Image src={avatar} alt={name} width={1200} height={300} />
+    <div class="absolute bottom-6 left-6 text-white drop-shadow-lg">
+      <h1
+        class="text-3xl leading-9 font-extrabold tracking-tight text-gray-50 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-200"
+      >
+        {name}
+      </h1>
+      <h2
+        class="text-sm sm:text-lg leading-8 font-medium text-gray-100 dark:text-gray-300"
+      >
+        {bio}
+      </h2>
     </div>
-    {Content && (
-    <div class="prose dark:prose-invert max-w-none pt-8 pb-8 xl:col-span-2">
-      <Content />
-    </div>
-    )}
-    
-    <!-- Skills Section -->
-    <section class="border-t border-gray-200 dark:border-gray-700 pt-16 pb-16">
-      <h2 class="text-base font-normal text-gray-900 dark:text-gray-100 mb-8">Skills</h2>
-      <div class="space-y-12">
-        <!-- Backend -->
-        <div class="flex flex-col sm:flex-row gap-6">
-          <h3 class="text-base font-normal text-gray-900 dark:text-gray-100 w-56 flex-shrink-0">Backend</h3>
-          <ul class="space-y-2 text-base text-gray-700 dark:text-gray-300 flex-1">
-            <li>• Java, Groovy, Node.JS (TypeScript)</li>
-            <li>• NestJS, Spring Boot, Spring MVC, Spring Batch, Spring Security, Spring Data JPA/Redis, Spring Cloud AWS</li>
-            <li>• TypeORM, JPA, Querydsl, Hibernate</li>
-            <li>• Jest, Supertest, Junit4/5, Mockito, Spock</li>
-            <li>• Gradle, Maven</li>
-            <li>• IntelliJ, WebStorm, Visual Studio Code</li>
-          </ul>
-        </div>
-        
-        <!-- DevOps -->
-        <div class="flex flex-col sm:flex-row gap-6">
-          <h3 class="text-base font-normal text-gray-900 dark:text-gray-100 w-56 flex-shrink-0">DevOps</h3>
-          <ul class="space-y-2 text-base text-gray-700 dark:text-gray-300 flex-1">
-            <li>• MySQL, MariaDB, PostgreSQL</li>
-            <li>• Jenkins, TravisCI, AWS Code Deploy</li>
-            <li>• AWS Beanstalk, AWS SQS, Elastic Cache (Redis), RDS (Aurora), S3, EC2, Cloud Watch</li>
-            <li>• Nginx, Tomcat</li>
-            <li>• Pinpoint, Ngrinder</li>
-            <li>• Linux Centos</li>
-          </ul>
-        </div>
-        
-        <!-- Frontend -->
-        <div class="flex flex-col sm:flex-row gap-6">
-          <h3 class="text-base font-normal text-gray-900 dark:text-gray-100 w-56 flex-shrink-0">Frontend</h3>
-          <ul class="space-y-2 text-base text-gray-700 dark:text-gray-300 flex-1">
-            <li>• ES6</li>
-            <li>• Npm, Grunt, Webpack</li>
-            <li>• Handlebars, Lodash</li>
-            <li>• Backbone</li>
-          </ul>
-        </div>
+  </div>
+  {
+    Content && (
+      <div class="prose dark:prose-invert max-w-none pt-8 pb-8 xl:col-span-2">
+        <Content />
       </div>
-    </section>
-    
-    <!-- Opensource Section -->
-    <section class="border-t border-gray-200 dark:border-gray-700 pt-16 pb-16">
-      <h2 class="text-base font-normal text-gray-900 dark:text-gray-100 mb-8">Opensource</h2>
-      <div class="space-y-8">
-        <!-- Project 1 -->
-        <div class="flex flex-col sm:flex-row gap-8">
-          <div class="w-56">
-            <h3 class="text-base font-normal text-gray-900 dark:text-gray-100 mb-2">react-design-system</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Maintainer</p>
-          </div>
-          <div class="flex-1">
-            <p class="text-base text-gray-700 dark:text-gray-300 mb-2">Reusable React component library. Design system built with TypeScript and Storybook.</p>
-            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <span>TypeScript</span>
-              <span>•</span>
-              <span>1.2k stars</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Project 2 -->
-        <div class="flex flex-col sm:flex-row gap-8">
-          <div class="w-56">
-            <h3 class="text-base font-normal text-gray-900 dark:text-gray-100 mb-2">next-analytics</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Contributor</p>
-          </div>
-          <div class="flex-1">
-            <p class="text-base text-gray-700 dark:text-gray-300 mb-2">Lightweight analytics tool for Next.js applications. Provides performance monitoring and user behavior tracking.</p>
-            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <span>JavaScript</span>
-              <span>•</span>
-              <span>850 stars</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Project 3 -->
-        <div class="flex flex-col sm:flex-row gap-8">
-          <div class="w-56">
-            <h3 class="text-base font-normal text-gray-900 dark:text-gray-100 mb-2">tailwind-components</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Creator</p>
-          </div>
-          <div class="flex-1">
-            <p class="text-base text-gray-700 dark:text-gray-300 mb-2">Premium UI component collection based on Tailwind CSS. Responsive design and dark mode support.</p>
-            <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <span>CSS</span>
-              <span>•</span>
-              <span>2.5k stars</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    
-    <!-- Certifications Section -->
-    <section class="border-t border-gray-200 dark:border-gray-700 pt-16 pb-16">
-      <h2 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-8">Certifications</h2>
-      <ul class="space-y-4">
-        <li class="flex items-center gap-4">
-          <div class="w-2 h-2 rounded-full bg-gray-900 dark:bg-gray-100"></div>
-          <span class="text-base text-gray-700 dark:text-gray-300">AWS Certified Solutions Architect</span>
-        </li>
-        <li class="flex items-center gap-4">
-          <div class="w-2 h-2 rounded-full bg-gray-900 dark:bg-gray-100"></div>
-          <span class="text-base text-gray-700 dark:text-gray-300">Google Cloud Professional</span>
-        </li>
-        <li class="flex items-center gap-4">
-          <div class="w-2 h-2 rounded-full bg-gray-900 dark:bg-gray-100"></div>
-          <span class="text-base text-gray-700 dark:text-gray-300">React Advanced Certification</span>
-        </li>
-      </ul>
-    </section>
-    
-    <!-- Contact Section -->
-    <section class="border-t border-gray-200 dark:border-gray-700 pt-16 pb-16">
-      <h2 class="text-base font-normal text-gray-900 dark:text-gray-100 mb-8">Contact</h2>
-      <div class="space-y-4">
-        <a href="mailto:your.email@example.com" class="flex items-center gap-4 text-base text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">
-          <div class="w-5 h-5"></div>
-          <span>your.email@example.com</span>
-        </a>
-        <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 text-base text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">
-          <div class="w-5 h-5"></div>
-          <span>github.com/yourusername</span>
-        </a>
-        <a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 text-base text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">
-          <div class="w-5 h-5"></div>
-          <span>linkedin.com/in/yourusername</span>
-        </a>
-        <a href="https://twitter.com/yourusername" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 text-base text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">
-          <div class="w-5 h-5"></div>
-          <span>@yourusername</span>
-        </a>
-      </div>
-    </section>
-    
-    <!-- Portfolio Section -->
-    <section class="py-20 relative overflow-hidden">
-      <!-- Background Typography - 撫 (어루만질 무) -->
-      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">
-        <span
-          class="text-gray-900 dark:text-gray-100"
-          style={{
-            fontSize: "800px",
-            opacity: "0.02",
-            lineHeight: "1",
-            fontFamily: "serif",
-          }}
-        >
-          撫
-        </span>
-      </div>
-      <div class="mb-12 relative z-10">
-        <h2 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">Portfolio</h2>
-        <p class="text-base text-gray-600 dark:text-gray-400">
-          Introducing experiences and works accumulated through various projects.
-        </p>
-      </div>
-      <div class="relative z-10">
-        <PortfolioList projects={projects} />
-      </div>
-    </section>
-  </>
+    )
+  }
+
+  <!-- Portfolio Link Section -->
+  <a
+    href="/en/portfolio"
+    class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors font-medium"
+  >
+    Portfolio
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class="rotate-45"
+    >
+      <path
+        d="M3.13523 8.84197C3.3241 9.04343 3.64052 9.05363 3.84197 8.86477L7.5 5.43536L11.158 8.86477C11.3595 9.05363 11.6759 9.04343 11.8648 8.84197C12.0536 8.64051 12.0434 8.32409 11.842 8.13523L7.84197 4.38523C7.64964 4.20492 7.35036 4.20492 7.15803 4.38523L3.15803 8.13523C2.95657 8.32409 2.94637 8.64051 3.13523 8.84197Z"
+        fill="currentColor"
+        fill-rule="evenodd"
+        clip-rule="evenodd"></path>
+    </svg>
+  </a>
 </Layout>

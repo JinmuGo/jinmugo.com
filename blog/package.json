@@ -32,7 +32,6 @@
     "@astrojs/rss": "^4.0.12",
     "@aws-sdk/client-s3": "^3.850.0",
     "@giscus/react": "^3.1.0",
-    "@iconify-json/lucide": "^1.2.58",
     "@r4ai/remark-callout": "^0.6.2",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-popover": "^1.1.14",

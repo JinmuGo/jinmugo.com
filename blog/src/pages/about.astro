@@ -9,7 +9,6 @@ import {
 } from "@/utils/structuredData";
 import pkg from "~/package.json";
 import Layout from "../layouts/Layout.astro";
-import PortfolioList from "@/components/content/PortfolioList.astro";
 
 // Breadcrumb 항목 생성
 const breadcrumbItems = generateBreadcrumbItems({
@@ -35,147 +34,6 @@ const { name, bio, avatar } = app[0].data;
 const { Content } = await app[0].render();
 const title = "About";
 const description = "About Jinmu";
-
-// 더미 프로젝트 데이터
-const projects = [
-  {
-    id: 1,
-    title: "E-commerce Platform",
-    description: "현대적인 디자인의 전자상거래 플랫폼 구축 프로젝트",
-    image: "/avatar.webp",
-    tags: ["React", "TypeScript", "Tailwind CSS"],
-    period: "2024.10 - 2024.12",
-    link: "https://example.com",
-  },
-  {
-    id: 2,
-    title: "Mobile Banking App",
-    description: "직관적인 UX를 가진 모바일 뱅킹 애플리케이션",
-    image: "/avatar.webp",
-    tags: ["React Native", "Node.js", "MongoDB"],
-    period: "2024.08 - 2024.10",
-    link: "https://example.com",
-  },
-  {
-    id: 3,
-    title: "Analytics Dashboard",
-    description: "실시간 데이터 분석 및 시각화 대시보드",
-    image: "/avatar.webp",
-    tags: ["Vue.js", "D3.js", "Python"],
-    period: "2024.06 - 2024.08",
-    link: "https://example.com",
-  },
-  {
-    id: 4,
-    title: "Creative Studio Website",
-    description: "크리에이티브 스튜디오 포트폴리오 웹사이트",
-    image: "/avatar.webp",
-    tags: ["Next.js", "Framer Motion", "Sanity"],
-    period: "2024.04 - 2024.06",
-    link: "https://example.com",
-  },
-  {
-    id: 5,
-    title: "Brand Identity System",
-    description: "스타트업을 위한 브랜드 아이덴티티 디자인 시스템",
-    image: "/avatar.webp",
-    tags: ["Figma", "Illustrator", "Design System"],
-    period: "2024.02 - 2024.04",
-    link: "https://example.com",
-  },
-  {
-    id: 6,
-    title: "AI Chat Interface",
-    description: "AI 기반 대화형 인터페이스 개발",
-    image: "/avatar.webp",
-    tags: ["React", "OpenAI", "WebSocket"],
-    period: "2023.12 - 2024.02",
-    link: "https://example.com",
-  },
-];
-// 섹션 데이터 구조
-const sections = [
-  {
-    type: "skills",
-    title: "Skills",
-    titleClass: "text-base font-normal",
-    data: [
-      {
-        category: "Backend",
-        items: [
-          "Java, Groovy, Node.JS (TypeScript)",
-          "NestJS, Spring Boot, Spring MVC, Spring Batch, Spring Security, Spring Data JPA/Redis, Spring Cloud AWS",
-          "TypeORM, JPA, Querydsl, Hibernate",
-          "Jest, Supertest, Junit4/5, Mockito, Spock",
-          "Gradle, Maven",
-          "IntelliJ, WebStorm, Visual Studio Code",
-        ],
-      },
-      {
-        category: "DevOps",
-        items: [
-          "MySQL, MariaDB, PostgreSQL",
-          "Jenkins, TravisCI, AWS Code Deploy",
-          "AWS Beanstalk, AWS SQS, Elastic Cache (Redis), RDS (Aurora), S3, EC2, Cloud Watch",
-          "Nginx, Tomcat",
-          "Pinpoint, Ngrinder",
-          "Linux Centos",
-        ],
-      },
-      {
-        category: "Frontend",
-        items: ["ES6", "Npm, Grunt, Webpack", "Handlebars, Lodash", "Backbone"],
-      },
-    ],
-  },
-  {
-    type: "opensource",
-    title: "Opensource",
-    titleClass: "text-base font-normal",
-    data: [
-      {
-        name: "react-design-system",
-        role: "Maintainer",
-        description:
-          "재사용 가능한 React 컴포넌트 라이브러리. TypeScript와 Storybook을 활용한 디자인 시스템 구축.",
-        tech: "TypeScript",
-        stars: "1.2k stars",
-      },
-      {
-        name: "next-analytics",
-        role: "Contributor",
-        description:
-          "Next.js 애플리케이션을 위한 경량 분석 도구. 성능 모니터링 및 사용자 행동 추적 기능 제공.",
-        tech: "JavaScript",
-        stars: "850 stars",
-      },
-      {
-        name: "tailwind-components",
-        role: "Creator",
-        description:
-          "Tailwind CSS 기반 프리미엄 UI 컴포넌트 모음. 반응형 디자인과 다크모드 지원.",
-        tech: "CSS",
-        stars: "2.5k stars",
-      },
-    ],
-  },
-  {
-    type: "certifications",
-    title: "Certifications",
-    titleClass: "text-xl font-medium",
-    data: [
-      "AWS Certified Solutions Architect",
-      "Google Cloud Professional",
-      "React Advanced Certification",
-    ],
-  },
-  {
-    type: "portfolio",
-    title: "Portfolio",
-    titleClass: "text-xl font-medium",
-    data: projects,
-  },
-];
 ---
 
 <Layout
@@ -209,99 +67,25 @@ const sections = [
     )
   }
 
-  {
-    sections.map((section) => {
-      if (section.type === "skills") {
-        return (
-          <section class="border-t border-gray-200 dark:border-gray-700 pt-16 pb-16">
-            <h2
-              class={`${section.titleClass} text-gray-900 dark:text-gray-100 mb-8`}
-            >
-              {section.title}
-            </h2>
-            <div class="space-y-12">
-              {(section.data as any[]).map((skill: any) => (
-                <div class="flex flex-col sm:flex-row gap-6">
-                  <h3 class="text-base font-normal text-gray-900 dark:text-gray-100 w-56 flex-shrink-0">
-                    {skill.category}
-                  </h3>
-                  <ul class="space-y-2 text-base text-gray-700 dark:text-gray-300 flex-1">
-                    {skill.items.map((item: string) => (
-                      <li>• {item}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </section>
-        );
-      }
-      if (section.type === "opensource") {
-        return (
-          <section class="border-t border-gray-200 dark:border-gray-700 pt-16 pb-16">
-            <h2
-              class={`${section.titleClass} text-gray-900 dark:text-gray-100 mb-8`}
-            >
-              {section.title}
-            </h2>
-            <div class="space-y-8">
-              {(section.data as any[]).map((project: any) => (
-                <div class="flex flex-col sm:flex-row gap-8">
-                  <div class="w-56">
-                    <h3 class="text-base font-normal text-gray-900 dark:text-gray-100 mb-2">
-                      {project.name}
-                    </h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                      {project.role}
-                    </p>
-                  </div>
-                  <div class="flex-1">
-                    <p class="text-base text-gray-700 dark:text-gray-300 mb-2">
-                      {project.description}
-                    </p>
-                    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                      <span>{project.tech}</span>
-                      <span>•</span>
-                      <span>{project.stars}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        );
-      }
-      if (section.type === "certifications") {
-        return (
-          <section class="border-t border-gray-200 dark:border-gray-700 pt-16 pb-16">
-            <h2
-              class={`${section.titleClass} text-gray-900 dark:text-gray-100 mb-8`}
-            >
-              {section.title}
-            </h2>
-            <ul class="space-y-4">
-              {(section.data as string[]).map((cert: string) => (
-                <li class="flex items-center gap-4">
-                  <div class="w-2 h-2 rounded-full bg-gray-900 dark:bg-gray-100" />
-                  <span class="text-base text-gray-700 dark:text-gray-300">
-                    {cert}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        );
-      }
-      return null;
-    })
-  }
-
-  <!-- Portfolio Section -->
-  <section class="border-t border-gray-200 dark:border-gray-700 pt-16 pb-16">
-    <h2 class="text-xl font-medium text-gray-900 dark:text-gray-100 mb-3">
-      Portfolio
-    </h2>
-
-    <PortfolioList projects={projects} />
-  </section>
+  <!-- Portfolio Link Section -->
+  <a
+    href="/portfolio"
+    class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors font-medium"
+  >
+    Portfolio
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class="rotate-45"
+    >
+      <path
+        d="M3.13523 8.84197C3.3241 9.04343 3.64052 9.05363 3.84197 8.86477L7.5 5.43536L11.158 8.86477C11.3595 9.05363 11.6759 9.04343 11.8648 8.84197C12.0536 8.64051 12.0434 8.32409 11.842 8.13523L7.84197 4.38523C7.64964 4.20492 7.35036 4.20492 7.15803 4.38523L3.15803 8.13523C2.95657 8.32409 2.94637 8.64051 3.13523 8.84197Z"
+        fill="currentColor"
+        fill-rule="evenodd"
+        clip-rule="evenodd"></path>
+    </svg>
+  </a>
 </Layout>

@@ -7,3 +7,11 @@ export async function getEnglishApp() {
 export async function getKoreanApp() {
   return await getCollection("app", (item) => item.slug === "about")
 }
+
+export async function getEnglishPortfolio() {
+  return await getCollection("app", (item) => item.slug === "portfolioen")
+}
+
+export async function getKoreanPortfolio() {
+  return await getCollection("app", (item) => item.slug === "portfolio")
+}
