@@ -11,11 +11,17 @@ import ThemeSwitch from "./ThemeSwitch"
 
 const BASE_LINE = 50
 
+interface ContainerStyles {
+  header: string
+  headerButton: string
+}
+
 interface HeaderProps {
   frontmatter?: PostMetadata | MemoMetadata
   pathname: string
+  containerStyles: ContainerStyles
 }
-const Header = ({ frontmatter, pathname }: HeaderProps) => {
+const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
   const [isSlideOpen, setIsSlideOpen] = useState<boolean>(false)
   const [isEndofContent, setIsEndofContent] = useState<boolean>(false)
   const [open, setOpen] = useState<boolean>(false)
@@ -66,7 +72,7 @@ const Header = ({ frontmatter, pathname }: HeaderProps) => {
     <header className="w-full py-5 backdrop-blur-sm backdrop-saturate-180 sticky top-0 z-50">
       <div className="relative">
         <section
-          className={`${isSlideOpen ? "-translate-y-[200%]" : "translate-y-0 "} duration-300 transition-all mx-auto flex items-center justify-between max-w-2xl lg:max-w-3xl xl:max-w-4xl px-4 sm:px-6 xl:px-0`}
+          className={`${isSlideOpen ? "-translate-y-[200%]" : "translate-y-0 "} duration-300 transition-all mx-auto flex items-center justify-between ${containerStyles.header}`}
         >
           <a href={isEn ? "/en" : "/"}>
             <div className="flex items-center justify-between">
@@ -103,6 +109,7 @@ const Header = ({ frontmatter, pathname }: HeaderProps) => {
             isSlideOpen={isSlideOpen}
             postMetadata={frontmatter}
             pathname={pathname}
+            containerStyles={containerStyles}
           />
         )}
       </div>

@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useState } from "react"
 import type { MemoMetadata, PostMetadata } from "@/types/content"
 
+interface ContainerStyles {
+  header: string
+  headerButton: string
+}
+
 interface HeaderSliderProps {
   readonly postMetadata: PostMetadata | MemoMetadata
   readonly isEndofContent: boolean
   readonly isSlideOpen: boolean
   readonly pathname: string
+  readonly containerStyles: ContainerStyles
 }
 
 export default function HeaderSlider({
@@ -13,6 +19,7 @@ export default function HeaderSlider({
   isEndofContent,
   isSlideOpen,
   pathname,
+  containerStyles,
 }: HeaderSliderProps) {
   const { category, date, title } = postMetadata
   const href = pathname.startsWith("/en")
@@ -65,7 +72,9 @@ export default function HeaderSlider({
           }
         `}
       >
-        <div className="w-full mx-auto flex md:items-center flex-col md:flex-row justify-between max-w-2xl lg:max-w-3xl xl:max-w-4xl px-4 sm:px-6 xl:px-0">
+        <div
+          className={`w-full mx-auto flex md:items-center flex-col md:flex-row justify-between ${containerStyles.header}`}
+        >
           <h1 className="text-xl md:text-2xl font-bold whitespace-pre text-ellipsis overflow-hidden ">
             {title}
           </h1>
@@ -96,7 +105,9 @@ export default function HeaderSlider({
         className={`transition-all duration-300 w-full h-full justify-between items-center absolute ${(isHovered || isEndofContent) && isSlideOpen ? "-translate-y-full opacity-100 flex" : "translate-y-0 opacity-0 hidden"}
         }`}
       >
-        <div className="w-full cursor-pointer mx-auto flex items-center justify-center max-w-3xl lg:max-w-4xl xl:max-w-5xl px-4 sm:px-6 xl:px-0">
+        <div
+          className={`w-full cursor-pointer mx-auto flex items-center justify-center ${containerStyles.headerButton}`}
+        >
           <svg
             width="15"
             height="15"
