@@ -86,6 +86,9 @@ importers:
       '@giscus/react':
         specifier: ^3.1.0
         version: 3.1.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@iconify-json/lucide':
+        specifier: ^1.2.58
+        version: 1.2.73
       '@r4ai/remark-callout':
         specifier: ^0.6.2
         version: 0.6.2(patch_hash=08e6280e24bc88950cedda4f50be19b65651ba76879a88b9ed9c86a0a2cf994a)
@@ -718,6 +721,9 @@ packages:
     peerDependencies:
       react: ^16 || ^17 || ^18 || ^19
       react-dom: ^16 || ^17 || ^18 || ^19
+
+  '@iconify-json/lucide@1.2.73':
+    resolution: {integrity: sha512-++HFkqDNu4jqG5+vYT+OcVj9OiuPCw9wQuh8G5QWQnBRSJ9eKwSStiU8ORgOoK07xJsm/0VIHySMniXUUXP9Gw==}
 
   '@iconify/tools@4.1.2':
     resolution: {integrity: sha512-q6NzLQYEN9zkDfcyBqD3vItHcZw97w/s++3H3TBxUORr57EfHxj6tOW6fyufDjMq+Vl56WXWaPx1csBPYlI5CA==}
@@ -5301,6 +5307,10 @@ snapshots:
       giscus: 1.6.0
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
+
+  '@iconify-json/lucide@1.2.73':
+    dependencies:
+      '@iconify/types': 2.0.0
 
   '@iconify/tools@4.1.2':
     dependencies:
