@@ -1,11 +1,25 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
+/**
+ * Utility function to merge Tailwind CSS classes
+ * Combines clsx for conditional classes and twMerge for proper Tailwind merging
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// 카운트 집계
+/**
+ * Tagged template literal for Tailwind CSS classes
+ * Useful for defining class strings in a template literal format
+ */
+export const tw = (strings: TemplateStringsArray, ...args: unknown[]) =>
+  strings.reduce((acc, str, i) => acc + str + (args.at(i) ?? ""), "")
+
+/**
+ * Count items by a key function
+ * Returns a record of key -> count
+ */
 export function countBy<T>(
   items: T[],
   keyFn: (item: T) => string | string[],

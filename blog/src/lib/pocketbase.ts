@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
+import type { ApiResponse, LikeData, TotalLikesData, ViewData } from "@/types/api"
 import { useAsyncEffect } from "@/utils/useAsyncEffect"
 
 // API 공통 유틸리티 함수들 - Express + PocketBase 기반으로 변경
@@ -19,25 +20,6 @@ const handleApiError = (error: unknown, status?: number): string => {
     return error.message
   }
   return status ? `HTTP Error: ${status}` : "Unknown error occurred"
-}
-
-// API 응답 타입
-interface ApiResponse<T = unknown> {
-  success?: boolean
-  data?: T
-  error?: string
-}
-
-// 좋아요 관련 데이터 타입
-interface LikeData {
-  count?: number
-  total_likes?: number
-  ip_address?: string
-}
-
-// 조회수 관련 데이터 타입
-interface ViewData {
-  views?: number
 }
 
 // 좋아요 관련 API
@@ -87,7 +69,7 @@ export const likeApi = {
   },
 
   // 총 좋아요 수 조회
-  getTotalLikes: async (slug: string): Promise<ApiResponse<{ total: number }>> => {
+  getTotalLikes: async (slug: string): Promise<ApiResponse<TotalLikesData>> => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/likes/${slug}/total`, {
         headers: getHeaders(),
