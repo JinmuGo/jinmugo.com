@@ -15,3 +15,11 @@ export async function getEnglishPortfolio() {
 export async function getKoreanPortfolio() {
   return await getCollection("app", (item) => item.slug === "portfolio")
 }
+
+export async function getEnglishResume() {
+  return await getCollection("app", (item) => item.slug === "resumeen")
+}
+
+export async function getKoreanResume() {
+  return await getCollection("app", (item) => item.slug === "resume")
+}

@@ -1,6 +1,4 @@
 ---
-import { Image } from "astro:assets";
-import Breadcrumb from "@/components/seo/Breadcrumb.astro";
 import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils";
 import {
   buildPageUrl,
@@ -8,10 +6,10 @@ import {
   generatePageSchema,
 } from "@/utils/structuredData";
 import pkg from "~/package.json";
-import Layout from "@/layouts/Layout.astro";
+import Layout from "../layouts/Layout.astro";
 import { ObsidianDownloadCount } from "@/components/features/ObsidianDownloadCount";
 import { PortfolioList } from "@/components/features/PortfolioList";
-import { getEnglishPortfolio } from "@/utils/content/apps";
+import { getKoreanResume } from "@/utils/content/apps";
 
 // GitHub stars를 빌드 타임에 가져오는 함수
 async function fetchGitHubStars(
@@ -22,7 +20,7 @@ async function fetchGitHubStars(
     const token = import.meta.env.GITHUB_TOKEN;
     const headers: HeadersInit = {
       Accept: "application/vnd.github.v3+json",
-      "User-Agent": "jinmu.me-portfolio",
+      "User-Agent": "jinmu.me-resume",
     };
 
     // GitHub Token이 있으면 사용 (rate limit 증가)
@@ -67,33 +65,33 @@ async function fetchGitHubStars(
 
 // Breadcrumb 항목 생성
 const breadcrumbItems = generateBreadcrumbItems({
-  pathname: "/en/portfolio",
-  origin: pkg.homepage,
-  lang: "en",
-  title: "Portfolio",
+  pathname: "/resume",
+  origin: buildPageUrl(pkg.homepage, ""),
+  lang: "ko",
+  title: "Resume",
 });
 
 const pageSchema = generatePageSchema({
-  title: "Portfolio",
-  description: "Jinmu's Portfolio",
-  url: buildPageUrl(pkg.homepage, "/en/portfolio"),
-  keywords: "portfolio, projects, works",
-  inLanguage: "en",
+  title: "Resume",
+  description: "Jinmu's Resume",
+  url: buildPageUrl(pkg.homepage, "/resume"),
+  keywords: "resume, projects, works",
+  inLanguage: "ko",
 });
 
 const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
 const jsonLd = [pageSchema, breadcrumbSchema];
 
-const title = "Portfolio";
-const description = "Portfolio of Jinmu Ko, Developer Finding Leverage Points";
+const title = "Resume";
+const description = "지렛점을 찾는 개발자, 고진무의 이력서";
 
-// Portfolio 데이터를 마크다운 파일에서 가져오기
-const portfolio = await getEnglishPortfolio();
-const portfolioData = portfolio[0]?.data || {
-  name: "Jinmu Ko",
-  philosophy: `My name 撫 (Mu) carries the meaning of 'soothing formless things by hand.'
-Discovering invisible problems like user inconveniences,
-and solving them one by one with code, I am a developer growing through this process.`,
+// Resume 데이터를 마크다운 파일에서 가져오기
+const resume = await getKoreanResume();
+const resumeData = resume[0]?.data || {
+  name: "고진무 (Jinmu Go)",
+  philosophy: `이름 중 撫(무)는 '형체 없는 것을 손으로 어루만져 가라앉힌다'는 뜻입니다.
+사용자의 불편함이라는 보이지 않는 문제를 발견하고,
+해결하며 성장하며 살아가고 싶습니다.`,
   contact: {
     email: "hi@jinmu.me",
     github: "https://github.com/JinmuGo",
@@ -102,13 +100,13 @@ and solving them one by one with code, I am a developer growing through this pro
 };
 
 const intro = {
-  name: portfolioData.name,
-  philosophy: portfolioData.philosophy,
-  contact: portfolioData.contact,
+  name: resumeData.name,
+  philosophy: resumeData.philosophy,
+  contact: resumeData.contact,
 };
 
 // 섹션 데이터 구조 (마크다운에서 가져온 데이터 사용)
-const sections = portfolioData.sections || [];
+const sections = resumeData.sections || [];
 
 // opensource 섹션의 stars 초기화 및 빌드 타임에 GitHub stars 가져오기
 const opensourceSection = sections.find((s: any) => s.type === "opensource");
@@ -134,12 +132,10 @@ if (opensourceSection) {
 <Layout
   title={title}
   description={description}
-  lang="en"
+  lang="ko"
   jsonLd={jsonLd}
   type="website"
 >
-  <Breadcrumb items={breadcrumbItems} />
-
   <!-- Intro Section -->
   <section class="pb-12">
     <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
@@ -235,10 +231,10 @@ if (opensourceSection) {
             <PortfolioList client:load projects={section.data as any[]} />
             <div class="mt-12 flex justify-center">
               <a
-                href="/en/projects"
+                href="/projects"
                 class="inline-flex items-center gap-2 px-6 py-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-gray-900 dark:hover:border-gray-400 transition-colors"
               >
-                <span>All Projects</span>
+                <span>All projects</span>
                 <svg
                   class="w-4 h-4"
                   viewBox="0 0 24 24"
@@ -443,7 +439,7 @@ if (opensourceSection) {
                 const isFeatured = cert.image;
                 return (
                   <div
-                    class={`py-8 px-6 -mx-6 rounded-lg ${
+                    class={`px-6 -mx-6 rounded-lg ${
                       isFeatured
                         ? "bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
                         : ""
@@ -451,7 +447,6 @@ if (opensourceSection) {
                   >
                     {/* Header with Title */}
                     <div class="flex items-center justify-between gap-4 mb-3">
-                      <span class="w-2 h-2 rounded-full bg-gray-900 dark:bg-gray-100" />
                       <div class="flex-1">
                         {cert.link ? (
                           <div class="flex items-center gap-3">
