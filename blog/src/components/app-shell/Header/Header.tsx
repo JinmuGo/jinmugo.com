@@ -1,6 +1,6 @@
 import debounce from "lodash.debounce"
 import { useCallback, useEffect, useState } from "react"
-import CommandPalette from "@/components/CommandPalette"
+import CommandPalette from "@/components/search/CommandPalette"
 import type { MemoMetadata, PostMetadata } from "@/types/content"
 import HeaderSlider from "./HeaderSlider"
 import headerNavLinks from "./headerNavLinks"

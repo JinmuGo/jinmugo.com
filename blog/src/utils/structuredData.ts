@@ -1,53 +1,29 @@
+import type {
+  ArticleSchemaOptions,
+  BreadcrumbItem,
+  ListItem,
+  OrganizationSchemaOptions,
+  PageSchemaOptions,
+  PersonSchemaOptions,
+  WebsiteSchemaOptions,
+} from "@/types/schema"
 import pkg from "~/package.json"
 
-export interface ListItem {
-  "@type": "ListItem"
-  url: string
-  position: number
-  item: {
-    "@type": "Article" | "Collection" | "CreativeWork"
-    name: string
-    url: string
-    description?: string
-  }
-}
-
-export interface PageSchemaOptions {
-  type?:
-    | "WebPage"
-    | "AboutPage"
-    | "CheckoutPage"
-    | "CollectionPage"
-    | "MediaGallery"
-    | "ImageGallery"
-    | "VideoGallery"
-    | "ContactPage"
-    | "FAQPage"
-    | "ItemPage"
-    | "MedicalWebPage"
-    | "ProfilePage"
-    | "QAPage"
-    | "RealEstateListing"
-    | "SearchResultsPage"
-  title: string
-  description: string
-  url: string
-  imageUrl?: string
-  keywords?: string
-  inLanguage?: string
-  itemListElements?: ListItem[]
-  extra?: Record<string, unknown>
+// Re-export types for backward compatibility
+export type {
+  ArticleSchemaOptions,
+  BreadcrumbItem,
+  ListItem,
+  OrganizationSchemaOptions,
+  PageSchemaOptions,
+  PersonSchemaOptions,
+  WebsiteSchemaOptions,
 }
 
 export const generateStructuredData = <T extends Record<string, unknown>>(data: T) => ({
   "@context": "https://schema.org",
   ...data,
 })
-
-export interface BreadcrumbItem {
-  name: string
-  item: string
-}
 
 export const generateBreadcrumbSchema = (items: BreadcrumbItem[]) =>
   generateStructuredData({
@@ -119,23 +95,6 @@ export const generatePageSchema = (options: PageSchemaOptions) => {
 // Posts 페이지 전용 스키마 생성 함수 (편의 함수)
 export const generatePostsPageSchema = (options: Omit<PageSchemaOptions, "type">) => {
   return generatePageSchema({ ...options, type: "CollectionPage" })
-}
-
-// Article/BlogPosting 스키마 옵션
-export interface ArticleSchemaOptions {
-  title: string
-  description: string
-  url: string
-  imageUrl?: string
-  keywords?: string
-  inLanguage?: string
-  datePublished: string
-  dateModified?: string
-  authorName: string
-  authorUrl?: string
-  wordCount?: number
-  readingTime?: number
-  extra?: Record<string, unknown>
 }
 
 // Article 스키마 생성 함수
@@ -224,19 +183,6 @@ export const buildPageUrl = (basePath: string, path: string) => buildUrl(basePat
 export const buildItemUrl = (url: string) => buildUrl(url)
 
 // Organization 스키마 생성 함수
-export interface OrganizationSchemaOptions {
-  name: string
-  url: string
-  logo?: string
-  description?: string
-  sameAs?: string[]
-  contactPoint?: {
-    telephone?: string
-    email?: string
-    contactType?: string
-  }
-}
-
 export const generateOrganizationSchema = (options: OrganizationSchemaOptions) => {
   const { name, url, logo, description, sameAs, contactPoint } = options
 
@@ -272,16 +218,6 @@ export const generateOrganizationSchema = (options: OrganizationSchemaOptions) =
 }
 
 // Person 스키마 생성 함수
-export interface PersonSchemaOptions {
-  name: string
-  url?: string
-  image?: string
-  description?: string
-  jobTitle?: string
-  worksFor?: string
-  sameAs?: string[]
-}
-
 export const generatePersonSchema = (options: PersonSchemaOptions) => {
   const { name, url, image, description, jobTitle, worksFor, sameAs } = options
 
@@ -324,18 +260,6 @@ export const generatePersonSchema = (options: PersonSchemaOptions) => {
 }
 
 // Website 스키마 생성 함수
-export interface WebsiteSchemaOptions {
-  name: string
-  url: string
-  description: string
-  inLanguage?: string
-  potentialAction?: {
-    "@type": "SearchAction"
-    target: string
-    "query-input": string
-  }
-}
-
 export const generateWebsiteSchema = (options: WebsiteSchemaOptions) => {
   const { name, url, description, inLanguage = "ko", potentialAction } = options
 

@@ -1,4 +1,4 @@
-import type { BreadcrumbItem } from "./structuredData"
+import type { BreadcrumbItem } from "@/types/schema"
 
 export interface BreadcrumbConfig {
   pathname: string

@@ -1,8 +1,6 @@
 import type { CollectionEntry } from "astro:content"
-import type { getKoreanMemos } from "@/content-utils/memos"
-import type { getKoreanPosts } from "@/content-utils/posts"
-
-export type PostLayoutType = "PostDefault" | "PostBannerX" | "PostBannerY"
+import type { getKoreanMemos } from "@/utils/content/memos"
+import type { getKoreanPosts } from "@/utils/content/posts"
 
 type ContentType = "post" | "memo"
 
@@ -27,4 +25,13 @@ export type Post = Awaited<ReturnType<typeof getKoreanPosts>>[number] & {
 
 export type Memo = Awaited<ReturnType<typeof getKoreanMemos>>[number] & {
   type: ContentType
+}
+
+/**
+ * Series information for grouping related posts
+ */
+export interface Series {
+  name: string
+  posts: Post[]
+  totalPosts: number
 }
