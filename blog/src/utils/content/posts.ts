@@ -1,6 +1,6 @@
 import { getCollection } from "astro:content"
-import { filterEnglishContent, filterKoreanContent } from "@/content-utils/content"
 import type { Post } from "@/types/content"
+import { filterEnglishContent, filterKoreanContent } from "@/utils/content"
 
 const slug = (post: Post) => post.slug.split("/").pop() ?? ""
 
