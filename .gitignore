@@ -22,3 +22,5 @@ pnpm-debug.log*
 
 # Supabase temp files
 api/supabase/.temp/
+
+.cursor/
