@@ -6,6 +6,7 @@ import Container from "@/layouts/Container.astro";
 import type { Post } from "@/types/content";
 import StructuredData from "@/utils/structuredData.astro";
 import Header from "@/components/app-shell/Header/Header.tsx";
+import MobileMenu from "@/components/app-shell/Header/MobileMenu.tsx";
 
 const pathname = Astro.url.pathname;
 
@@ -52,5 +53,6 @@ const containerStyles = {
     <Container containerStyles={containerStyles}>
       <slot />
     </Container>
+    <MobileMenu pathname={pathname} client:load />
   </body>
 </html>
