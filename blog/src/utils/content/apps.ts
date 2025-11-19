@@ -17,9 +17,16 @@ export async function getKoreanPortfolio() {
 }
 
 export async function getEnglishResume() {
-  return await getCollection("app", (item) => item.slug === "resumeen")
+  return await getCollection(
+    "resume",
+    (item) =>
+      item.id === "resume/resume.en.mdx" || item.slug === "resume-en" || item.slug === "resumeen",
+  )
 }
 
 export async function getKoreanResume() {
-  return await getCollection("app", (item) => item.slug === "resume")
+  return await getCollection(
+    "resume",
+    (item) => item.id === "resume/resume.mdx" || item.slug === "resume",
+  )
 }

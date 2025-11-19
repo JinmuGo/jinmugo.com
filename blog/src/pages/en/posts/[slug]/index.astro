@@ -1,32 +1,32 @@
 ---
-import { components } from "@/components/mdx/components.astro"
 import PhotoSwipe from "@/components/features/PhotoSwipe.astro"
-import { getEnglishPosts } from "@/utils/content/posts"
+import { components } from "@/components/mdx/components.astro"
 import PostBannerX from "@/layouts/PostBannerX.astro"
 import PostBannerY from "@/layouts/PostBannerY.astro"
 import PostDefault from "@/layouts/PostDefault.astro"
 import type { Post } from "@/types/content"
 import { getBannerImageBySlug } from "@/utils/banner.astro"
+import { getEnglishPosts } from "@/utils/content/posts"
 import { selectPostLayout } from "@/utils/layoutSelector"
 
 export async function getStaticPaths() {
-	const posts = await getEnglishPosts()
+  const posts = await getEnglishPosts()
 
-	return posts.map((entry: Post) => {
-		return {
-			params: {
-				slug: entry.slug,
-			},
-			props: { entry, slug: entry.slug },
-		}
-	})
+  return posts.map((entry: Post) => {
+    return {
+      params: {
+        slug: entry.slug,
+      },
+      props: { entry, slug: entry.slug },
+    }
+  })
 }
 
 const { entry, slug }: { entry: Post; slug: string } = Astro.props
 const { Content } = await entry.render()
 const frontmatterWithSlug = {
-	...entry.data,
-	slug,
+  ...entry.data,
+  slug,
 }
 
 // Select layout based on banner image dimensions
