@@ -1,0 +1,62 @@
+---
+import { PortfolioAbout } from "@/components/portfolio/PortfolioAbout"
+import { PortfolioGallery } from "@/components/portfolio/PortfolioGallery"
+import { PortfolioHero } from "@/components/portfolio/PortfolioHero"
+import { PortfolioSkills } from "@/components/portfolio/PortfolioSkills"
+import { ScrollProgress } from "@/components/portfolio/ScrollProgress"
+import Layout from "@/layouts/Layout.astro"
+import { getKoreanPortfolio } from "@/utils/content/apps"
+import {
+  transformAboutData,
+  transformHeroData,
+  transformPortfolioProjects,
+  transformSkillsData,
+} from "@/utils/portfolio-transformer"
+import pkg from "../../package.json"
+
+// Get portfolio data from content collection
+const [portfolioEntry] = await getKoreanPortfolio()
+const { data } = portfolioEntry
+
+// Transform data using portfolio-transformer
+const heroData = transformHeroData(data, pkg)
+const aboutData = transformAboutData(data)
+const projects = transformPortfolioProjects(data)
+const skills = transformSkillsData(data)
+---
+
+<Layout title="Portfolio" description="My portfolio showcase">
+  <!-- Scroll Progress Indicator -->
+  <ScrollProgress client:load />
+
+  <!-- Hero Section -->
+  <PortfolioHero
+    client:load
+    tagline={heroData.tagline}
+    title={heroData.title}
+    description={heroData.description}
+    social={heroData.social}
+  />
+
+  <!-- Projects Gallery Section -->
+  <PortfolioGallery
+    client:load
+    projects={projects}
+    title="Featured Works"
+    archiveButtonText="View All Projects"
+    archiveButtonHref="/projects"
+    tagline="프로젝트를 클릭하여 자세히 보세요"
+  />
+
+  <!-- Skills Section -->
+  <PortfolioSkills client:load skills={skills} sectionTitle="기술 스택" />
+
+  <!-- About Section -->
+  <PortfolioAbout
+    client:visible
+    profileImage={aboutData.profileImage}
+    title={aboutData.title}
+    bio={aboutData.bio}
+    caption={aboutData.caption}
+  />
+</Layout>
