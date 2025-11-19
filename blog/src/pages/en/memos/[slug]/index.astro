@@ -1,9 +1,9 @@
 ---
-import { components } from "@/components/mdx/components.astro"
 import PhotoSwipe from "@/components/features/PhotoSwipe.astro"
-import { getEnglishMemos } from "@/utils/content/memos"
+import { components } from "@/components/mdx/components.astro"
 import MemoDefault from "@/layouts/MemoDefault.astro"
 import type { Memo } from "@/types/content"
+import { getEnglishMemos } from "@/utils/content/memos"
 
 export async function getStaticPaths() {
   // .en.md 파일(영문)만 필터링

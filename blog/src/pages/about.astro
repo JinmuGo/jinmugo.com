@@ -1,11 +1,11 @@
 ---
 import { Image } from "astro:assets"
-import { getKoreanApp } from "@/utils/content/apps"
+import ArrowButton from "@/components/content/ArrowButton.astro"
 import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
+import { getKoreanApp } from "@/utils/content/apps"
 import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
 import pkg from "~/package.json"
 import Layout from "../layouts/Layout.astro"
-import ArrowButton from "@/components/content/ArrowButton.astro"
 
 // Breadcrumb 항목 생성
 const breadcrumbItems = generateBreadcrumbItems({

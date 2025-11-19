@@ -1,13 +1,13 @@
 ---
 import ArchiveSection from "@/components/content/ArchiveSection.astro"
-import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Title from "@/components/layout/Title"
-import { getEnglishMemos } from "@/utils/content/memos"
-import { getEnglishPosts } from "@/utils/content/posts"
+import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Layout from "@/layouts/Layout.astro"
-import { countBy } from "@/utils/cn"
 import type { Memo, Post } from "@/types/content"
 import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
+import { countBy } from "@/utils/cn"
+import { getEnglishMemos } from "@/utils/content/memos"
+import { getEnglishPosts } from "@/utils/content/posts"
 import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
 
 const posts = await getEnglishPosts()

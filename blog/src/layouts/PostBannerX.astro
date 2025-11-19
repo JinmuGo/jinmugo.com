@@ -1,13 +1,13 @@
 ---
 import { Image } from "astro:assets"
-import Breadcrumb from "@/components/seo/Breadcrumb.astro"
+import UserSection from "@/components/app-shell/Comment/UserSection.astro"
 import FormattedDate from "@/components/content/FormattedDate.astro"
 import { PageViewIsland } from "@/components/features/PageViewIsland"
 import Prose from "@/components/layout/Prose.astro"
+import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Layout from "@/layouts/Layout.astro"
 import type { PostMetadata } from "@/types/content"
 import { generateContentSchemas } from "@/utils/contentSchemas"
-import UserSection from "@/components/app-shell/Comment/UserSection.astro"
 
 interface Props {
   frontmatter: PostMetadata

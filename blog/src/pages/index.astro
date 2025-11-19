@@ -2,9 +2,9 @@
 import { Image } from "astro:assets"
 import Bleed from "@/components/layout/Bleed.astro"
 import PostTimeline from "@/components/Timeline/PostTimeline.astro"
+import Layout from "@/layouts/Layout.astro"
 import { getKoreanMemos, sortMemosByDate } from "@/utils/content/memos"
 import { getKoreanPosts, sortPostsByDate } from "@/utils/content/posts"
-import Layout from "@/layouts/Layout.astro"
 import {
   generateOrganizationSchema,
   generatePageSchema,

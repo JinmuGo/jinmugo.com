@@ -1,10 +1,10 @@
 ---
 import MemoLabel from "@/components/content/MemoLabel.astro"
-import { getEnglishMemos } from "@/utils/content/memos"
-import { getEnglishPosts } from "@/utils/content/posts"
 import Layout from "@/layouts/Layout.astro"
 import type { Memo, Post } from "@/types/content"
 import { generateArchiveBreadcrumbs } from "@/utils/breadcrumbUtils"
+import { getEnglishMemos } from "@/utils/content/memos"
+import { getEnglishPosts } from "@/utils/content/posts"
 import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
 
 export async function getStaticPaths() {

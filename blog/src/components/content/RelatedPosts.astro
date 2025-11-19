@@ -1,8 +1,8 @@
 ---
 import FormattedDate from "@/components/content/FormattedDate.astro"
+import type { Memo, Post } from "@/types/content"
 import { getEnglishMemos, getKoreanMemos } from "@/utils/content/memos"
 import { getEnglishPosts, getKoreanPosts } from "@/utils/content/posts"
-import type { Memo, Post } from "@/types/content"
 
 interface Props {
   current: Post | Memo
