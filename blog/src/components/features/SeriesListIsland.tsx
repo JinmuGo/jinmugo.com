@@ -30,7 +30,7 @@ const SeriesListIsland: React.FC<SeriesListIslandProps> = ({ seriesList }) => {
             showPostDates={true}
             accordionType="multiple"
             triggerLabel={
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 cursor-pointer">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 dark:text-gray-100 dark:group-hover:text-primary-400">
                     {series.name}
