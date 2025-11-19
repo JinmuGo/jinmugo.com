@@ -9,7 +9,7 @@ import { generateContentSchemas } from "@/utils/contentSchemas"
 import UserSection from "@/components/app-shell/Comment/UserSection.astro"
 
 interface Props {
-	frontmatter: PostMetadata
+  frontmatter: PostMetadata
 }
 
 const { frontmatter } = Astro.props
@@ -17,10 +17,10 @@ const { title, date, summary, category, slug, tags } = frontmatter
 
 // Generate all schemas using consolidated utility
 const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentSchemas({
-	frontmatter,
-	pathname: Astro.url.pathname,
-	origin: Astro.url.origin,
-	contentType: "post",
+  frontmatter,
+  pathname: Astro.url.pathname,
+  origin: Astro.url.origin,
+  contentType: "post",
 })
 ---
 

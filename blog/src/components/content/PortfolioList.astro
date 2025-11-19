@@ -1,19 +1,19 @@
 ---
 interface Project {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  tags: string[];
-  period: string;
-  link?: string;
+  id: number
+  title: string
+  description: string
+  image: string
+  tags: string[]
+  period: string
+  link?: string
 }
 
 interface Props {
-  projects: Project[];
+  projects: Project[]
 }
 
-const { projects } = Astro.props;
+const { projects } = Astro.props
 ---
 
 <div class="space-y-1">

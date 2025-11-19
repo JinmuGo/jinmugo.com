@@ -5,9 +5,9 @@ import { GiscusComments } from "./GiscusComments"
 import { Flower } from "./LikeFlower"
 
 interface Props {
-	slug: string
-	frontmatter?: PostMetadata | MemoMetadata
-	type: "post" | "memo"
+  slug: string
+  frontmatter?: PostMetadata | MemoMetadata
+  type: "post" | "memo"
 }
 
 const { slug, frontmatter, type } = Astro.props

@@ -53,11 +53,7 @@ export function PortfolioList({ projects }: PortfolioListProps) {
           {/* Image - supports both relative paths and external URLs */}
           {project.image && (
             <div className="mb-4 rounded-lg overflow-hidden">
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-64 object-cover"
-              />
+              <img src={project.image} alt={project.title} className="w-full h-64 object-cover" />
             </div>
           )}
 

@@ -3,11 +3,11 @@ import FormattedDate from "@/components/content/FormattedDate.astro"
 import { PageViewIsland } from "@/components/features/PageViewIsland"
 
 interface Props {
-	category?: string
-	date: Date
-	slug: string
-	showViews?: boolean
-	variant?: "default" | "compact"
+  category?: string
+  date: Date
+  slug: string
+  showViews?: boolean
+  variant?: "default" | "compact"
 }
 
 const { category, date, slug, showViews = true, variant = "default" } = Astro.props

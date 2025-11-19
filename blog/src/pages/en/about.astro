@@ -1,15 +1,12 @@
 ---
-import { Image } from "astro:assets";
-import Breadcrumb from "@/components/seo/Breadcrumb.astro";
-import { getEnglishApp } from "@/utils/content/apps";
-import Layout from "@/layouts/Layout.astro";
-import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils";
-import {
-  buildPageUrl,
-  generateBreadcrumbSchema,
-  generatePageSchema,
-} from "@/utils/structuredData";
-import pkg from "~/package.json";
+import { Image } from "astro:assets"
+import Breadcrumb from "@/components/seo/Breadcrumb.astro"
+import { getEnglishApp } from "@/utils/content/apps"
+import Layout from "@/layouts/Layout.astro"
+import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
+import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
+import pkg from "~/package.json"
+import ArrowButton from "@/components/content/ArrowButton.astro"
 
 // Breadcrumb 항목 생성
 const breadcrumbItems = generateBreadcrumbItems({
@@ -17,7 +14,7 @@ const breadcrumbItems = generateBreadcrumbItems({
   origin: pkg.homepage,
   lang: "en",
   title: "About",
-});
+})
 
 const pageSchema = generatePageSchema({
   title: "About",
@@ -25,22 +22,22 @@ const pageSchema = generatePageSchema({
   url: buildPageUrl(pkg.homepage, "/en/about"),
   keywords: "about, author, profile",
   inLanguage: "en",
-});
+})
 
-const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
-const jsonLd = [pageSchema, breadcrumbSchema];
+const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
+const jsonLd = [pageSchema, breadcrumbSchema]
 
-const app = await getEnglishApp();
+const app = await getEnglishApp()
 const fallback = {
   name: pkg.author,
   bio: pkg.description,
   avatar: "/avatar.webp",
-};
-const hasContent = app.length > 0;
-const { name, bio, avatar } = hasContent ? app[0].data : fallback;
-const Content = hasContent ? (await app[0].render()).Content : undefined;
-const title = "About";
-const description = "About Jinmu";
+}
+const hasContent = app.length > 0
+const { name, bio, avatar } = hasContent ? app[0].data : fallback
+const Content = hasContent ? (await app[0].render()).Content : undefined
+const title = "About"
+const description = "About Jinmu"
 ---
 
 <Layout
@@ -75,25 +72,6 @@ const description = "About Jinmu";
     )
   }
 
-  <!-- Resume Link Section -->
-  <a
-    href="/en/resume"
-    class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors font-medium"
-  >
-    Resume
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      class="rotate-45"
-    >
-      <path
-        d="M3.13523 8.84197C3.3241 9.04343 3.64052 9.05363 3.84197 8.86477L7.5 5.43536L11.158 8.86477C11.3595 9.05363 11.6759 9.04343 11.8648 8.84197C12.0536 8.64051 12.0434 8.32409 11.842 8.13523L7.84197 4.38523C7.64964 4.20492 7.35036 4.20492 7.15803 4.38523L3.15803 8.13523C2.95657 8.32409 2.94637 8.64051 3.13523 8.84197Z"
-        fill="currentColor"
-        fill-rule="evenodd"
-        clip-rule="evenodd"></path>
-    </svg>
-  </a>
+  <ArrowButton href="/en/resume" label="Resume" />
+  <ArrowButton href="/en/portfolio" label="Portfolio" />
 </Layout>
