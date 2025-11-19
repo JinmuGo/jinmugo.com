@@ -121,6 +121,12 @@ const parseMdxFileContent = async (contentName) => {
 async function main() {
   console.info("DeepL API로 블로그 글 번역을 합니다.")
 
+  // API 키 검증
+  if (!DEEPL_API_KEY) {
+    console.error("Error: DEEPL_API_KEY 환경 변수가 설정되지 않았습니다.")
+    process.exit(1)
+  }
+
   // 커맨드 라인 인자로 stagedOnly 옵션 확인
   const stagedOnly = process.argv.includes("--staged-only")
 
@@ -150,29 +156,69 @@ async function main() {
     console.info(`-----------------------`)
     console.info(`(${idx + 1}/${count}) ${path} 번역 시작`)
 
-    const url = "https://api-free.deepl.com/v2/translate"
-    const options = {
-      method: "POST",
-      headers: {
-        Authorization: `DeepL-Auth-Key ${DEEPL_API_KEY}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        text: content,
-        target_lang: TARGET_LANG,
-      }),
-    }
-
     try {
+      // frontmatter와 본문 분리
+      const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/)
+      let frontmatter = ""
+      let body = content
+
+      if (frontmatterMatch) {
+        frontmatter = frontmatterMatch[1]
+        body = frontmatterMatch[2]
+      }
+
+      // 본문만 번역
+      const url = "https://api-free.deepl.com/v2/translate"
+      const options = {
+        method: "POST",
+        headers: {
+          Authorization: `DeepL-Auth-Key ${DEEPL_API_KEY}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          text: body,
+          target_lang: TARGET_LANG,
+        }),
+      }
+
       const response = await fetch(url, options)
+
+      // HTTP 응답 상태 확인
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: "Unknown error" }))
+        console.error(
+          `번역 실패: HTTP ${response.status} ${response.statusText}`,
+          errorData.message || errorData,
+        )
+        continue
+      }
+
       const data = await response.json()
-      const translatedContent = data.translations[0].text.replaceAll("---.", "---")
+
+      // 응답 데이터 검증
+      if (
+        !data.translations ||
+        !Array.isArray(data.translations) ||
+        data.translations.length === 0
+      ) {
+        console.error(`번역 실패: 잘못된 응답 형식`, data)
+        continue
+      }
+
+      const translatedBody = data.translations[0].text.replaceAll("---.", "---")
+
+      // frontmatter와 번역된 본문 합치기
+      const translatedContent = frontmatter
+        ? `---\n${frontmatter}\n---\n${translatedBody}`
+        : translatedBody
+
       const translatedMdxPath = path.replace(/\.md$/, `.${TARGET_LANG}.md`)
       console.info(`${translatedMdxPath}에 번역 파일을 작성합니다.`)
 
       await fs.writeFile(translatedMdxPath, translatedContent)
     } catch (error) {
-      console.error("Error:", error)
+      console.error(`번역 중 오류 발생 (${path}):`, error.message || error)
+      continue
     }
 
     const end = performance.now()
