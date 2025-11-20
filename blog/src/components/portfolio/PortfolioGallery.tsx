@@ -563,20 +563,22 @@ export function PortfolioGallery({
                           </ul>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                          <a
-                            href={selectedProject.live}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-foreground text-background hover:bg-foreground/90 transition-all duration-300 hover:shadow-lg cursor-pointer"
-                            style={{
-                              fontSize: "0.875rem",
-                              fontWeight: 500,
-                              letterSpacing: "0.02em",
-                            }}
-                          >
-                            <ExternalLink size={14} />
-                            View Live Project
-                          </a>
+                          {selectedProject.live && (
+                            <a
+                              href={selectedProject.live}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-foreground text-background hover:bg-foreground/90 transition-all duration-300 hover:shadow-lg cursor-pointer"
+                              style={{
+                                fontSize: "0.875rem",
+                                fontWeight: 500,
+                                letterSpacing: "0.02em",
+                              }}
+                            >
+                              <ExternalLink size={14} />
+                              View Live Project
+                            </a>
+                          )}
                           <a
                             href={selectedProject.github}
                             target="_blank"

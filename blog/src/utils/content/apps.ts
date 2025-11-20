@@ -18,15 +18,15 @@ export async function getKoreanPortfolio() {
 
 export async function getEnglishResume() {
   return await getCollection(
-    "resume",
+    "app",
     (item) =>
-      item.id === "resume/resume.en.mdx" || item.slug === "resume-en" || item.slug === "resumeen",
+      item.id === "app/resume.en.mdx" || item.slug === "resume-en" || item.slug === "resumeen",
   )
 }
 
 export async function getKoreanResume() {
   return await getCollection(
-    "resume",
-    (item) => item.id === "resume/resume.mdx" || item.slug === "resume",
+    "app",
+    (item) => item.id === "app/resume.mdx" || item.slug === "resume",
   )
 }

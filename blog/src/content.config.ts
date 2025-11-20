@@ -68,12 +68,12 @@ const ProjectSchema = z.object({
   problem: z.string(),
   role: z.string(),
   responsibilities: z.array(z.string()),
-  image: z.string(),
+  image: z.string().optional(),
   category: z.string(),
   tags: z.array(z.string()),
   timeline: z.string(),
   github: z.string(),
-  live: z.string(),
+  live: z.string().optional(),
   exhibitNumber: z.string(),
   year: z.number(),
   metrics: ProjectMetricsSchema.optional(),
@@ -163,97 +163,8 @@ const appCollection = defineCollection({
   }),
 })
 
-const ResumeExperienceSchema = z.object({
-  name: z.string(),
-  role: z.string().optional(),
-  award: z.string().optional(),
-  description: z.string(),
-  github: z.string().optional(),
-  news: z.string().optional(),
-  blog: z.string().optional(),
-})
-
-const ResumeOpenSourceSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-  role: z.string().optional(),
-  tech: z.string().optional(),
-  github: z.string().optional(),
-  githubRepo: z.string().optional(),
-  obsidianPluginId: z.string().optional(),
-  stars: z.number().optional(),
-})
-
-const ResumeSkillSchema = z.object({
-  category: z.string(),
-  items: z.array(z.string()),
-})
-
-const ResumeCertificationSchema = z.object({
-  name: z.string(),
-  link: z.string().optional(),
-  image: z.string().optional(),
-})
-
-const ResumeProjectSchema = z.object({
-  id: z.number(),
-  title: z.string(),
-  description: z.string(),
-  tags: z.array(z.string()),
-  period: z.string(),
-  link: z.string().optional(),
-  image: z.string().optional(),
-})
-
-const ResumeSectionSchema = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("experiences"),
-    title: z.string(),
-    titleClass: z.string().optional(),
-    data: z.array(ResumeExperienceSchema),
-  }),
-  z.object({
-    type: z.literal("opensource"),
-    title: z.string(),
-    titleClass: z.string().optional(),
-    data: z.array(ResumeOpenSourceSchema),
-  }),
-  z.object({
-    type: z.literal("skills"),
-    title: z.string(),
-    titleClass: z.string().optional(),
-    data: z.array(ResumeSkillSchema),
-  }),
-  z.object({
-    type: z.literal("certifications"),
-    title: z.string(),
-    titleClass: z.string().optional(),
-    data: z.array(ResumeCertificationSchema),
-  }),
-  z.object({
-    type: z.literal("projects"),
-    title: z.string(),
-    titleClass: z.string().optional(),
-    data: z.array(ResumeProjectSchema),
-  }),
-])
-
-const resumeCollection = defineCollection({
-  type: "content",
-  schema: z.object({
-    name: z.string(),
-    philosophy: z.string(),
-    contact: z.object({
-      email: z.string(),
-      github: z.string(),
-    }),
-    sections: z.array(ResumeSectionSchema),
-  }),
-})
-
 export const collections = {
   post: postCollection,
   memo: memoCollection,
   app: appCollection,
-  resume: resumeCollection,
 }
