@@ -6,6 +6,8 @@ name: Deploy Astro site to Pages
 
 on:
   # Runs on pushes targeting the default branch
+  repository_dispatch:
+    types: [new_photos_uploaded]
   push:
     branches: ["main"]
     paths:
