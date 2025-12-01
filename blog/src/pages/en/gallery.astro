@@ -11,58 +11,80 @@ import pkg from "~/package.json"
 // S3 클라이언트 생성 (CI/preview에서는 비활성화)
 const DISABLE_REMOTE_GALLERY =
   (import.meta.env.DISABLE_REMOTE_GALLERY ?? process.env.DISABLE_REMOTE_GALLERY) === "true" ||
-  !import.meta.env.R2_BUCKET_NAME
-const s3Client = new S3Client({
-  credentials: {
-    accessKeyId: import.meta.env.R2_ACCESS_KEY_ID,
-    secretAccessKey: import.meta.env.R2_SECRET_ACCESS_KEY,
-  },
-  endpoint: `https://${import.meta.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  region: "auto",
-})
+  !import.meta.env.R2_BUCKET_NAME ||
+  !import.meta.env.R2_ACCESS_KEY_ID ||
+  !import.meta.env.R2_SECRET_ACCESS_KEY ||
+  !import.meta.env.R2_ACCOUNT_ID
 
-const prefixDateRegex = /^(?:\d{4})\/(?:0[1-9]|1[0-2])\/(?:0[1-9]|[12]\d|3[01])/
+let images: Array<{ key: string; src: string; width: number; height: number }> = []
 
-// S3에서 이미지 목록 가져오기 (빌드 타임)
-const { Contents } = DISABLE_REMOTE_GALLERY
-  ? { Contents: [] }
-  : await s3Client.send(new ListObjectsCommand({ Bucket: import.meta.env.R2_BUCKET_NAME }))
+if (!DISABLE_REMOTE_GALLERY) {
+  const bucketName = import.meta.env.R2_BUCKET_NAME
+  const accessKeyId = import.meta.env.R2_ACCESS_KEY_ID
+  const secretAccessKey = import.meta.env.R2_SECRET_ACCESS_KEY
+  const accountId = import.meta.env.R2_ACCOUNT_ID
+  
 
-const filtered = ((Contents ?? []) as _Object[]).filter(
-  (obj: _Object) => obj.Key?.endsWith(".jpg") && prefixDateRegex.test(obj.Key),
-)
+  if (bucketName && accessKeyId && secretAccessKey && accountId) {
+    const s3Client = new S3Client({
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+      endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+      region: "auto",
+    })
 
-const images = await Promise.all(
-  filtered.map(async (obj: _Object) => {
-    let width = 1200
-    let height = 800
     try {
-      if (!obj.Key) {
-        throw new Error("Key is undefined")
-      }
-      const head = DISABLE_REMOTE_GALLERY
-        ? { Metadata: undefined }
-        : await s3Client.send(
-            new HeadObjectCommand({
-              Bucket: import.meta.env.R2_BUCKET_NAME,
-              Key: obj.Key,
-            }),
-          )
-      if (head.Metadata?.width && head.Metadata?.height) {
-        width = Number(head.Metadata.width)
-        height = Number(head.Metadata.height)
-      }
-    } catch {
-      // 무시하고 기본값 사용
+      // S3에서 이미지 목록 가져오기 (빌드 타임)
+      const { Contents } = await s3Client.send(
+        new ListObjectsCommand({
+          Bucket: bucketName,
+          Prefix: "jinmu.me/"
+        }),
+      )
+      
+      const filtered = ((Contents ?? []) as _Object[]).filter(
+        (obj: _Object) =>
+          obj.Key &&
+          !obj.Key.toLowerCase().endsWith(".heic")
+      )
+
+      images = await Promise.all(
+        filtered.map(async (obj: _Object) => {
+          let width = 1200
+          let height = 800
+          try {
+            if (!obj.Key) {
+              throw new Error("Key is undefined")
+            }
+            const head = await s3Client.send(
+              new HeadObjectCommand({
+                Bucket: bucketName,
+                Key: obj.Key,
+              }),
+            )
+            if (head.Metadata?.width && head.Metadata?.height) {
+              width = Number(head.Metadata.width)
+              height = Number(head.Metadata.height)
+            }
+          } catch {
+            // 무시하고 기본값 사용
+          }
+          return {
+            key: obj.Key ?? "",
+            src: obj.Key ? `${pkg.cdnUrl}/${obj.Key}` : "",
+            width,
+            height,
+          }
+        }),
+      )
+    } catch (error) {
+      console.error("Failed to fetch images from S3:", error)
+      images = []
     }
-    return {
-      key: obj.Key ?? "",
-      src: obj.Key ? `${pkg.cdnUrl}/${obj.Key}` : "",
-      width,
-      height,
-    }
-  }),
-)
+  }
+}
 
 const title = "Gallery"
 const description = "Jinmu's gallery"
@@ -94,7 +116,7 @@ const jsonLd = [pageSchema, breadcrumbSchema]
   jsonLd={jsonLd}
   type="website"
 >
-  <Breadcrumb items={breadcrumbItems} class="mb-4" />
+  <Breadcrumb items={breadcrumbItems} />
   <div class="space-y-2 pt-6 pb-8 md:space-y-5">
     <h1
       class="text-3xl font-extrabold tracking-tight leading-9 text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14"
