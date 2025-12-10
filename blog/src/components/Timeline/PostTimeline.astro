@@ -1,4 +1,5 @@
 ---
+import DraftLabel from "@/components/content/DraftLabel.astro"
 import MemoLabel from "@/components/content/MemoLabel.astro"
 import type { Memo, Post } from "@/types/content"
 import Timeline from "./Timeline.astro"
@@ -27,6 +28,7 @@ const allContent = [...posts, ...memos].sort(
       const itemUrl = `${basePath}${item.type === 'post' ? '/posts' : '/memos'}/${item.slug}`;
       const formattedDate = item.data.date.toISOString().split("T")[0]; // yyyy-MM-dd 형식
       const isLatest = index === 0;
+      const isDraft = item.data.draft && import.meta.env.DEV;
 
       return (
         <TimelineItem>
@@ -39,6 +41,7 @@ const allContent = [...posts, ...memos].sort(
               <div class="flex items-center space-x-2">
                 <span>{item.data.title}</span>
                 {item.type === 'memo' && <MemoLabel />}
+                {isDraft && <DraftLabel />}
               </div>
               {item.data.summary && (
                 <TimelineDescription class="mt-1 text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
