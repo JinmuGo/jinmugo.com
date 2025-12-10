@@ -1,0 +1,38 @@
+---
+const props = Astro.props
+
+// Astro automatically passes width and height for local images in markdown
+const { src, alt, width, height, title, ...attrs } = props
+
+const isOptimized = width && height
+---
+
+{
+  isOptimized ? (
+    <a
+      class="photo-swipe cursor-zoom-in"
+      href={src}
+      data-pswp-width={width}
+      data-pswp-height={height}
+      data-pswp-caption={title || alt}
+      target="_blank"
+    >
+      <img
+        src={src}
+        alt={alt || ""}
+        width={width}
+        height={height}
+        title={title}
+        class="mx-auto rounded-lg shadow-md my-8"
+        {...attrs}
+      />
+    </a>
+  ) : (
+    <img
+      src={src}
+      alt={alt || ""}
+      class="mx-auto rounded-lg shadow-md my-8"
+      {...attrs}
+    />
+  )
+}

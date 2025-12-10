@@ -39,6 +39,10 @@
       if (el.src.trim() == "") {
         return;
       }
+      // 이미 MdxImage 등으로 래핑된 경우 건너뛰기
+      if (el.closest("a.photo-swipe")) {
+        return;
+      }
       if (!imgEls.includes(el)) {
         imgEls.push(el);
       }
