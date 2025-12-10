@@ -4,10 +4,13 @@ name: Published Content Migration
 # blog_obsidian 디렉토리의 마크다운 파일이 변경되면 draft가 false인 것들만 PocketBase DB에 마이그레이션
 
 on:
-  push:
+  # Runs on completion of CI workflow
+  workflow_run:
+    workflows: ["CI"]
     branches: ["main"]
-    paths:
-      - "blog/blog_obsidian"  # submodule commit hash 변경 감지
+    types:
+      - completed
+  
   workflow_dispatch:
     inputs:
       force_migrate:
@@ -24,6 +27,7 @@ env:
 
 jobs:
   detect-changes:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     name: Detect Submodule Changes
     runs-on: ubuntu-latest
     outputs:
@@ -33,6 +37,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 2
           submodules: recursive
 
@@ -88,6 +93,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.workflow_run.head_sha }}
           submodules: recursive
 
       - name: Setup Common Environment
@@ -100,10 +106,6 @@ jobs:
           PB_TOKEN=${{ secrets.PB_TOKEN }}
           NODE_ENV=production
           EOF
-
-      - name: Install API dependencies
-        run: pnpm install
-        working-directory: api
 
       - name: Show changed files
         run: |
@@ -129,7 +131,15 @@ jobs:
       - name: Verify migration
         run: |
           echo "Published content migration completed successfully!"
-          echo "Only draft=false content has been migrated to the PocketBase database."
+          echo "Verifying API health and data..."
+          # API 서버가 살아있는지 및 데이터 조회 가능한지 확인 (공개된 API 사용)
+          if [ -n "${{ secrets.PUBLIC_API_URL }}" ]; then
+            curl -f "${{ secrets.PUBLIC_API_URL }}/health" || echo "Warning: Health check failed"
+            curl -f "${{ secrets.PUBLIC_API_URL }}/api/posts?limit=1" || echo "Warning: Could not fetch posts"
+          else
+            echo "Skipping API verification (PUBLIC_API_URL not set)"
+          fi
         if: success()
+
 
   # PocketBase는 별도 배포가 필요없으므로 Edge Functions 배포 단계 제거 

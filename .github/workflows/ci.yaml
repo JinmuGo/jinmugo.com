@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  lint-and-audit:
+    name: Lint & Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        uses: ./.github/actions/common-steps
+
+      - name: Biome Check (Root)
+        run: pnpm check
+
+      - name: Security Audit
+        run: pnpm audit
+
+  test-api:
+    name: Test API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        uses: ./.github/actions/common-steps
+
+      - name: Run API Tests
+        working-directory: api
+        run: pnpm test -- --run
