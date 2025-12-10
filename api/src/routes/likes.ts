@@ -1,14 +1,30 @@
 import type { Router } from "express";
 import { Router as ExpressRouter } from "express";
+import { z } from "zod";
 import { COLLECTIONS, pb } from "../lib/pocketbase";
 
 export const likesRouter: Router = ExpressRouter();
+
+const likeSchema = z.object({
+  count: z.number().int().min(1).max(5).default(1),
+});
 
 // 포스트에 좋아요 추가
 likesRouter.post("/:slug", async (req, res) => {
   try {
     const { slug } = req.params;
-    const { count = 1 } = req.body;
+
+    // 입력 데이터 검증
+    const validationResult = likeSchema.safeParse(req.body);
+
+    if (!validationResult.success) {
+      return res.status(400).json({
+        error: "Invalid input",
+        details: validationResult.error.format(),
+      });
+    }
+
+    const { count } = validationResult.data;
     const clientIP = req.headers.x_forwarded_for || req.headers.origin || req.ip;
 
     // 포스트 존재 확인

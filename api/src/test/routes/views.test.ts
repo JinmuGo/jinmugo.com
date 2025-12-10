@@ -39,7 +39,7 @@ describe("Views API", () => {
       expect(response.body.data).toHaveProperty("views", 101);
       expect(response.body.data).toHaveProperty("post_id", "test-post-id");
       expect(mockUpdate).toHaveBeenCalledWith("test-view-id", {
-        count: 101, // 기존 100 + 1
+        "count+": 1, // Atomic update
       });
     });
 
@@ -135,7 +135,7 @@ describe("Views API", () => {
 
       expect(response.status).toBe(200);
       expect(mockUpdate).toHaveBeenCalledWith("test-view-id", {
-        count: 110, // 기존 100 + 10
+        "count+": 10, // Atomic update
       });
     });
   });

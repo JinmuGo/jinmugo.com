@@ -1,15 +1,31 @@
 import type { Router } from "express";
 import { Router as ExpressRouter } from "express";
 import type { RecordModel } from "pocketbase";
+import { z } from "zod";
 import { COLLECTIONS, pb } from "../lib/pocketbase";
 
 export const viewsRouter: Router = ExpressRouter();
+
+const viewSchema = z.object({
+  count: z.number().int().min(1).max(50).default(1),
+});
 
 // 포스트 조회수 증가
 viewsRouter.post("/:slug", async (req, res) => {
   try {
     const { slug } = req.params;
-    const { count = 1 } = req.body; // 증가할 조회수 (기본값 1)
+
+    // 입력 데이터 검증
+    const validationResult = viewSchema.safeParse(req.body);
+
+    if (!validationResult.success) {
+      return res.status(400).json({
+        error: "Invalid input",
+        details: validationResult.error.format(),
+      });
+    }
+
+    const { count } = validationResult.data; // 증가할 조회수
 
     // 포스트 존재 확인 (없으면 생성)
     const posts = await pb.collection(COLLECTIONS.POSTS).getList(1, 1, {
@@ -34,12 +50,11 @@ viewsRouter.post("/:slug", async (req, res) => {
 
     let viewRecord: RecordModel;
     if (existingViews.items.length > 0) {
-      // 기존 조회수 업데이트
+      // 기존 조회수 업데이트 (Atomic)
       const existingView = existingViews.items[0];
-      const newCount = (existingView.count || 0) + Number(count);
 
       viewRecord = await pb.collection(COLLECTIONS.POST_VIEWS).update(existingView.id, {
-        count: newCount,
+        "count+": Number(count),
       });
     } else {
       // 새 조회 기록 생성
