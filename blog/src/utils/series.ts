@@ -1,9 +1,5 @@
 import type { Memo, Post } from "@/types/content"
-import type {
-  type SeriesMetadata,
-  type SeriesSortOption,
-  type SeriesTranslations,
-} from "@/types/series"
+import type { SeriesMetadata, SeriesSortOption, SeriesTranslations } from "@/types/series"
 import type { Lang } from "@/types/utils"
 
 /**
@@ -27,7 +23,6 @@ export function groupContentBySeries(contents: (Post | Memo)[]): SeriesMetadata[
         lastUpdated: content.data.date,
         primaryCategory: null,
         categoryDistribution: {},
-        totalReadingTime: 0,
       })
     }
 
@@ -51,11 +46,6 @@ export function groupContentBySeries(contents: (Post | Memo)[]): SeriesMetadata[
     if (content.data.category) {
       series.categoryDistribution[content.data.category] =
         (series.categoryDistribution[content.data.category] || 0) + 1
-    }
-
-    // Sum reading time if available
-    if (content.data.readingTime) {
-      series.totalReadingTime = (series.totalReadingTime || 0) + content.data.readingTime
     }
   }
 

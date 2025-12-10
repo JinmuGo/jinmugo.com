@@ -12,7 +12,6 @@ export interface SeriesMetadata {
   lastUpdated: Date
   primaryCategory: string | null
   categoryDistribution: Record<string, number>
-  totalReadingTime?: number
 }
 
 /**

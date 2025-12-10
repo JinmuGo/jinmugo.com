@@ -1,4 +1,4 @@
-import { BookOpen, Calendar, FolderOpen } from "lucide-react"
+import { Calendar, FolderOpen } from "lucide-react"
 import type React from "react"
 import { useMemo, useState } from "react"
 import SeriesPostsAccordion from "@/components/features/SeriesPostsAccordion"
@@ -93,16 +93,6 @@ const SeriesListIsland: React.FC<SeriesListIslandProps> = ({ seriesList, lang })
                     <div className="flex items-center gap-1.5">
                       <FolderOpen className="size-3.5" />
                       <span>{series.primaryCategory}</span>
-                    </div>
-                  )}
-
-                  {/* Reading Time */}
-                  {series.totalReadingTime && series.totalReadingTime > 0 && (
-                    <div className="flex items-center gap-1.5">
-                      <BookOpen className="size-3.5" />
-                      <span>
-                        {Math.round(series.totalReadingTime)} {t.minutes}
-                      </span>
                     </div>
                   )}
                 </div>
