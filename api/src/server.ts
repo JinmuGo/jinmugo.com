@@ -1,6 +1,8 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { type Express } from "express";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 import { pb } from "./lib/pocketbase";
 import { likesRouter } from "./routes/likes";
 import { postsRouter } from "./routes/posts";
@@ -11,6 +13,9 @@ dotenv.config();
 
 const app: Express = express();
 const PORT = process.env.PORT || 3001;
+
+// 보안 헤더 설정
+app.use(helmet());
 
 // 미들웨어 설정
 app.use(
@@ -30,6 +35,19 @@ app.use((req, _res, next) => {
   req.clientIP = clientIP as string;
   next();
 });
+
+// Rate Limiter 설정
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15분
+  limit: 100, // 15분당 100회 요청 제한
+  standardHeaders: true, // RateLimit-* 헤더 활성화
+  legacyHeaders: true, // X-RateLimit-* 헤더 활성화
+  keyGenerator: (req) => req.clientIP, // 사용자 정의 IP 식별 사용
+  message: { error: "Too many requests, please try again later." },
+});
+
+// API 라우트에 Rate Limiter 적용
+app.use("/api", apiLimiter);
 
 // Root path 라우터
 app.get("/", (req, res) => {
