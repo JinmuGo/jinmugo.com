@@ -55,8 +55,6 @@ export function PortfolioAbout({
     "My focus is on writing maintainable code and delivering projects that meet both business objectives and user needs. I believe in continuous learning and staying updated with industry best practices.",
     "When I'm not coding, I enjoy contributing to open source projects and sharing knowledge with the developer community.",
   ],
-  caption = "Building digital experiences that matter",
-  metrics = defaultMetrics,
 }: PortfolioAboutProps) {
   return (
     <section id="about" className="py-24 px-6 lg:px-8 bg-secondary/30">
@@ -144,8 +142,8 @@ export function PortfolioAbout({
                 className="space-y-4 text-muted-foreground"
                 style={{ fontSize: "1.0625rem", lineHeight: "1.7" }}
               >
-                {bio.map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
+                {bio.map((paragraph) => (
+                  <p key={paragraph.slice(0, 20)}>{paragraph}</p>
                 ))}
               </div>
             </div>

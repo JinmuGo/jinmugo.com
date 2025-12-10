@@ -32,7 +32,7 @@ async function fetchGitHubStars(owner: string, repo: string): Promise<number | n
     if (response.status === 403) {
       // Rate limit 초과 시 조용히 실패
       if (remaining === "0" && resetTime) {
-        const resetDate = new Date(parseInt(resetTime) * 1000)
+        const resetDate = new Date(parseInt(resetTime, 10) * 1000)
         console.warn(`GitHub API rate limit exceeded. Resets at: ${resetDate.toLocaleString()}`)
       }
       return null
@@ -97,10 +97,21 @@ const intro = {
 const sections = resumeData.sections || []
 
 // opensource 섹션의 stars 초기화 및 빌드 타임에 GitHub stars 가져오기
-const opensourceSection = sections.find((s: any) => s.type === "opensource")
+const opensourceSection = sections.find(
+  (
+    s,
+  ): s is {
+    type: "opensource"
+    title: string
+    data: Array<{ githubRepo?: string; stars?: number | null } & Record<string, unknown>>
+  } => s.type === "opensource",
+)
 if (opensourceSection) {
   for (let i = 0; i < opensourceSection.data.length; i++) {
-    const project = opensourceSection.data[i] as any
+    const project = opensourceSection.data[i] as {
+      githubRepo?: string
+      stars?: number | null
+    } & Record<string, unknown>
     // stars가 없으면 null로 초기화
     if (project.stars === undefined) {
       project.stars = null

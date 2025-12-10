@@ -96,7 +96,10 @@ export interface HeroData {
   }
 }
 
-export function transformHeroData(data: PortfolioData, pkg: any): HeroData {
+export function transformHeroData(
+  data: PortfolioData,
+  pkg: { social?: { github?: string; linkedin?: string }; email?: string },
+): HeroData {
   return {
     tagline: data.hero?.tagline || "DEVELOPER",
     title: data.hero?.title || "Portfolio",

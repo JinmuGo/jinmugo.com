@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react"
 import { motion } from "motion/react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { cn } from "@/utils/cn"
 
@@ -65,11 +65,16 @@ export function PortfolioGalleryContent({
   onImageClick,
   pauseOnHover = true,
   marqueeRepeat = 4,
-  selectedIndex = null,
   onHoverChange,
 }: PortfolioGalleryContentProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const prefersReducedMotion = useReducedMotion()
+
+  // Generate unique keys for marquee repeats
+  const marqueeKeys = useMemo(
+    () => Array.from({ length: marqueeRepeat }, (_, i) => `marquee-${i}-${Date.now()}`),
+    [marqueeRepeat],
+  )
 
   const defaultImages = [
     {
@@ -120,7 +125,7 @@ export function PortfolioGalleryContent({
 
             return (
               <motion.button
-                key={index}
+                key={`${image.src}-${index}`}
                 type="button"
                 className="group cursor-pointer flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 rounded-lg"
                 style={{
@@ -191,49 +196,55 @@ export function PortfolioGalleryContent({
             "flex-row",
           )}
         >
-          {Array(marqueeRepeat)
-            .fill(0)
-            .map((_, i) => (
-              <div
-                key={i}
-                className={cn(
-                  "flex shrink-0 justify-around [gap:var(--gap)]",
-                  "animate-marquee flex-row",
-                  {
-                    "group-hover:[animation-play-state:paused]": pauseOnHover,
-                  },
-                )}
-              >
-                {images.map((image, index) => (
-                  <div
-                    key={`${i}-${index}`}
-                    className="group cursor-pointer flex-shrink-0"
-                    onClick={() => onImageClick?.(index)}
-                  >
-                    <motion.div
-                      layoutId={`project-image-${index}`}
-                      className="relative aspect-video w-64 rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-105"
-                      style={{
-                        boxShadow: `
+          {marqueeKeys.map((key, i) => (
+            <div
+              key={key}
+              className={cn(
+                "flex shrink-0 justify-around [gap:var(--gap)]",
+                "animate-marquee flex-row",
+                {
+                  "group-hover:[animation-play-state:paused]": pauseOnHover,
+                },
+              )}
+            >
+              {images.map((image, index) => (
+                <button
+                  key={`${image.src}-repeat-${i}-item-${index}`}
+                  type="button"
+                  className="group cursor-pointer flex-shrink-0"
+                  onClick={() => onImageClick?.(index)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault()
+                      onImageClick?.(index)
+                    }
+                  }}
+                  aria-label={`View ${image.alt} project details`}
+                >
+                  <motion.div
+                    layoutId={`project-image-${index}`}
+                    className="relative aspect-video w-64 rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-105"
+                    style={{
+                      boxShadow: `
                           rgba(0, 0, 0, 0.01) 0.796192px 0px 0.796192px 0px,
                           rgba(0, 0, 0, 0.03) 2.41451px 0px 2.41451px 0px,
                           rgba(0, 0, 0, 0.08) 6.38265px 0px 6.38265px 0px,
                           rgba(0, 0, 0, 0.25) 20px 0px 20px 0px
                         `,
-                      }}
-                    >
-                      <img
-                        src={image.src || "/placeholder.svg"}
-                        alt={image.alt}
-                        className="w-full h-full object-cover object-left-top"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </motion.div>
-                  </div>
-                ))}
-              </div>
-            ))}
+                    }}
+                  >
+                    <img
+                      src={image.src || "/placeholder.svg"}
+                      alt={image.alt}
+                      className="w-full h-full object-cover object-left-top"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </motion.div>
+                </button>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -45,10 +45,10 @@ export function PortfolioHero({
           </div>
 
           <h1 className={`${typography.displayLarge} text-foreground mb-6`}>
-            {title.split("\n").map((line, i) => (
-              <span key={i}>
+            {title.split("\n").map((line) => (
+              <span key={line}>
                 {line}
-                {i < title.split("\n").length - 1 && <br />}
+                {line !== title.split("\n").at(-1) && <br />}
               </span>
             ))}
           </h1>
