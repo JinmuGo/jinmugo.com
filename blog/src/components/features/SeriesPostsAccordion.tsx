@@ -19,7 +19,7 @@ export interface SeriesPostsAccordionProps {
   /**
    * List of posts in the series
    */
-  posts: PostMetadata[]
+  posts: (PostMetadata & { href?: string })[]
   /**
    * Optional: Index of the current post (for highlighting)
    */
@@ -85,7 +85,7 @@ export function SeriesPostsAccordion({
                   </span>
                 )}
                 <a
-                  href={`/posts/${post.slug}`}
+                  href={post.href ?? `/posts/${post.slug}`}
                   className={[
                     "truncate",
                     index === currentPostIndex

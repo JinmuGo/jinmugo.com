@@ -2,11 +2,11 @@ import type React from "react"
 import SeriesPostsAccordion from "@/components/features/SeriesPostsAccordion"
 import Title from "@/components/layout/Title"
 import { Accordion } from "@/components/ui/accordion"
-import type { Post } from "@/types/content"
+import type { Memo, Post } from "@/types/content"
 
 interface Series {
   name: string
-  posts: Post[]
+  posts: (Post | Memo)[]
   totalPosts: number
 }
 
@@ -26,6 +26,7 @@ const SeriesListIsland: React.FC<SeriesListIslandProps> = ({ seriesList }) => {
             posts={series.posts.map((post) => ({
               ...post.data,
               slug: post.slug,
+              href: post.href,
             }))}
             showPostDates={true}
             accordionType="multiple"

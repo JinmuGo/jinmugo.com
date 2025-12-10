@@ -49,6 +49,8 @@ const memoCollection = defineCollection({
     category: categorySchema.nullish(),
     summary: z.string().or(z.undefined()),
     lastmod: z.preprocess((v: unknown) => v ?? undefined, z.coerce.date().optional()),
+    series: z.string().nullish(),
+    seriesOrder: z.preprocess((v: unknown) => v ?? undefined, z.number().optional()),
   }),
 })
 
