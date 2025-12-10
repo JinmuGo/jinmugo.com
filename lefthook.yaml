@@ -4,16 +4,16 @@ pre-commit:
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
       run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
       stage_fixed: true
-    
+
     api-test:
       glob: "api/**/*.{js,ts}"
       run: cd api && pnpm vitest related --run {staged_files}
       fail_text: "API 테스트가 실패했습니다. 커밋을 중단합니다."
-    
+
     type-check-api:
       glob: "api/**/*.{ts,tsx}"
       run: pnpm -C api check
-    
+
     type-check-blog:
       glob: "blog/**/*.{ts,tsx,astro}"
       run: pnpm -C blog check
@@ -28,8 +28,3 @@ pre-commit:
           echo "➕ 번역된 파일 스테이징..."
           git add blog/blog_obsidian/**/*.en.md
         fi
-
-commit-msg:
-  commands:
-    commitlint:
-      run: npx commitlint --edit {1}
