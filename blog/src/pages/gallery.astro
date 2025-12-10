@@ -22,7 +22,6 @@ if (!DISABLE_REMOTE_GALLERY) {
   const accessKeyId = import.meta.env.R2_ACCESS_KEY_ID
   const secretAccessKey = import.meta.env.R2_SECRET_ACCESS_KEY
   const accountId = import.meta.env.R2_ACCOUNT_ID
-  
 
   if (bucketName && accessKeyId && secretAccessKey && accountId) {
     const s3Client = new S3Client({
@@ -39,15 +38,15 @@ if (!DISABLE_REMOTE_GALLERY) {
       const { Contents } = await s3Client.send(
         new ListObjectsCommand({
           Bucket: bucketName,
-          Prefix: "jinmu.me/"
+          Prefix: "jinmu.me/",
         }),
       )
-      
+
       const filtered = ((Contents ?? []) as _Object[]).filter(
         (obj: _Object) =>
           obj.Key &&
           !obj.Key.toLowerCase().endsWith(".heic") &&
-          !obj.Key.toLowerCase().endsWith(".mov")
+          !obj.Key.toLowerCase().endsWith(".mov"),
       )
 
       images = await Promise.all(
