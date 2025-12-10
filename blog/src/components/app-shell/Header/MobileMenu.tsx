@@ -69,8 +69,8 @@ const MobileMenu = ({ pathname }: MobileMenuProps) => {
   return (
     <>
       {/* Backdrop */}
-      <div
-        role="button"
+      <button
+        type="button"
         tabIndex={-1}
         className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] sm:hidden transition-all duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         onClick={closeMenu}

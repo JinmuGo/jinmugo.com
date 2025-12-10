@@ -6,6 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import type { PostMetadata } from "@/types/content"
+import type { Lang } from "@/types/utils"
 import { cn } from "@/utils/cn"
 
 /**
@@ -40,6 +41,10 @@ export interface SeriesPostsAccordionProps {
    * Optional: Custom className for AccordionItem
    */
   itemClassName?: string
+  /**
+   * Optional: Language for i18n (default: 'ko')
+   */
+  lang?: Lang
 }
 
 /**
@@ -53,7 +58,10 @@ export function SeriesPostsAccordion({
   accordionType = "single",
   triggerLabel = "시리즈 포스트 목록",
   itemClassName = "",
+  lang = "ko",
 }: SeriesPostsAccordionProps) {
+  const currentText = lang === "ko" ? "현재" : "Current"
+
   return (
     <Accordion
       type={accordionType}
@@ -114,7 +122,7 @@ export function SeriesPostsAccordion({
                 ) : (
                   index === currentPostIndex && (
                     <span className="text-xs text-primary-600 dark:text-primary-400 ml-2">
-                      현재
+                      {currentText}
                     </span>
                   )
                 )}

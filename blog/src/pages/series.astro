@@ -1,67 +1,21 @@
 ---
 import SeriesListIsland from "@/components/features/SeriesListIsland.tsx"
 import Layout from "@/layouts/Layout.astro"
-import type { Memo, Post } from "@/types/content"
 import { getKoreanMemos } from "@/utils/content/memos"
 import { getKoreanPosts } from "@/utils/content/posts"
+import { getSeriesTranslations, groupContentBySeries } from "@/utils/series"
 import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
 
-interface Series {
-  name: string
-  posts: (Post | Memo)[]
-  totalPosts: number
-}
-
-function groupContentBySeries(contents: (Post | Memo)[]): Series[] {
-  const map = new Map<string, Series>()
-  contents.forEach((content) => {
-    const series = content.data.series
-    if (!series) {
-      return
-    }
-    if (!map.has(series)) {
-      map.set(series, { name: series, posts: [], totalPosts: 0 })
-    }
-    const seriesObj = map.get(series)
-    if (seriesObj) {
-      seriesObj.posts.push(content)
-      seriesObj.totalPosts++
-    }
-  })
-
-  // Sort items within each series by seriesOrder (if available) or date
-  for (const series of map.values()) {
-    series.posts.sort((a, b) => {
-      // If both have seriesOrder, compare them
-      if (a.data.seriesOrder !== undefined && b.data.seriesOrder !== undefined) {
-        return a.data.seriesOrder - b.data.seriesOrder
-      }
-      // If only one has seriesOrder, it comes first (or last? usually explicit order comes first)
-      // Let's assume explicit order is preferred.
-      if (a.data.seriesOrder !== undefined) return -1
-      if (b.data.seriesOrder !== undefined) return 1
-
-      // Fallback to date (oldest first for series usually?)
-      // Original code didn't sort explicitly in the loop, but usually series are ordered.
-      // Let's keep it simple: Sort by date ascending (oldest to newest) is common for series.
-      // Or descending? The original code didn't sort.
-      // `getKoreanPosts` doesn't seem to sort by default (returns collection order).
-
-      // I'll add a simple date sort (oldest first) as it's typical for series.
-      return new Date(a.data.date).getTime() - new Date(b.data.date).getTime()
-    })
-  }
-
-  return Array.from(map.values())
-}
+const lang = "ko"
+const t = getSeriesTranslations(lang)
 
 const posts = await getKoreanPosts()
 const memos = await getKoreanMemos()
 const allContent = [...posts, ...memos]
 const seriesList = groupContentBySeries(allContent)
 
-const title = "Series"
-const description = "Jinmu's blog series"
+const title = t.pageTitle
+const description = t.pageDescription
 const jsonLd = generatePageSchema({
   type: "CollectionPage",
   title,
@@ -76,19 +30,19 @@ const jsonLd = generatePageSchema({
     item: {
       "@type": "Collection",
       name: series.name,
-      description: `${series.totalPosts}개의 포스트`,
+      description: t.postsCount(series.totalPosts),
       url: `/series/${encodeURIComponent(series.name)}`,
     },
   })),
 })
 ---
 
-<Layout 
-  title={title} 
-  description={description} 
-  lang="ko"
+<Layout
+  title={title}
+  description={description}
+  lang={lang}
   jsonLd={jsonLd}
   type="website"
 >
-  <SeriesListIsland seriesList={seriesList} client:load />
+  <SeriesListIsland seriesList={seriesList} lang={lang} client:load />
 </Layout>

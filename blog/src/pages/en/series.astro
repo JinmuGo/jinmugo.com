@@ -1,40 +1,21 @@
 ---
 import SeriesListIsland from "@/components/features/SeriesListIsland.tsx"
 import Layout from "@/layouts/Layout.astro"
-import type { Post } from "@/types/content"
+import { getEnglishMemos } from "@/utils/content/memos"
 import { getEnglishPosts } from "@/utils/content/posts"
+import { getSeriesTranslations, groupContentBySeries } from "@/utils/series"
 import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
 
-interface Series {
-  name: string
-  posts: Post[]
-  totalPosts: number
-}
-
-function groupPostsBySeries(posts: Post[]): Series[] {
-  const map = new Map<string, Series>()
-  posts.forEach((post) => {
-    const series = post.data.series
-    if (!series) {
-      return
-    }
-    if (!map.has(series)) {
-      map.set(series, { name: series, posts: [], totalPosts: 0 })
-    }
-    const seriesObj = map.get(series)
-    if (seriesObj) {
-      seriesObj.posts.push(post)
-      seriesObj.totalPosts++
-    }
-  })
-  return Array.from(map.values())
-}
+const lang = "en"
+const t = getSeriesTranslations(lang)
 
 const posts = await getEnglishPosts()
-const seriesList = groupPostsBySeries(posts)
+const memos = await getEnglishMemos()
+const allContent = [...posts, ...memos]
+const seriesList = groupContentBySeries(allContent)
 
-const title = "Series"
-const description = "Jinmu's blog series"
+const title = t.pageTitle
+const description = t.pageDescription
 const jsonLd = generatePageSchema({
   type: "CollectionPage",
   title,
@@ -49,19 +30,19 @@ const jsonLd = generatePageSchema({
     item: {
       "@type": "Collection",
       name: series.name,
-      description: `${series.totalPosts} posts`,
+      description: t.postsCount(series.totalPosts),
       url: `/en/series/${encodeURIComponent(series.name)}`,
     },
   })),
 })
 ---
 
-<Layout 
-  title={title} 
-  description={description} 
-  lang="en"
+<Layout
+  title={title}
+  description={description}
+  lang={lang}
   jsonLd={jsonLd}
   type="website"
 >
-  <SeriesListIsland seriesList={seriesList} client:load />
+  <SeriesListIsland seriesList={seriesList} lang={lang} client:load />
 </Layout>
