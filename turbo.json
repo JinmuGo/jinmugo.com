@@ -23,6 +23,10 @@
     },
     "check": {
       "cache": false
+    },
+    "test": {
+      "cache": false,
+      "dependsOn": ["^test"]
     }
   }
 }
