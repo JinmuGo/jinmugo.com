@@ -50,7 +50,7 @@ const apiLimiter = rateLimit({
 app.use("/api", apiLimiter);
 
 // Root path 라우터
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   const corsOrigin = process.env.CORS_ORIGIN;
 
   if (corsOrigin && corsOrigin !== "*") {
@@ -75,7 +75,7 @@ app.get("/health", (_req, res) => {
 });
 
 // 404 핸들러
-app.use("*", (_req, res) => {
+app.use((_req, res) => {
   res.status(404).json({ error: "Endpoint not found" });
 });
 
@@ -88,12 +88,6 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 });
 
 // 서버 시작
-app.listen(PORT, () => {
-  console.log(`🚀 API Server is running on port ${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`🗄️  PocketBase URL: ${process.env.PB_URL || "http://127.0.0.1:8090"}`);
-  console.log(`🌐 CORS Origin: ${process.env.CORS_ORIGIN || "*"}`);
-  console.log(`✅ Health check: http://localhost:${PORT}/health`);
-});
+app.listen(PORT, () => {});
 
 export default app;

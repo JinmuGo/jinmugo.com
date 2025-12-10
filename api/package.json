@@ -25,25 +25,25 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^17.2.1",
-    "express": "^4.18.2",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
     "gray-matter": "^4.0.3",
     "helmet": "^8.1.0",
-    "pocketbase": "^0.24.0",
+    "pocketbase": "^0.26.5",
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/express-rate-limit": "^6.0.2",
     "@types/helmet": "^4.0.0",
-    "@types/node": "22.13.0",
+    "@types/node": "24.10.2",
     "@types/supertest": "^6.0.3",
-    "@vitest/ui": "^3.2.4",
+    "@vitest/ui": "^4.0.15",
     "supertest": "^7.1.4",
-    "tsx": "^4.19.2",
-    "typescript": "^5.3.3",
-    "vitest": "^3.2.4"
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.15"
   }
 }

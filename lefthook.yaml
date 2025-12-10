@@ -7,16 +7,16 @@ pre-commit:
     
     api-test:
       glob: "api/**/*.{js,ts}"
-      run: pnpm -C api vitest related --run {staged_files}
+      run: cd api && pnpm vitest related --run {staged_files}
       fail_text: "API 테스트가 실패했습니다. 커밋을 중단합니다."
     
     type-check-api:
       glob: "api/**/*.{ts,tsx}"
-      run: pnpm -C api tsc --noEmit
+      run: pnpm -C api check
     
     type-check-blog:
       glob: "blog/**/*.{ts,tsx,astro}"
-      run: pnpm -C blog astro check
+      run: pnpm -C blog check
 
     translate-korean-posts:
       glob: "blog/blog_obsidian/**/*.md"
