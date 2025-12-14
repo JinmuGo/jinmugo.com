@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 import express, { type Express } from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-import { pb } from "./lib/pocketbase";
+import { startSyncJob } from "./jobs/firestore-sync.job";
+import { initializePocketBase, pb } from "./lib/pocketbase";
 import { likesRouter } from "./routes/likes";
 import { postsRouter } from "./routes/posts";
 import { viewsRouter } from "./routes/views";
@@ -87,7 +88,25 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   });
 });
 
-// 서버 시작
-app.listen(PORT, () => {});
+// 서버 시작 전 PocketBase 초기화 및 동기화 작업 시작
+(async () => {
+  try {
+    // PocketBase 인증 초기화
+    await initializePocketBase();
+
+    // Firestore → PocketBase 동기화 작업 시작 (테스트 환경 제외)
+    if (process.env.NODE_ENV !== "test") {
+      startSyncJob();
+    }
+
+    // 서버 시작
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+})();
 
 export default app;

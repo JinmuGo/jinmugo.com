@@ -1,26 +1,47 @@
 import PocketBase from "pocketbase";
 
-const PB_URL = process.env.PB_URL || "http://127.0.0.1:8090";
+/**
+ * PocketBase 인증을 초기화합니다.
+ * superuser로 인증하여 관리자 권한을 획득합니다.
+ */
+async function initializePocketBase(): Promise<PocketBase> {
+  const PB_URL = process.env.PB_URL || "http://127.0.0.1:8090";
 
-// PocketBase 클라이언트 인스턴스 생성
-const pb = new PocketBase(PB_URL);
+  // PocketBase 클라이언트 인스턴스 생성
+  const pb = new PocketBase(PB_URL);
 
-pb.autoCancellation(false);
+  if (process.env.NODE_ENV === "test") {
+    return pb;
+  }
 
-if (process.env.NODE_ENV !== "test") {
-  // option 1: authenticate as superuser using email/password (could be filled with ENV params)
-  pb.collection("_superusers").authWithPassword(
-    process.env.SUPERUSER_EMAIL || "",
-    process.env.SUPERUSER_PASS || "",
-    {
-      // This will trigger auto refresh or auto reauthentication in case
-      // the token has expired or is going to expire in the next 30 minutes.
-      autoRefreshThreshold: 30 * 60,
-    },
-  );
+  pb.autoCancellation(false);
+
+  try {
+    const authResult = await pb
+      .collection("_superusers")
+      .authWithPassword(process.env.SUPERUSER_EMAIL || "", process.env.SUPERUSER_PASS || "", {
+        // This will trigger auto refresh or auto reauthentication in case
+        // the token has expired or is going to expire in the next 30 minutes.
+        autoRefreshThreshold: 30 * 60,
+      });
+    console.log("[PocketBase] Authenticated as superuser:", authResult.record.email);
+    return pb;
+  } catch (error: unknown) {
+    const err = error as Error & {
+      code?: number;
+      reason?: string;
+      errorInfoMetadata?: { activationUrl?: string };
+      details?: string;
+      message?: string;
+    };
+    console.error("[PocketBase] Failed to authenticate:", error);
+    throw err;
+  }
 }
 
-export { pb };
+const pb = await initializePocketBase();
+
+export { pb, initializePocketBase };
 
 // 타입 정의 - 현재 스키마에 맞게 수정
 export interface BlogPost {
