@@ -55,5 +55,6 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"
 
-# 애플리케이션 실행
-CMD ["node", "dist/server.js"] 
+# 애플리케이션 실행 (Entrypoint 스크립트 사용)
+# GOOGLE_CREDENTIALS_BASE64 환경 변수가 있으면 디코딩하여 파일 생성
+CMD sh -c 'if [ -n "$GOOGLE_CREDENTIALS_BASE64" ]; then echo "$GOOGLE_CREDENTIALS_BASE64" | base64 -d > service-account-key.json; fi && node dist/server.js'
