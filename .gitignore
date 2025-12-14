@@ -24,3 +24,15 @@ pnpm-debug.log*
 api/supabase/.temp/
 
 .cursor/
+
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/.terraform.tfstate.lock.info
+
+
+# Firebase
+.firebaserc
