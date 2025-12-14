@@ -8,9 +8,16 @@ dotenv.config();
 
 // PocketBase 클라이언트 설정
 const pbUrl = process.env.PB_URL || "http://127.0.0.1:8090";
-const pb = new PocketBase(pbUrl);
-pb.authStore.save(process.env.PB_TOKEN || "", null);
 
+const pb = new PocketBase(pbUrl);
+
+pb.autoCancellation(false);
+const authResult = await pb
+  .collection("_superusers")
+  .authWithPassword(process.env.SUPERUSER_EMAIL || "", process.env.SUPERUSER_PASS || "", {
+    autoRefreshThreshold: 30 * 60,
+  });
+console.log(authResult);
 // 현재 스키마에 맞는 인터페이스
 interface BlogPost {
   slug: string;
