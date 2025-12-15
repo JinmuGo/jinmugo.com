@@ -1,5 +1,5 @@
 import { FieldValue } from "firebase-admin/firestore";
-import { admin, db, FIRESTORE_COLLECTIONS, FIRESTORE_ENABLED } from "../lib/firestore";
+import { db, FIRESTORE_COLLECTIONS, FIRESTORE_ENABLED } from "../lib/firestore";
 import type {
   LikeIncrementResult,
   PostStatsDocument,
@@ -21,44 +21,38 @@ class FirestoreStatsService {
     }
 
     const docRef = db.collection(FIRESTORE_COLLECTIONS.POST_STATS).doc(slug);
+    await db.runTransaction(async (transaction) => {
+      const doc = await transaction.get(docRef);
 
-    try {
-      await db.runTransaction(async (transaction) => {
-        const doc = await transaction.get(docRef);
+      if (!doc.exists) {
+        // 문서가 없으면 생성
+        transaction.set(docRef, {
+          slug,
+          total_views: count,
+          total_likes: 0,
+          likes_by_ip: {},
+          created_at: FieldValue.serverTimestamp(),
+          updated_at: FieldValue.serverTimestamp(),
+          last_synced_to_pb: null,
+        });
+      } else {
+        // 문서가 있으면 atomic increment
+        transaction.update(docRef, {
+          total_views: FieldValue.increment(count),
+          updated_at: FieldValue.serverTimestamp(),
+        });
+      }
+    });
 
-        if (!doc.exists) {
-          // 문서가 없으면 생성
-          transaction.set(docRef, {
-            slug,
-            total_views: count,
-            total_likes: 0,
-            likes_by_ip: {},
-            created_at: FieldValue.serverTimestamp(),
-            updated_at: FieldValue.serverTimestamp(),
-            last_synced_to_pb: null,
-          });
-        } else {
-          // 문서가 있으면 atomic increment
-          transaction.update(docRef, {
-            total_views: FieldValue.increment(count),
-            updated_at: FieldValue.serverTimestamp(),
-          });
-        }
-      });
+    // 업데이트 후 최신 데이터 조회
+    const updatedDoc = await docRef.get();
+    const data = updatedDoc.data() as PostStatsDocument;
 
-      // 업데이트 후 최신 데이터 조회
-      const updatedDoc = await docRef.get();
-      const data = updatedDoc.data() as PostStatsDocument;
-
-      return {
-        slug,
-        total_views: data.total_views,
-        success: true,
-      };
-    } catch (error) {
-      console.error(`[Firestore] Failed to increment views for ${slug}:`, error);
-      throw error;
-    }
+    return {
+      slug,
+      total_views: data.total_views,
+      success: true,
+    };
   }
 
   /**
@@ -68,21 +62,15 @@ class FirestoreStatsService {
     if (!FIRESTORE_ENABLED || !db) {
       throw new Error("Firestore is not enabled");
     }
+    const docRef = db.collection(FIRESTORE_COLLECTIONS.POST_STATS).doc(slug);
+    const doc = await docRef.get();
 
-    try {
-      const docRef = db.collection(FIRESTORE_COLLECTIONS.POST_STATS).doc(slug);
-      const doc = await docRef.get();
-
-      if (!doc.exists) {
-        return 0;
-      }
-
-      const data = doc.data() as PostStatsDocument;
-      return data.total_views || 0;
-    } catch (error) {
-      console.error(`[Firestore] Failed to get views for ${slug}:`, error);
-      throw error;
+    if (!doc.exists) {
+      return 0;
     }
+
+    const data = doc.data() as PostStatsDocument;
+    return data.total_views || 0;
   }
 
   /**
@@ -94,59 +82,53 @@ class FirestoreStatsService {
     }
 
     const docRef = db.collection(FIRESTORE_COLLECTIONS.POST_STATS).doc(slug);
+    let myLikes = 0;
+    let totalLikes = 0;
 
-    try {
-      let myLikes = 0;
-      let totalLikes = 0;
+    await db.runTransaction(async (transaction) => {
+      const doc = await transaction.get(docRef);
 
-      await db.runTransaction(async (transaction) => {
-        const doc = await transaction.get(docRef);
+      if (!doc.exists) {
+        // 문서가 없으면 생성
+        myLikes = Math.min(count, MAX_LIKES_PER_IP);
+        totalLikes = myLikes;
 
-        if (!doc.exists) {
-          // 문서가 없으면 생성
-          myLikes = Math.min(count, MAX_LIKES_PER_IP);
-          totalLikes = myLikes;
+        transaction.set(docRef, {
+          slug,
+          total_views: 0,
+          total_likes: totalLikes,
+          likes_by_ip: {
+            [userId]: myLikes,
+          },
+          created_at: FieldValue.serverTimestamp(),
+          updated_at: FieldValue.serverTimestamp(),
+          last_synced_to_pb: null,
+        });
+      } else {
+        const data = doc.data() as PostStatsDocument;
+        const currentLikes = data.likes_by_ip[userId] || 0;
 
-          transaction.set(docRef, {
-            slug,
-            total_views: 0,
-            total_likes: totalLikes,
-            likes_by_ip: {
-              [userId]: myLikes,
-            },
-            created_at: FieldValue.serverTimestamp(),
-            updated_at: FieldValue.serverTimestamp(),
-            last_synced_to_pb: null,
-          });
-        } else {
-          const data = doc.data() as PostStatsDocument;
-          const currentLikes = data.likes_by_ip[userId] || 0;
+        // 최대 좋아요 제한
+        const newCount = Math.min(currentLikes + count, MAX_LIKES_PER_IP);
+        const increment = newCount - currentLikes;
 
-          // 최대 좋아요 제한
-          const newCount = Math.min(currentLikes + count, MAX_LIKES_PER_IP);
-          const increment = newCount - currentLikes;
+        myLikes = newCount;
+        totalLikes = data.total_likes + increment;
 
-          myLikes = newCount;
-          totalLikes = data.total_likes + increment;
+        transaction.update(docRef, {
+          [`likes_by_ip.${userId}`]: newCount,
+          total_likes: FieldValue.increment(increment),
+          updated_at: FieldValue.serverTimestamp(),
+        });
+      }
+    });
 
-          transaction.update(docRef, {
-            [`likes_by_ip.${userId}`]: newCount,
-            total_likes: FieldValue.increment(increment),
-            updated_at: FieldValue.serverTimestamp(),
-          });
-        }
-      });
-
-      return {
-        slug,
-        my_likes: myLikes,
-        total_likes: totalLikes,
-        success: true,
-      };
-    } catch (error) {
-      console.error(`[Firestore] Failed to increment likes for ${slug}:`, error);
-      throw error;
-    }
+    return {
+      slug,
+      my_likes: myLikes,
+      total_likes: totalLikes,
+      success: true,
+    };
   }
 
   /**
@@ -156,21 +138,15 @@ class FirestoreStatsService {
     if (!FIRESTORE_ENABLED || !db) {
       throw new Error("Firestore is not enabled");
     }
+    const docRef = db.collection(FIRESTORE_COLLECTIONS.POST_STATS).doc(slug);
+    const doc = await docRef.get();
 
-    try {
-      const docRef = db.collection(FIRESTORE_COLLECTIONS.POST_STATS).doc(slug);
-      const doc = await docRef.get();
-
-      if (!doc.exists) {
-        return 0;
-      }
-
-      const data = doc.data() as PostStatsDocument;
-      return data.likes_by_ip[userId] || 0;
-    } catch (error) {
-      console.error(`[Firestore] Failed to get my likes for ${slug}:`, error);
-      throw error;
+    if (!doc.exists) {
+      return 0;
     }
+
+    const data = doc.data() as PostStatsDocument;
+    return data.likes_by_ip[userId] || 0;
   }
 
   /**
@@ -180,21 +156,15 @@ class FirestoreStatsService {
     if (!FIRESTORE_ENABLED || !db) {
       throw new Error("Firestore is not enabled");
     }
+    const docRef = db.collection(FIRESTORE_COLLECTIONS.POST_STATS).doc(slug);
+    const doc = await docRef.get();
 
-    try {
-      const docRef = db.collection(FIRESTORE_COLLECTIONS.POST_STATS).doc(slug);
-      const doc = await docRef.get();
-
-      if (!doc.exists) {
-        return 0;
-      }
-
-      const data = doc.data() as PostStatsDocument;
-      return data.total_likes || 0;
-    } catch (error) {
-      console.error(`[Firestore] Failed to get total likes for ${slug}:`, error);
-      throw error;
+    if (!doc.exists) {
+      return 0;
     }
+
+    const data = doc.data() as PostStatsDocument;
+    return data.total_likes || 0;
   }
 
   /**
@@ -204,20 +174,14 @@ class FirestoreStatsService {
     if (!FIRESTORE_ENABLED || !db) {
       throw new Error("Firestore is not enabled");
     }
+    const docRef = db.collection(FIRESTORE_COLLECTIONS.POST_STATS).doc(slug);
+    const doc = await docRef.get();
 
-    try {
-      const docRef = db.collection(FIRESTORE_COLLECTIONS.POST_STATS).doc(slug);
-      const doc = await docRef.get();
-
-      if (!doc.exists) {
-        return null;
-      }
-
-      return doc.data() as PostStatsDocument;
-    } catch (error) {
-      console.error(`[Firestore] Failed to get post stats for ${slug}:`, error);
-      throw error;
+    if (!doc.exists) {
+      return null;
     }
+
+    return doc.data() as PostStatsDocument;
   }
 
   /**
@@ -227,15 +191,9 @@ class FirestoreStatsService {
     if (!FIRESTORE_ENABLED || !db) {
       throw new Error("Firestore is not enabled");
     }
+    const snapshot = await db.collection(FIRESTORE_COLLECTIONS.POST_STATS).get();
 
-    try {
-      const snapshot = await db.collection(FIRESTORE_COLLECTIONS.POST_STATS).get();
-
-      return snapshot.docs.map((doc) => doc.data() as PostStatsDocument);
-    } catch (error) {
-      console.error("[Firestore] Failed to get all post stats:", error);
-      throw error;
-    }
+    return snapshot.docs.map((doc) => doc.data() as PostStatsDocument);
   }
 
   /**
@@ -245,16 +203,10 @@ class FirestoreStatsService {
     if (!FIRESTORE_ENABLED || !db) {
       throw new Error("Firestore is not enabled");
     }
-
-    try {
-      const docRef = db.collection(FIRESTORE_COLLECTIONS.POST_STATS).doc(slug);
-      await docRef.update({
-        last_synced_to_pb: FieldValue.serverTimestamp(),
-      });
-    } catch (error) {
-      console.error(`[Firestore] Failed to update last_synced_to_pb for ${slug}:`, error);
-      throw error;
-    }
+    const docRef = db.collection(FIRESTORE_COLLECTIONS.POST_STATS).doc(slug);
+    await docRef.update({
+      last_synced_to_pb: FieldValue.serverTimestamp(),
+    });
   }
 }
 

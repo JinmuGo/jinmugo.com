@@ -42,7 +42,9 @@ export const likeApi = {
   likePost: async (slug: string, count: number = 1): Promise<ApiResponse<LikeData>> => {
     try {
       const user = await ensureAuth()
-      if (!user) throw new Error("Authentication failed")
+      if (!user) {
+        throw new Error("Authentication failed")
+      }
 
       const uid = user.uid
       const docRef = doc(db, COLLECTION_NAME, slug)
@@ -111,7 +113,9 @@ export const likeApi = {
   getMyLike: async (slug: string): Promise<ApiResponse<LikeData>> => {
     try {
       const user = await ensureAuth()
-      if (!user) throw new Error("Authentication failed")
+      if (!user) {
+        throw new Error("Authentication failed")
+      }
 
       const uid = user.uid
       const docRef = doc(db, COLLECTION_NAME, slug)

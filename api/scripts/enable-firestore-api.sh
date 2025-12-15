@@ -28,3 +28,4 @@ echo ""
 echo "3. Run the migration again:"
 echo "   pnpm migrate:firestore"
 
+

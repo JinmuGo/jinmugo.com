@@ -10,8 +10,6 @@ const SYNC_ENABLED = process.env.SYNC_JOB_ENABLED === "true";
  */
 async function syncDocument(slug: string, data: PostStatsDocument) {
   try {
-    console.log(`[Sync Listener] Detected change in: ${slug}`);
-
     // Views 동기화
     await pocketbaseStatsService.syncViewsFromFirestore(slug, data.total_views);
 
@@ -29,9 +27,7 @@ async function syncDocument(slug: string, data: PostStatsDocument) {
 
     // 여기서는 일단 업데이트를 수행합니다. (무한 루프 방지 로직은 아래 리스너에서 처리)
     await firestoreStatsService.updateLastSyncedToPb(slug);
-  } catch (error) {
-    console.error(`[Sync Listener] Failed to sync ${slug}:`, error);
-  }
+  } catch (_error) {}
 }
 
 /**
@@ -39,16 +35,12 @@ async function syncDocument(slug: string, data: PostStatsDocument) {
  */
 export function startSyncJob(): void {
   if (!SYNC_ENABLED) {
-    console.log("[Sync Job] Sync job disabled (SYNC_JOB_ENABLED=false)");
     return;
   }
 
   if (!FIRESTORE_ENABLED || !db) {
-    console.log("[Sync Job] Firestore not enabled, sync listener will not start");
     return;
   }
-
-  console.log("[Sync Job] Starting Firestore Real-time Listener...");
 
   // Real-time Listener 등록
   const query = db.collection(FIRESTORE_COLLECTIONS.POST_STATS);
@@ -84,9 +76,7 @@ export function startSyncJob(): void {
         }
       });
     },
-    (error) => {
-      console.error("[Sync Listener] Listener error:", error);
-    },
+    (_error) => {},
   );
 
   // 프로세스 종료 시 리스너 해제 (선택 사항, 보통 서버 종료 시 같이 종료됨)

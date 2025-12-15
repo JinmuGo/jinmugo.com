@@ -29,16 +29,9 @@ if (FIRESTORE_ENABLED && process.env.NODE_ENV !== "test") {
               credential: cert(serviceAccount),
               projectId: process.env.FIREBASE_PROJECT_ID || serviceAccount.project_id,
             };
-            console.log("[Firestore] Using GOOGLE_APPLICATION_CREDENTIALS");
-            console.log(
-              `[Firestore] Credentials file: ${process.env.GOOGLE_APPLICATION_CREDENTIALS}`,
-            );
           } else {
             // OAuth 2.0 형식이거나 서비스 계정 키가 아닌 경우 Default Credentials 사용
             if (process.env.NODE_ENV === "development") {
-              console.warn(
-                "[Firestore] GOOGLE_APPLICATION_CREDENTIALS is not a service account key, Firestore will use default credentials",
-              );
             }
             // firebaseConfig는 빈 객체로 유지하여 Default Credentials 사용
             firebaseConfig = {
@@ -48,9 +41,6 @@ if (FIRESTORE_ENABLED && process.env.NODE_ENV !== "test") {
         } catch (error) {
           // 파일 읽기 실패는 개발 환경에서는 경고, 프로덕션에서는 에러
           if (process.env.NODE_ENV === "development") {
-            console.warn(
-              `[Firestore] Failed to read GOOGLE_APPLICATION_CREDENTIALS file, Firestore will use default credentials: ${error instanceof Error ? error.message : String(error)}`,
-            );
             firebaseConfig = {
               projectId: process.env.FIREBASE_PROJECT_ID,
             };
@@ -59,7 +49,6 @@ if (FIRESTORE_ENABLED && process.env.NODE_ENV !== "test") {
               `Failed to read GOOGLE_APPLICATION_CREDENTIALS file: ${error instanceof Error ? error.message : String(error)}`,
             );
             initializationError = err;
-            console.error("[Firestore] Initialization failed:", err.message);
             throw err;
           }
         }
@@ -70,22 +59,16 @@ if (FIRESTORE_ENABLED && process.env.NODE_ENV !== "test") {
             "Firestore credentials missing. Required: GOOGLE_APPLICATION_CREDENTIALS environment variable pointing to service account key file, or FIREBASE_PROJECT_ID for default credentials",
           );
           initializationError = error;
-          console.error("[Firestore] Initialization failed:", error.message);
         } else {
           firebaseConfig = {
             projectId: process.env.FIREBASE_PROJECT_ID,
           };
-          console.log("[Firestore] Using default credentials (Cloud Run environment)");
         }
       }
 
       // Firebase App 초기화
       if (!initializationError) {
-        const app = initializeApp(firebaseConfig);
-        console.log(
-          `[Firestore] Initialized for project: ${app.options.projectId || process.env.FIREBASE_PROJECT_ID}`,
-        );
-        console.log(`[Firestore] App name: ${app.name}`);
+        const _app = initializeApp(firebaseConfig);
       }
     }
 
@@ -97,15 +80,9 @@ if (FIRESTORE_ENABLED && process.env.NODE_ENV !== "test") {
       // Firestore 인스턴스 생성 - 데이터베이스 ID를 직접 전달
       // "(default)"는 기본 데이터베이스를 의미하며, getFirestore의 두 번째 인자로 전달하지 않으면 기본값 사용
       db = databaseId !== "(default)" ? getFirestore(app, databaseId) : getFirestore(app);
-
-      console.log("[Firestore] Firestore instance created successfully");
-      console.log(
-        `[Firestore] Using database: ${databaseId} in project: ${app.options.projectId || process.env.FIREBASE_PROJECT_ID}`,
-      );
     }
   } catch (error) {
     initializationError = error instanceof Error ? error : new Error(String(error));
-    console.error("[Firestore] Initialization error:", initializationError.message);
     db = null;
   }
 }

@@ -20,12 +20,7 @@ class StatsService {
     if (FIRESTORE_ENABLED) {
       try {
         return await firestoreStatsService.incrementViews(slug, count);
-      } catch (error) {
-        console.error(
-          `[StatsService] Firestore increment views failed for ${slug}, falling back to PocketBase:`,
-          error,
-        );
-      }
+      } catch (_error) {}
     }
     return await pocketbaseStatsService.incrementViews(slug, count);
   }
@@ -38,12 +33,7 @@ class StatsService {
     if (FIRESTORE_ENABLED) {
       try {
         return await firestoreStatsService.getViews(slug);
-      } catch (error) {
-        console.error(
-          `[StatsService] Firestore get views failed for ${slug}, falling back to PocketBase:`,
-          error,
-        );
-      }
+      } catch (_error) {}
     }
 
     // PocketBase fallback
@@ -57,12 +47,7 @@ class StatsService {
     if (FIRESTORE_ENABLED) {
       try {
         return await firestoreStatsService.incrementLikes(slug, ipAddress, count);
-      } catch (error) {
-        console.error(
-          `[StatsService] Firestore increment likes failed for ${slug}, falling back to PocketBase:`,
-          error,
-        );
-      }
+      } catch (_error) {}
     }
     return await pocketbaseStatsService.incrementLikes(slug, ipAddress, count);
   }
@@ -74,12 +59,7 @@ class StatsService {
     if (FIRESTORE_ENABLED) {
       try {
         return await firestoreStatsService.getMyLikes(slug, ipAddress);
-      } catch (error) {
-        console.error(
-          `[StatsService] Firestore get my likes failed for ${slug}, falling back to PocketBase:`,
-          error,
-        );
-      }
+      } catch (_error) {}
     }
     return await pocketbaseStatsService.getMyLikes(slug, ipAddress);
   }
@@ -92,12 +72,7 @@ class StatsService {
     if (FIRESTORE_ENABLED) {
       try {
         return await firestoreStatsService.getTotalLikes(slug);
-      } catch (error) {
-        console.error(
-          `[StatsService] Firestore get total likes failed for ${slug}, falling back to PocketBase:`,
-          error,
-        );
-      }
+      } catch (_error) {}
     }
 
     // PocketBase fallback (O(N) - getFullList + reduce)

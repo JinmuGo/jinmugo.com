@@ -101,12 +101,9 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 
     // 서버 시작
     if (process.env.NODE_ENV !== "test") {
-      app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-      });
+      app.listen(PORT, () => {});
     }
-  } catch (error) {
-    console.error("Failed to start server:", error);
+  } catch (_error) {
     process.exit(1);
   }
 })();

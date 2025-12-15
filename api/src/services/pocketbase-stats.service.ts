@@ -32,219 +32,187 @@ export class PocketBaseStatsService {
    * View count 증가
    */
   async incrementViews(slug: string, count = 1): Promise<ViewIncrementResult> {
-    try {
-      const post = await this.ensurePostExists(slug);
+    const post = await this.ensurePostExists(slug);
 
-      // 기존 조회 기록 확인
-      const existingViews = await pb.collection(COLLECTIONS.POST_VIEWS).getList(1, 1, {
-        filter: `post_id = "${post.id}"`,
+    // 기존 조회 기록 확인
+    const existingViews = await pb.collection(COLLECTIONS.POST_VIEWS).getList(1, 1, {
+      filter: `post_id = "${post.id}"`,
+    });
+
+    let viewRecord: RecordModel;
+    if (existingViews.items.length > 0) {
+      // Atomic increment
+      const existingView = existingViews.items[0];
+      viewRecord = await pb.collection(COLLECTIONS.POST_VIEWS).update(existingView.id, {
+        "count+": Number(count),
       });
-
-      let viewRecord: RecordModel;
-      if (existingViews.items.length > 0) {
-        // Atomic increment
-        const existingView = existingViews.items[0];
-        viewRecord = await pb.collection(COLLECTIONS.POST_VIEWS).update(existingView.id, {
-          "count+": Number(count),
-        });
-      } else {
-        // 새 조회 기록 생성
-        viewRecord = await pb.collection(COLLECTIONS.POST_VIEWS).create({
-          post_id: post.id,
-          count: Number(count),
-        });
-      }
-
-      return {
-        slug,
-        total_views: viewRecord.count,
-        success: true,
-      };
-    } catch (error) {
-      console.error(`[PocketBase] Failed to increment views for ${slug}:`, error);
-      throw error;
+    } else {
+      // 새 조회 기록 생성
+      viewRecord = await pb.collection(COLLECTIONS.POST_VIEWS).create({
+        post_id: post.id,
+        count: Number(count),
+      });
     }
+
+    return {
+      slug,
+      total_views: viewRecord.count,
+      success: true,
+    };
   }
 
   /**
    * View count 조회
    */
   async getViews(slug: string): Promise<number> {
-    try {
-      const posts = await pb.collection(COLLECTIONS.POSTS).getList(1, 1, {
-        filter: `slug = "${slug}"`,
-      });
+    const posts = await pb.collection(COLLECTIONS.POSTS).getList(1, 1, {
+      filter: `slug = "${slug}"`,
+    });
 
-      if (posts.items.length === 0) {
-        return 0;
-      }
-
-      const post = posts.items[0];
-      const viewsResult = await pb.collection(COLLECTIONS.POST_VIEWS).getList(1, 1, {
-        filter: `post_id = "${post.id}"`,
-        fields: "count",
-      });
-
-      return viewsResult.items.length > 0 ? viewsResult.items[0].count || 0 : 0;
-    } catch (error) {
-      console.error(`[PocketBase] Failed to get views for ${slug}:`, error);
-      throw error;
+    if (posts.items.length === 0) {
+      return 0;
     }
+
+    const post = posts.items[0];
+    const viewsResult = await pb.collection(COLLECTIONS.POST_VIEWS).getList(1, 1, {
+      filter: `post_id = "${post.id}"`,
+      fields: "count",
+    });
+
+    return viewsResult.items.length > 0 ? viewsResult.items[0].count || 0 : 0;
   }
 
   /**
    * Like count 증가
    */
   async incrementLikes(slug: string, ipAddress: string, count = 1): Promise<LikeIncrementResult> {
-    try {
-      const posts = await pb.collection(COLLECTIONS.POSTS).getList(1, 1, {
-        filter: `slug = "${slug}"`,
-      });
+    const posts = await pb.collection(COLLECTIONS.POSTS).getList(1, 1, {
+      filter: `slug = "${slug}"`,
+    });
 
-      if (posts.items.length === 0) {
-        throw new Error(`Post not found: ${slug}`);
-      }
-
-      const post = posts.items[0];
-
-      if (!post.id) {
-        throw new Error("Post ID is missing");
-      }
-
-      // 기존 좋아요 확인
-      const existingLikes = await pb.collection(COLLECTIONS.POST_LIKES).getList(1, 1, {
-        filter: `ip_address = "${ipAddress}" && post_id = "${post.id}"`,
-      });
-
-      let newCount: number;
-
-      if (existingLikes.items.length > 0) {
-        // 기존 좋아요 업데이트
-        const existingLike = existingLikes.items[0];
-        newCount = Math.min((existingLike.count || 0) + count, MAX_LIKES_PER_IP);
-
-        await pb.collection(COLLECTIONS.POST_LIKES).update(existingLike.id, {
-          count: newCount,
-          updated: new Date().toISOString(),
-        });
-      } else {
-        // 새 좋아요 생성
-        newCount = Math.min(count, MAX_LIKES_PER_IP);
-
-        await pb.collection(COLLECTIONS.POST_LIKES).create({
-          ip_address: ipAddress,
-          post_id: post.id,
-          count: newCount,
-        });
-      }
-
-      // 총 좋아요 수 계산
-      const allLikes = await pb.collection(COLLECTIONS.POST_LIKES).getFullList({
-        filter: `post_id = "${post.id}"`,
-      });
-
-      const totalLikes = allLikes.reduce((sum, like) => sum + (like.count || 0), 0);
-
-      return {
-        slug,
-        my_likes: newCount,
-        total_likes: totalLikes,
-        success: true,
-      };
-    } catch (error) {
-      console.error(`[PocketBase] Failed to increment likes for ${slug}:`, error);
-      throw error;
+    if (posts.items.length === 0) {
+      throw new Error(`Post not found: ${slug}`);
     }
+
+    const post = posts.items[0];
+
+    if (!post.id) {
+      throw new Error("Post ID is missing");
+    }
+
+    // 기존 좋아요 확인
+    const existingLikes = await pb.collection(COLLECTIONS.POST_LIKES).getList(1, 1, {
+      filter: `ip_address = "${ipAddress}" && post_id = "${post.id}"`,
+    });
+
+    let newCount: number;
+
+    if (existingLikes.items.length > 0) {
+      // 기존 좋아요 업데이트
+      const existingLike = existingLikes.items[0];
+      newCount = Math.min((existingLike.count || 0) + count, MAX_LIKES_PER_IP);
+
+      await pb.collection(COLLECTIONS.POST_LIKES).update(existingLike.id, {
+        count: newCount,
+        updated: new Date().toISOString(),
+      });
+    } else {
+      // 새 좋아요 생성
+      newCount = Math.min(count, MAX_LIKES_PER_IP);
+
+      await pb.collection(COLLECTIONS.POST_LIKES).create({
+        ip_address: ipAddress,
+        post_id: post.id,
+        count: newCount,
+      });
+    }
+
+    // 총 좋아요 수 계산
+    const allLikes = await pb.collection(COLLECTIONS.POST_LIKES).getFullList({
+      filter: `post_id = "${post.id}"`,
+    });
+
+    const totalLikes = allLikes.reduce((sum, like) => sum + (like.count || 0), 0);
+
+    return {
+      slug,
+      my_likes: newCount,
+      total_likes: totalLikes,
+      success: true,
+    };
   }
 
   /**
    * 내 좋아요 수 조회
    */
   async getMyLikes(slug: string, ipAddress: string): Promise<number> {
-    try {
-      const posts = await pb.collection(COLLECTIONS.POSTS).getList(1, 1, {
-        filter: `slug = "${slug}"`,
-      });
+    const posts = await pb.collection(COLLECTIONS.POSTS).getList(1, 1, {
+      filter: `slug = "${slug}"`,
+    });
 
-      if (posts.items.length === 0) {
-        return 0;
-      }
-
-      const post = posts.items[0];
-
-      if (!post.id) {
-        return 0;
-      }
-
-      const likes = await pb.collection(COLLECTIONS.POST_LIKES).getList(1, 1, {
-        filter: `ip_address = "${ipAddress}" && post_id = "${post.id}"`,
-      });
-
-      return likes.items.length > 0 ? likes.items[0].count || 0 : 0;
-    } catch (error) {
-      console.error(`[PocketBase] Failed to get my likes for ${slug}:`, error);
-      throw error;
+    if (posts.items.length === 0) {
+      return 0;
     }
+
+    const post = posts.items[0];
+
+    if (!post.id) {
+      return 0;
+    }
+
+    const likes = await pb.collection(COLLECTIONS.POST_LIKES).getList(1, 1, {
+      filter: `ip_address = "${ipAddress}" && post_id = "${post.id}"`,
+    });
+
+    return likes.items.length > 0 ? likes.items[0].count || 0 : 0;
   }
 
   /**
    * 총 좋아요 수 조회
    */
   async getTotalLikes(slug: string): Promise<number> {
-    try {
-      const posts = await pb.collection(COLLECTIONS.POSTS).getList(1, 1, {
-        filter: `slug = "${slug}"`,
-      });
+    const posts = await pb.collection(COLLECTIONS.POSTS).getList(1, 1, {
+      filter: `slug = "${slug}"`,
+    });
 
-      if (posts.items.length === 0) {
-        return 0;
-      }
-
-      const post = posts.items[0];
-
-      if (!post.id) {
-        return 0;
-      }
-
-      const likes = await pb.collection(COLLECTIONS.POST_LIKES).getFullList({
-        filter: `post_id = "${post.id}"`,
-      });
-
-      return likes.reduce((sum, like) => sum + (like.count || 0), 0);
-    } catch (error) {
-      console.error(`[PocketBase] Failed to get total likes for ${slug}:`, error);
-      throw error;
+    if (posts.items.length === 0) {
+      return 0;
     }
+
+    const post = posts.items[0];
+
+    if (!post.id) {
+      return 0;
+    }
+
+    const likes = await pb.collection(COLLECTIONS.POST_LIKES).getFullList({
+      filter: `post_id = "${post.id}"`,
+    });
+
+    return likes.reduce((sum, like) => sum + (like.count || 0), 0);
   }
 
   /**
    * Firestore → PocketBase 동기화 (views)
    */
   async syncViewsFromFirestore(slug: string, viewCount: number): Promise<void> {
-    try {
-      const post = await this.ensurePostExists(slug);
+    const post = await this.ensurePostExists(slug);
 
-      const existingViews = await pb.collection(COLLECTIONS.POST_VIEWS).getList(1, 1, {
-        filter: `post_id = "${post.id}"`,
+    const existingViews = await pb.collection(COLLECTIONS.POST_VIEWS).getList(1, 1, {
+      filter: `post_id = "${post.id}"`,
+    });
+
+    if (existingViews.items.length > 0) {
+      // 기존 레코드 업데이트 (Firestore 값으로 덮어쓰기)
+      await pb.collection(COLLECTIONS.POST_VIEWS).update(existingViews.items[0].id, {
+        count: viewCount,
       });
-
-      if (existingViews.items.length > 0) {
-        // 기존 레코드 업데이트 (Firestore 값으로 덮어쓰기)
-        await pb.collection(COLLECTIONS.POST_VIEWS).update(existingViews.items[0].id, {
-          count: viewCount,
-        });
-        console.log(`[PocketBase] Updated views for ${slug}: ${viewCount}`);
-      } else {
-        // 새 레코드 생성
-        await pb.collection(COLLECTIONS.POST_VIEWS).create({
-          post_id: post.id,
-          count: viewCount,
-        });
-        console.log(`[PocketBase] Created views for ${slug}: ${viewCount}`);
-      }
-    } catch (error) {
-      console.error(`[PocketBase] Failed to sync views for ${slug}:`, error);
-      throw error;
+    } else {
+      // 새 레코드 생성
+      await pb.collection(COLLECTIONS.POST_VIEWS).create({
+        post_id: post.id,
+        count: viewCount,
+      });
     }
   }
 
@@ -253,38 +221,31 @@ export class PocketBaseStatsService {
    */
   async syncLikesFromFirestore(
     slug: string,
-    totalLikes: number,
+    _totalLikes: number,
     likesByIp: { [ipAddress: string]: number } | null | undefined,
   ): Promise<void> {
-    try {
-      const post = await this.ensurePostExists(slug);
+    const post = await this.ensurePostExists(slug);
 
-      // 기존 좋아요 모두 삭제 (간단한 동기화 전략)
-      const existingLikes = await pb.collection(COLLECTIONS.POST_LIKES).getFullList({
-        filter: `post_id = "${post.id}"`,
+    // 기존 좋아요 모두 삭제 (간단한 동기화 전략)
+    const existingLikes = await pb.collection(COLLECTIONS.POST_LIKES).getFullList({
+      filter: `post_id = "${post.id}"`,
+    });
+
+    for (const like of existingLikes) {
+      await pb.collection(COLLECTIONS.POST_LIKES).delete(like.id);
+    }
+
+    // Firestore 데이터로 다시 생성
+    // likesByIp가 null/undefined일 수 있으므로 기본값 제공
+    const likesByIpData = likesByIp || {};
+    const _likeCount = Object.keys(likesByIpData).length;
+
+    for (const [ipAddress, count] of Object.entries(likesByIpData)) {
+      await pb.collection(COLLECTIONS.POST_LIKES).create({
+        ip_address: ipAddress,
+        post_id: post.id,
+        count,
       });
-
-      for (const like of existingLikes) {
-        await pb.collection(COLLECTIONS.POST_LIKES).delete(like.id);
-      }
-
-      // Firestore 데이터로 다시 생성
-      // likesByIp가 null/undefined일 수 있으므로 기본값 제공
-      const likesByIpData = likesByIp || {};
-      const likeCount = Object.keys(likesByIpData).length;
-
-      for (const [ipAddress, count] of Object.entries(likesByIpData)) {
-        await pb.collection(COLLECTIONS.POST_LIKES).create({
-          ip_address: ipAddress,
-          post_id: post.id,
-          count,
-        });
-      }
-
-      console.log(`[PocketBase] Synced likes for ${slug}: ${likeCount} IPs, total: ${totalLikes}`);
-    } catch (error) {
-      console.error(`[PocketBase] Failed to sync likes for ${slug}:`, error);
-      throw error;
     }
   }
 }

@@ -17,14 +17,13 @@ async function initializePocketBase(): Promise<PocketBase> {
   pb.autoCancellation(false);
 
   try {
-    const authResult = await pb
+    const _authResult = await pb
       .collection("_superusers")
       .authWithPassword(process.env.SUPERUSER_EMAIL || "", process.env.SUPERUSER_PASS || "", {
         // This will trigger auto refresh or auto reauthentication in case
         // the token has expired or is going to expire in the next 30 minutes.
         autoRefreshThreshold: 30 * 60,
       });
-    console.log("[PocketBase] Authenticated as superuser:", authResult.record.email);
     return pb;
   } catch (error: unknown) {
     const err = error as Error & {
@@ -34,7 +33,6 @@ async function initializePocketBase(): Promise<PocketBase> {
       details?: string;
       message?: string;
     };
-    console.error("[PocketBase] Failed to authenticate:", error);
     throw err;
   }
 }

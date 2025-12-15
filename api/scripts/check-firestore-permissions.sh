@@ -42,3 +42,4 @@ echo "  1. Grant you the 'Service Usage Admin' role, OR"
 echo "  2. Enable Firestore API via GCP Console:"
 echo "     https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=$PROJECT_ID"
 
+
