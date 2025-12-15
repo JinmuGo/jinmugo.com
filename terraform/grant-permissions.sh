@@ -62,3 +62,4 @@ echo "✅ Permissions granted successfully!"
 echo ""
 echo "You can now run: terraform apply"
 
+

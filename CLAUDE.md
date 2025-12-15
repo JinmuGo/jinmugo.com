@@ -5,10 +5,17 @@
 ## 프로젝트 개요
 
 jinmu.me의 개인 블로그와 API 서버를 포함하는 모노레포:
-- **blog/**: Obsidian에서 콘텐츠를 가져오는 Astro 기반 이중언어(한국어/영어) 블로그
-- **api/**: 조회수, 좋아요, 게시물 관리를 위한 PocketBase 통합 Express.js API 서버
 
-블로그 콘텐츠 워크플로우: Obsidian 마크다운 (`blog/blog_obsidian/`) → Astro 콘텐츠로 변환 (`blog/src/content/`) → 선택적으로 PocketBase 데이터베이스로 마이그레이션.
+### 애플리케이션 (`apps/`)
+- **apps/blog/**: Obsidian에서 콘텐츠를 가져오는 Astro 기반 이중언어(한국어/영어) 블로그
+- **apps/api/**: 조회수, 좋아요, 게시물 관리를 위한 PocketBase 통합 Express.js API 서버
+
+### 공유 패키지 (`packages/`)
+- **@jinmu/types**: 공유 TypeScript 타입 정의 (Category, PostFrontmatter, Firestore 타입 등)
+- **@jinmu/utils**: 공유 유틸리티 함수 (마크다운 파싱, slug 생성 등)
+- **@jinmu/tsconfig**: 공유 TypeScript 설정 (base, node, astro)
+
+블로그 콘텐츠 워크플로우: Obsidian 마크다운 (`apps/blog/blog_obsidian/`) → Astro 콘텐츠로 변환 (`apps/blog/src/content/`) → 선택적으로 PocketBase 데이터베이스로 마이그레이션.
 
 ## 주요 개발 명령어
 
@@ -36,9 +43,9 @@ pnpm install
 make fclean
 ```
 
-### 블로그 (`blog/`)
+### 블로그 (`apps/blog/`)
 ```bash
-cd blog
+cd apps/blog
 
 # 개발 서버 실행 (prebuild 단계 포함)
 pnpm dev
@@ -66,9 +73,9 @@ pnpm format
 pnpm check
 ```
 
-### API (`api/`)
+### API (`apps/api/`)
 ```bash
-cd api
+cd apps/api
 
 # 개발 서버 실행
 pnpm dev
@@ -99,19 +106,96 @@ pnpm docker:logs       # 로그 확인
 ## 아키텍처
 
 ### 모노레포 구조
-- **pnpm workspace**: `blog/`와 `api/` 두 개의 패키지
-- **Turborepo**: 빌드 오케스트레이션
+```
+jinmu.me/
+├── apps/                   # 애플리케이션
+│   ├── blog/              # Astro 블로그
+│   └── api/               # Express API 서버
+├── packages/              # 공유 패키지
+│   ├── types/             # @jinmu/types
+│   ├── utils/             # @jinmu/utils
+│   └── tsconfig/          # @jinmu/tsconfig
+├── pnpm-workspace.yaml
+└── turbo.json
+```
+
+- **pnpm workspace**: `apps/*`와 `packages/*` 워크스페이스
+- **Turborepo**: 빌드 오케스트레이션 및 캐싱
 - **Biome**: 린팅 및 포맷팅 (ESLint/Prettier 대체)
+
+### 공유 패키지
+
+#### @jinmu/types
+공유 TypeScript 타입 정의 및 상수:
+
+```typescript
+// Category 상수 및 타입
+import { CATEGORIES } from "@jinmu/types/content";
+import type { Category, PostFrontmatter } from "@jinmu/types/content";
+
+// Firestore 타입
+import type { PostStatsDocument, ViewIncrementResult } from "@jinmu/types/firestore";
+```
+
+주요 exports:
+- `CATEGORIES`: 블로그 카테고리 상수 배열
+- `Category`: 카테고리 타입
+- `PostFrontmatter`, `MemoFrontmatter`: 콘텐츠 메타데이터 인터페이스
+- Firestore document 타입
+
+#### @jinmu/utils
+공유 유틸리티 함수:
+
+```typescript
+// 마크다운 파싱
+import { findMarkdownFiles, parseFrontmatter } from "@jinmu/utils/markdown";
+
+// Slug 생성 및 정규화
+import { extractSlugFromPath, getPostTypeFromPath } from "@jinmu/utils/slug";
+```
+
+주요 함수:
+- `findMarkdownFiles(dir)`: 디렉토리에서 .md 파일 재귀 탐색
+- `parseFrontmatter<T>(filePath)`: gray-matter로 frontmatter 파싱
+- `extractSlugFromPath(filePath)`: 파일 경로에서 slug 추출
+- `getPostTypeFromPath(filePath)`: 경로에서 post/memo 타입 판별
+
+#### @jinmu/tsconfig
+공유 TypeScript 설정:
+
+```json
+// apps/api/tsconfig.json
+{
+  "extends": "@jinmu/tsconfig/node.json",
+  // ...
+}
+
+// apps/blog/tsconfig.json
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "paths": {
+      "@jinmu/types": ["../../packages/types/src"]
+    }
+  }
+}
+```
+
+제공 설정:
+- `base.json`: 공통 strict 설정
+- `node.json`: Node.js 프로젝트용 (API)
+- `astro.json`: Astro 프로젝트용 (Blog)
 
 ### 블로그 아키텍처
 
 **콘텐츠 플로우:**
-1. Obsidian에서 작성 (`blog/blog_obsidian/`)
+1. Obsidian에서 작성 (`apps/blog/blog_obsidian/`)
 2. `prebuild.sh`가 `obsidian-export` 실행 → `src/content/` 생성
 3. `src/content.config.ts`에 정의된 Astro 컬렉션:
    - `post`: 시리즈, 카테고리, 태그가 있는 블로그 게시물
    - `memo`: 짧은 형식의 콘텐츠
    - `app`: 애플리케이션/프로젝트 쇼케이스
+4. `@jinmu/types`에서 CATEGORIES 상수 import하여 카테고리 스키마 생성
 
 **주요 기능:**
 - **이중언어**: 한국어 (기본) + 영어 (`/en/*` 라우트)
@@ -150,7 +234,8 @@ pnpm docker:logs       # 로그 확인
 - `/api/likes`: 좋아요 상호작용
 
 **마이그레이션 스크립트:**
-- `gray-matter`를 통해 Obsidian 마크다운 frontmatter 파싱
+- `@jinmu/utils/markdown`의 `parseFrontmatter`로 Obsidian 마크다운 파싱
+- `@jinmu/utils/slug`로 slug 추출 및 타입 판별
 - PocketBase 컬렉션에 동기화
 - 두 가지 모드: 발행된 것만 또는 변경된 파일만
 
@@ -161,7 +246,7 @@ pnpm docker:logs       # 로그 확인
 
 ## 환경 변수
 
-### 블로그 (`blog/.env`)
+### 블로그 (`apps/blog/.env`)
 ```bash
 PUBLIC_API_URL=http://localhost:3001  # API 서버 URL
 PUBLIC_ENV=development                 # 환경
@@ -169,7 +254,7 @@ DEEPL_API_KEY=...                      # 번역 스크립트용
 # 추가: postbuild를 위한 Google Search Console 자격증명
 ```
 
-### API (`api/.env`)
+### API (`apps/api/.env`)
 ```bash
 PB_URL=http://127.0.0.1:8090          # PocketBase 인스턴스
 PORT=3001                              # API 서버 포트
@@ -179,25 +264,28 @@ CORS_ORIGIN=http://localhost:4321     # 블로그 개발 URL
 
 ## 콘텐츠 스키마
 
-**Posts** (`blog/src/content/post/`):
+**Posts** (`apps/blog/src/content/post/`):
 - `title`, `date`, `summary`
 - `category`: develop, experience, cloud, movie, book, thinking, health, tech, network, linux
+  - `@jinmu/types/content`의 `CATEGORIES` 상수에서 정의
 - `tags`: string[]
 - `draft`: boolean (기본값: false)
 - `series`, `seriesOrder`: 다중 파트 게시물용
 - `banner`: 히어로 이미지 경로
 - `lastmod`: 마지막 수정 날짜
 
-**Memos** (`blog/src/content/memo/`):
+**Memos** (`apps/blog/src/content/memo/`):
 - 게시물과 유사하지만 간소화된 스키마
 - 시리즈 지원 없음
 
 ## 중요 사항
 
-- **Prebuild 필수**: 개발 전에 Obsidian 콘텐츠를 동기화하기 위해 항상 blog/에서 `pnpm prebuild` (또는 이를 포함하는 `pnpm dev`)를 실행해야 함
+- **Prebuild 필수**: 개발 전에 Obsidian 콘텐츠를 동기화하기 위해 항상 apps/blog/에서 `pnpm prebuild` (또는 이를 포함하는 `pnpm dev`)를 실행해야 함
 - **번역 워크플로우**: `pnpm translate:staged`는 DeepL API를 사용하여 staged된 한국어 게시물을 영어로 자동 번역
 - **마이그레이션 vs. 익스포트**:
   - `obsidian-export` (prebuild) → Astro 정적 사이트
   - Migration scripts → 동적 기능을 위한 PocketBase 데이터베이스
 - **이중언어 라우트**: `/posts/[slug]`의 한국어 게시물, `/en/posts/[slug]`의 영어 게시물
 - **CDN**: 정적 자산은 `package.json`의 `pkg.cdnUrl`을 참조
+- **공유 패키지 사용**: 타입과 유틸리티는 `@jinmu/types`, `@jinmu/utils`에서 import하여 중복 제거
+- **TypeScript Project References**: 점진적 빌드를 위해 packages → apps 의존성 설정됨

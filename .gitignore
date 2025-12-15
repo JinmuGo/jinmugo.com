@@ -36,3 +36,8 @@ terraform/.terraform.tfstate.lock.info
 
 # Firebase
 .firebaserc
+
+# Build outputs
+dist/
+**/dist/
+*.tsbuildinfo

@@ -12,25 +12,29 @@ pre-commit:
       stage_fixed: true
 
     api-test:
-      glob: "api/**/*.{js,ts}"
-      run: cd api && pnpm vitest related --run {staged_files}
+      glob: "apps/api/**/*.{js,ts}"
+      run: cd apps/api && pnpm vitest related --run {staged_files}
       fail_text: "API 테스트가 실패했습니다. 커밋을 중단합니다."
 
     type-check-api:
-      glob: "api/**/*.{ts,tsx}"
-      run: pnpm -C api check
+      glob: "apps/api/**/*.{ts,tsx}"
+      run: pnpm -C apps/api check
 
     type-check-blog:
-      glob: "blog/**/*.{ts,tsx,astro}"
-      run: pnpm -C blog check
+      glob: "apps/blog/**/*.{ts,tsx,astro}"
+      run: pnpm -C apps/blog check
+
+    packages-type-check:
+      glob: "packages/**/*.{ts,tsx}"
+      run: pnpm --filter "@jinmu/*" check
 
     translate-korean-posts:
-      glob: "blog/blog_obsidian/**/*.md"
+      glob: "apps/blog/blog_obsidian/**/*.md"
       run: |
         korean_files=$(echo "{staged_files}" | grep -E '\.md$' | grep -v '\.en\.md$' || true)
         if [ -n "$korean_files" ]; then
           echo "📝 한국어 변경 감지: 번역 스크립트 실행..."
-          pnpm -C blog translate:staged
+          pnpm -C apps/blog translate:staged
           echo "➕ 번역된 파일 스테이징..."
-          git add blog/blog_obsidian/**/*.en.md
+          git add apps/blog/blog_obsidian/**/*.en.md
         fi
