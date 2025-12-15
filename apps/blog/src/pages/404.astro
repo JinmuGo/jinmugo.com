@@ -1,0 +1,16 @@
+---
+import NotFoundPage from "@/components/NotFoundPageSimple.astro"
+import Layout from "@/layouts/Layout.astro"
+
+const title = "Page not found"
+const description = "The page you requested may not exist or has been moved."
+
+const pathname = Astro.url.pathname
+const pathSegments = pathname.split("/").filter(Boolean)
+const lang = pathSegments[0] === "en" ? "en" : "ko"
+---
+
+<Layout title={title} description={description} lang={lang} type="website">
+  <NotFoundPage lang={lang} />
+</Layout>
+

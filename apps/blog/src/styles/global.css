@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@import "./cmdk.css";
+@import "./prose.css";
+@import "tw-animate-css";
+
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/Pretendard-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/Pretendard-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/Pretendard-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist), sans-serif;
+
+  --color-primary-50: oklch(98% 0.016 73.684deg);
+  --color-primary-100: oklch(95.4% 0.038 75.164deg);
+  --color-primary-200: oklch(90.1% 0.076 70.697deg);
+  --color-primary-300: oklch(83.7% 0.128 66.29deg);
+  --color-primary-400: oklch(75% 0.183 55.934deg);
+  --color-primary-500: oklch(70.5% 0.213 47.604deg);
+  --color-primary-600: oklch(64.6% 0.222 41.116deg);
+  --color-primary-700: oklch(55.3% 0.195 38.402deg);
+  --color-primary-800: oklch(47% 0.157 37.304deg);
+  --color-primary-900: oklch(40.8% 0.123 38.172deg);
+  --color-primary-950: oklch(26.6% 0.079 36.259deg);
+
+  --color-text-light: #5C6165;
+  --color-text-dark: #BFBDB6;
+}
+
+html[data-theme="light"] {
+  .dark {
+    display: none;
+  }
+
+  .astro-code,
+  .astro-code span {
+    color: var(--shiki-light);
+    background-color: var(--shiki-light-bg);
+  }
+}
+
+html[data-theme="dark"] {
+  .light {
+    display: none;
+  }
+
+  .astro-code,
+  .astro-code span {
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+}
+
+/* 접근성: 포커스 스타일 개선 */
+*:focus-visible {
+  outline: 2px solid oklch(var(--color-primary-500));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* 모션 감소 설정을 존중 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Portfolio Gallery Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee var(--duration) linear infinite;
+}

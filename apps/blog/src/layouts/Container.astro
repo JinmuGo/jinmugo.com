@@ -1,0 +1,25 @@
+---
+import Footer from "@/components/app-shell/Footer/Footer.astro"
+import { cn } from "@/utils/cn"
+
+export interface Props {
+  class?: string
+  containerStyles: {
+    container: string
+  }
+}
+
+const { class: className, containerStyles } = Astro.props
+---
+
+<main
+  class={cn(
+    `mx-auto min-h-screen divide-gray-200 dark:divide-gray-800 flex flex-col justify-between ${containerStyles.container}`,
+    className,
+  )}
+>
+  <section class="flex-1">
+    <slot />
+  </section>
+  <Footer />
+</main>

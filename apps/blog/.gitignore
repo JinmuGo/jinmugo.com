@@ -1,0 +1,9 @@
+src/content/app
+src/content/banner
+src/content/memo
+src/content/post
+
+# build output
+dist/
+
+.astro/

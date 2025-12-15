@@ -1,0 +1,61 @@
+---
+import PhotoSwipe from "@/components/features/PhotoSwipe.astro"
+import { components } from "@/components/mdx/components.astro"
+import PostBannerX from "@/layouts/PostBannerX.astro"
+import PostBannerY from "@/layouts/PostBannerY.astro"
+import PostDefault from "@/layouts/PostDefault.astro"
+import type { Post } from "@/types/content"
+import { getBannerImageBySlug } from "@/utils/banner.astro"
+import { getEnglishPosts } from "@/utils/content/posts"
+import { selectPostLayout } from "@/utils/layoutSelector"
+
+export async function getStaticPaths() {
+  const posts = await getEnglishPosts()
+
+  return posts.map((entry: Post) => {
+    return {
+      params: {
+        slug: entry.slug,
+      },
+      props: { entry, slug: entry.slug },
+    }
+  })
+}
+
+const { entry, slug }: { entry: Post; slug: string } = Astro.props
+const { Content } = await entry.render()
+const frontmatterWithSlug = {
+  ...entry.data,
+  slug,
+}
+
+// Select layout based on banner image dimensions
+const bannerImageBySlug = getBannerImageBySlug(slug)
+const { layout, bannerImage } = selectPostLayout(bannerImageBySlug)
+---
+
+{
+  layout === "PostDefault" && (
+    <PostDefault frontmatter={frontmatterWithSlug}>
+      <Content components={components} />
+    </PostDefault>
+  )
+}
+
+{
+  layout === "PostBannerX" && (
+    <PostBannerX frontmatter={frontmatterWithSlug} bannerImage={bannerImage!}>
+      <Content components={components} />
+    </PostBannerX>
+  )
+}
+
+{
+  layout === "PostBannerY" && (
+    <PostBannerY frontmatter={frontmatterWithSlug} bannerImage={bannerImage!}>
+      <Content components={components} />
+    </PostBannerY>
+  )
+}
+
+<PhotoSwipe />

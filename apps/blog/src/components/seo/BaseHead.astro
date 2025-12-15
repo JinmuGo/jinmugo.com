@@ -1,0 +1,76 @@
+---
+// Import the global.css file here so that it is included on
+// all pages through the use of the <BaseHead /> component.
+import "@/styles/global.css"
+import { Font } from "astro:assets"
+import type { ImageMetadata } from "astro"
+import Themes from "astro-themes"
+import pkg from "~/package.json"
+import FallbackImage from "~/public/avatar.webp"
+
+interface Props {
+  title: string
+  description: string
+  image?: ImageMetadata
+  ogImage?: string
+  tags?: string[]
+  type?: "article" | "website"
+}
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site)
+
+const { title, description, image = FallbackImage, ogImage, tags, type = "website" } = Astro.props
+---
+
+<title>{title}</title>
+<Font cssVariable="--font-geist" preload />
+
+<Themes defaultTheme="light" />
+
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="sitemap" href="/sitemap.xml" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={pkg.title}
+  href={new URL("rss.xml", Astro.site).href}
+/>
+<meta name="generator" content={Astro.generator} />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalURL.href} />
+
+<!-- Primary Meta Tags -->
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={type} />
+<meta property="og:url" content={Astro.url.href} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{
+  ogImage ? (
+    <meta property="og:image" content={new URL(ogImage, Astro.url).href} />
+  ) : (
+    <meta property="og:image" content={new URL(image.src, Astro.url).href} />
+  )
+}
+{tags && tags.map(tag => <meta property="article:tag" content={tag} />)}
+{tags && <meta property="og:keywords" content={tags.join(", ")} />}
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={Astro.url.href} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+{
+  ogImage ? (
+    <meta property="twitter:image" content={new URL(ogImage, Astro.url).href} />
+  ) : (
+    <meta property="twitter:image" content={new URL(image.src, Astro.url).href} />
+  )
+}

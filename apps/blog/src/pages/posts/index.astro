@@ -1,0 +1,49 @@
+---
+import Layout from "@/layouts/Layout.astro"
+import ListLayouts from "@/layouts/ListLayouts"
+import { getKoreanPosts, sortPostsByDate } from "@/utils/content/posts"
+import { buildItemUrl, buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData"
+
+// 모든 한국어 포스트 가져오기
+const posts = await getKoreanPosts()
+const sortedPosts = sortPostsByDate(posts)
+
+const title = "Posts"
+const description = "Post collection"
+
+const jsonLd = generatePostsPageSchema({
+  title,
+  description,
+  url: buildPageUrl("", "/posts"),
+  keywords: "posts, articles, collection",
+  inLanguage: "ko",
+  itemListElements: sortedPosts.map((post, index) => ({
+    "@type": "ListItem",
+    url: buildItemUrl(`/posts/${post.slug}`),
+    position: index + 1,
+    item: {
+      "@type": "Article",
+      name: post.data.title,
+      url: buildItemUrl(`/posts/${post.slug}`),
+    },
+  })),
+})
+---
+
+<Layout
+  title={title}
+  description={description}
+  lang="ko"
+  jsonLd={jsonLd}
+  type="website"
+>
+  <ListLayouts
+    posts={sortedPosts.map((post) => ({
+      ...post.data,
+      slug: post.slug,
+    }))}
+    title={title}
+    postType="post"
+    client:load
+  />
+</Layout>

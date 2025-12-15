@@ -1,0 +1,48 @@
+---
+import SeriesListIsland from "@/components/features/SeriesListIsland.tsx"
+import Layout from "@/layouts/Layout.astro"
+import { getKoreanMemos } from "@/utils/content/memos"
+import { getKoreanPosts } from "@/utils/content/posts"
+import { getSeriesTranslations, groupContentBySeries } from "@/utils/series"
+import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
+
+const lang = "ko"
+const t = getSeriesTranslations(lang)
+
+const posts = await getKoreanPosts()
+const memos = await getKoreanMemos()
+const allContent = [...posts, ...memos]
+const seriesList = groupContentBySeries(allContent)
+
+const title = t.pageTitle
+const description = t.pageDescription
+const jsonLd = generatePageSchema({
+  type: "CollectionPage",
+  title,
+  description,
+  url: buildPageUrl("", "/series"),
+  keywords: "series, blog series, collections",
+  inLanguage: "ko",
+  itemListElements: seriesList.map((series, idx) => ({
+    "@type": "ListItem",
+    url: `/series/${encodeURIComponent(series.name)}`,
+    position: idx + 1,
+    item: {
+      "@type": "Collection",
+      name: series.name,
+      description: t.postsCount(series.totalPosts),
+      url: `/series/${encodeURIComponent(series.name)}`,
+    },
+  })),
+})
+---
+
+<Layout
+  title={title}
+  description={description}
+  lang={lang}
+  jsonLd={jsonLd}
+  type="website"
+>
+  <SeriesListIsland seriesList={seriesList} lang={lang} client:load />
+</Layout>

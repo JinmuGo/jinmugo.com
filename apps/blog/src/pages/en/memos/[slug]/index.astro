@@ -1,0 +1,35 @@
+---
+import PhotoSwipe from "@/components/features/PhotoSwipe.astro"
+import { components } from "@/components/mdx/components.astro"
+import MemoDefault from "@/layouts/MemoDefault.astro"
+import type { Memo } from "@/types/content"
+import { getEnglishMemos } from "@/utils/content/memos"
+
+export async function getStaticPaths() {
+  // .en.md 파일(영문)만 필터링
+  const memos = await getEnglishMemos()
+
+  return memos.map((entry: Memo) => {
+    return {
+      params: {
+        slug: entry.slug,
+      },
+      props: { entry, slug: entry.slug },
+    }
+  })
+}
+
+const { entry, slug }: { entry: Memo; slug: string } = Astro.props
+const frontmatterWithSlug = {
+  ...entry.data,
+  slug,
+}
+
+const { Content } = await entry.render()
+---
+
+<MemoDefault frontmatter={frontmatterWithSlug}>
+  <Content components={components} />
+</MemoDefault>
+
+<PhotoSwipe />

@@ -1,0 +1,32 @@
+{
+  "root": false,
+  "extends": "//",
+  "files": {
+    "includes": [
+      "**/*.ts",
+      "**/*.json",
+      "**/*.prisma",
+      "!**/*.d.ts",
+      "!scripts/**/*.js",
+      "!scripts/**/*.js.map",
+      "!scripts/**/*.d.ts.map"
+    ]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "always"
+    }
+  },
+  "linter": {
+    "rules": {
+      "suspicious": {
+        "noConsole": "warn"
+      }
+    }
+  }
+}

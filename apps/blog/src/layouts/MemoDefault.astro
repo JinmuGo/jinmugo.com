@@ -1,0 +1,71 @@
+---
+import UserSection from "@/components/app-shell/Comment/UserSection.astro"
+import FormattedDate from "@/components/content/FormattedDate.astro"
+import { PageViewIsland } from "@/components/features/PageViewIsland"
+import Prose from "@/components/layout/Prose.astro"
+import Breadcrumb from "@/components/seo/Breadcrumb.astro"
+import Layout from "@/layouts/Layout.astro"
+import type { Memo } from "@/types/content"
+import { generateContentSchemas } from "@/utils/contentSchemas"
+
+interface Props {
+  frontmatter: Memo
+}
+
+const { frontmatter } = Astro.props
+const { title, date, summary, category, slug, tags } = frontmatter
+
+// Generate all schemas using consolidated utility
+const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentSchemas({
+  frontmatter,
+  pathname: Astro.url.pathname,
+  origin: Astro.url.origin,
+  contentType: "memo",
+})
+---
+
+<Layout
+  frontmatter={frontmatter}
+  title={title}
+  description={summary || title}
+  lang={lang}
+  jsonLd={[pageSchema, breadcrumbSchema]}
+  ogImage={`/memos/${slug}/og.png`}
+  type="article"
+  tags={tags}
+>
+  <Breadcrumb items={breadcrumbItems} />
+  <main>
+    <article>
+      <header class="space-y-1 pb-5">
+        <div id="memo-title" class="pt-5 space-y-1">
+          <h1 class="font-bold text-xl md:text-2xl">{title}</h1>
+          <p class="text-sm text-gray-500 dark:text-gray-300">
+            {summary}
+          </p>
+          <div class="text-sm text-gray-500 dark:text-gray-300">
+            {
+              category && (
+                <a
+                  class="underline"
+                  href={`/archives/category/${category}`}
+                >
+                  {category}
+                </a>
+              )
+            }
+            {category && " / "}
+            <FormattedDate date={date} />
+          </div>
+          <div class="flex items-center gap-2">
+            <PageViewIsland client:load slug={slug} />
+          </div>
+        </div>
+      </header>
+      <Prose as="article">
+        <slot />
+      </Prose>
+    </article>
+  </main>
+      <UserSection slug={slug} frontmatter={frontmatter} type="memo" />
+</Layout>

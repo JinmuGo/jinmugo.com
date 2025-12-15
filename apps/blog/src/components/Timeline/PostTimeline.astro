@@ -1,0 +1,57 @@
+---
+import DraftLabel from "@/components/content/DraftLabel.astro"
+import MemoLabel from "@/components/content/MemoLabel.astro"
+import type { Memo, Post } from "@/types/content"
+import Timeline from "./Timeline.astro"
+import TimelineDescription from "./TimelineDescription.astro"
+import TimelineDot from "./TimelineDot.astro"
+import TimelineHeader from "./TimelineHeader.astro"
+import TimelineItem from "./TimelineItem.astro"
+import TimelineTime from "./TimelineTime.astro"
+import TimelineTitle from "./TimelineTitle.astro"
+
+const { posts, memos = [] } = Astro.props
+
+// 현재 경로가 영어 버전인지 확인
+const isEnglish = Astro.url.pathname.startsWith("/en")
+const basePath = isEnglish ? "/en" : ""
+
+// 모든 콘텐츠를 날짜순으로 정렬
+const allContent = [...posts, ...memos].sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+)
+---
+
+<Timeline>
+  {
+    allContent.map((item: Post | Memo, index: number) => {
+      const itemUrl = `${basePath}${item.type === 'post' ? '/posts' : '/memos'}/${item.slug}`;
+      const formattedDate = item.data.date.toISOString().split("T")[0]; // yyyy-MM-dd 형식
+      const isLatest = index === 0;
+      const isDraft = item.data.draft && import.meta.env.DEV;
+
+      return (
+        <TimelineItem>
+          <TimelineHeader>
+            <TimelineTime datetime={item.data.date.toISOString()}>
+              {formattedDate}
+            </TimelineTime>
+            <TimelineDot isLatest={isLatest} />
+            <TimelineTitle href={itemUrl}>
+              <div class="flex items-center space-x-2">
+                <span>{item.data.title}</span>
+                {item.type === 'memo' && <MemoLabel />}
+                {isDraft && <DraftLabel />}
+              </div>
+              {item.data.summary && (
+                <TimelineDescription class="mt-1 text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
+                  {item.data.summary}
+                </TimelineDescription>
+              )}
+            </TimelineTitle>
+          </TimelineHeader>
+        </TimelineItem>
+      );
+    })
+  }
+</Timeline>

@@ -1,0 +1,14 @@
+---
+// TimelineItem.astro
+interface Props {
+  class?: string
+}
+
+const { class: className = "" } = Astro.props
+---
+
+<li
+  class={`relative flex items-start min-h-[2.5em] mb-8 sm:mb-10 group transition-all duration-300 ease-out ${className}`}
+>
+  <slot />
+</li>
