@@ -28,7 +28,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  BUILD_PATH: "./blog" # default value when not using subfolders
+  BUILD_PATH: "./apps/blog" # default value when not using subfolders
 
 jobs:
   build:
@@ -67,6 +67,9 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
+
+      - name: Build dependencies
+        run: pnpm build --filter=@jinmu/types --filter=@jinmu/utils
 
       - name: Build with Astro
         run: |

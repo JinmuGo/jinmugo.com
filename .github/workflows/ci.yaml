@@ -34,5 +34,5 @@ jobs:
         uses: ./.github/actions/common-steps
 
       - name: Run API Tests
-        working-directory: api
+        working-directory: apps/api
         run: pnpm test -- --run
