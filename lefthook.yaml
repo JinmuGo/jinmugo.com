@@ -1,3 +1,9 @@
+pre-push:
+  parallel: true
+  commands:
+    ci:
+      run: pnpm ci
+
 pre-commit:
   commands:
     check:

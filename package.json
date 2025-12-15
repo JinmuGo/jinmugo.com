@@ -10,7 +10,8 @@
     "lint": "biome lint .",
     "lint:fix": "biome lint --apply .",
     "check": "biome check --write --unsafe .",
-    "test": "turbo test"
+    "test": "turbo test",
+    "ci": "turbo run build test"
   },
   "keywords": [],
   "author": "",
