@@ -2,7 +2,7 @@ pre-push:
   parallel: true
   commands:
     ci:
-      run: pnpm ci
+      run: pnpm run ci
 
 pre-commit:
   commands:
