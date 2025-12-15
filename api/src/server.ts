@@ -31,7 +31,10 @@ app.use(express.urlencoded({ extended: true }));
 // IP 주소 추출 미들웨어
 app.use((req, _res, next) => {
   const clientIP =
-    req.headers.x_forwarded_for || req.headers.x_real_ip || req.headers.origin || "unknown";
+    req.headers["x-forwarded-for"] ||
+    req.headers["x-real-ip"] ||
+    req.headers.origin ||
+    "unknown";
 
   req.clientIP = clientIP as string;
   next();
@@ -100,9 +103,11 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
     }
 
     // 서버 시작
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
+    if (process.env.NODE_ENV !== "test") {
+      app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+      });
+    }
   } catch (error) {
     console.error("Failed to start server:", error);
     process.exit(1);
