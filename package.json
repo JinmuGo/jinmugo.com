@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "turbo build",
+    "build:blog": "turbo build --filter=blog",
+    "build:api": "turbo build --filter=api",
     "dev": "turbo dev",
+    "dev:blog": "turbo dev --filter=blog",
+    "dev:api": "turbo dev --filter=api",
     "format": "biome format --write .",
     "lint": "biome lint .",
     "lint:fix": "biome lint --apply .",

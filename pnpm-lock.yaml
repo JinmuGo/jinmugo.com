@@ -29,8 +29,11 @@ importers:
         specifier: ^2.6.3
         version: 2.6.3
 
-  api:
+  apps/api:
     dependencies:
+      '@jinmu/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       cors:
         specifier: ^2.8.5
         version: 2.8.5
@@ -99,7 +102,7 @@ importers:
         specifier: ^4.0.15
         version: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@24.10.2)(@vitest/ui@4.0.15)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.0)
 
-  blog:
+  apps/blog:
     dependencies:
       '@astrojs/mdx':
         specifier: ^4.3.12
@@ -119,6 +122,9 @@ importers:
       '@iconify-json/lucide':
         specifier: ^1.2.79
         version: 1.2.79
+      '@jinmu/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@r4ai/remark-callout':
         specifier: ^0.6.2
         version: 0.6.2(patch_hash=08e6280e24bc88950cedda4f50be19b65651ba76879a88b9ed9c86a0a2cf994a)
@@ -258,6 +264,39 @@ importers:
       vite-plugin-remove-console:
         specifier: ^2.2.0
         version: 2.2.0
+
+  packages/tsconfig: {}
+
+  packages/types:
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.15
+        version: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@24.10.2)(@vitest/ui@4.0.15)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.0)
+
+  packages/utils:
+    dependencies:
+      '@jinmu/types':
+        specifier: workspace:*
+        version: link:../types
+      gray-matter:
+        specifier: ^4.0.3
+        version: 4.0.3
+    devDependencies:
+      '@types/node':
+        specifier: ^24.10.2
+        version: 24.10.2
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.15
+        version: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@24.10.2)(@vitest/ui@4.0.15)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.21.0)(yaml@2.8.0)
+      zod:
+        specifier: ^4.1.13
+        version: 4.1.13
 
 packages:
 

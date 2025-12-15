@@ -1,32 +1,49 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [".env", "tsconfig.json", "biome.json"],
+  "globalEnv": ["NODE_ENV", "PUBLIC_API_URL"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".astro/**"]
+      "inputs": ["$TURBO_DEFAULT$", ".env.production"],
+      "outputs": ["dist/**", ".astro/**", "build/**"],
+      "cache": true
     },
     "dev": {
+      "dependsOn": ["^build"],
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["^dev"]
+      "persistent": true
     },
     "lint": {
-      "cache": false,
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^build"],
+      "inputs": ["src/**/*.{ts,tsx,astro,js}", "biome.json"],
+      "outputs": [],
+      "cache": true
     },
     "lint:fix": {
+      "dependsOn": ["^build"],
       "cache": false,
-      "dependsOn": ["^lint:fix"]
+      "outputs": []
     },
     "format": {
-      "cache": false
+      "inputs": ["src/**/*.{ts,tsx,astro,js,json}"],
+      "outputs": [],
+      "cache": true
     },
     "check": {
-      "cache": false
+      "dependsOn": ["^build"],
+      "cache": false,
+      "outputs": []
     },
     "test": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**/*.ts", "src/**/*.tsx", "src/test/**/*", "vitest.config.ts"],
+      "outputs": ["coverage/**"],
+      "cache": true
+    },
+    "test:watch": {
       "cache": false,
-      "dependsOn": ["^test"]
+      "persistent": true
     }
   }
 }
