@@ -1,6 +1,6 @@
 import type { Router } from "express";
 import { Router as ExpressRouter } from "express";
-import { COLLECTIONS, pb } from "../lib/pocketbase";
+import { COLLECTIONS, pb } from "../lib/pocketbase.js";
 
 export const postsRouter: Router = ExpressRouter();
 

@@ -1,8 +1,8 @@
 import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { pb } from "../../lib/pocketbase";
-import app from "../../server";
-import { mockPocketBaseResponse, testData } from "../helpers";
+import { pb } from "../../lib/pocketbase.js";
+import app from "../../server.js";
+import { mockPocketBaseResponse, testData } from "../helpers.js";
 
 // PocketBase 모킹
 vi.mock("../../lib/pocketbase", () => ({

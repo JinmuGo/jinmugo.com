@@ -32,9 +32,9 @@ vi.mock("../../services/pocketbase-stats.service", () => ({
   },
 }));
 
-import { firestoreStatsService } from "../../services/firestore-stats.service";
-import { pocketbaseStatsService } from "../../services/pocketbase-stats.service";
-import { statsService } from "../../services/stats.service";
+import { firestoreStatsService } from "../../services/firestore-stats.service.js";
+import { pocketbaseStatsService } from "../../services/pocketbase-stats.service.js";
+import { statsService } from "../../services/stats.service.js";
 
 describe("StatsService", () => {
   beforeEach(() => {

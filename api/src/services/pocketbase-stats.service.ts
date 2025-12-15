@@ -1,6 +1,6 @@
 import type { RecordModel } from "pocketbase";
-import { COLLECTIONS, pb } from "../lib/pocketbase";
-import type { LikeIncrementResult, ViewIncrementResult } from "../types/firestore";
+import { COLLECTIONS, pb } from "../lib/pocketbase.js";
+import type { LikeIncrementResult, ViewIncrementResult } from "../types/firestore.js";
 
 const MAX_LIKES_PER_IP = 5;
 

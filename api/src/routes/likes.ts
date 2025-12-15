@@ -1,7 +1,7 @@
 import type { Router } from "express";
 import { Router as ExpressRouter } from "express";
 import { z } from "zod";
-import { statsService } from "../services/stats.service";
+import { statsService } from "../services/stats.service.js";
 
 export const likesRouter: Router = ExpressRouter();
 

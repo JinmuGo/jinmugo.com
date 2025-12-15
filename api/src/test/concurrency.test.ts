@@ -1,8 +1,8 @@
 import type { Server } from "node:http";
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { pb } from "../lib/pocketbase";
-import app from "../server";
+import { pb } from "../lib/pocketbase.js";
+import app from "../server.js";
 
 // Mock PocketBase
 vi.mock("../lib/pocketbase", () => ({

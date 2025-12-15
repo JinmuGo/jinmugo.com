@@ -1,7 +1,7 @@
-import { db, FIRESTORE_COLLECTIONS, FIRESTORE_ENABLED } from "../lib/firestore";
-import { firestoreStatsService } from "../services/firestore-stats.service";
-import { pocketbaseStatsService } from "../services/pocketbase-stats.service";
-import type { PostStatsDocument } from "../types/firestore";
+import { db, FIRESTORE_COLLECTIONS, FIRESTORE_ENABLED } from "../lib/firestore.js";
+import { firestoreStatsService } from "../services/firestore-stats.service.js";
+import { pocketbaseStatsService } from "../services/pocketbase-stats.service.js";
+import type { PostStatsDocument } from "../types/firestore.js";
 
 const SYNC_ENABLED = process.env.SYNC_JOB_ENABLED === "true";
 

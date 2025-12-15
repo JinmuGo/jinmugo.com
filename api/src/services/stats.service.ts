@@ -1,7 +1,7 @@
-import { FIRESTORE_ENABLED } from "../lib/firestore";
-import type { LikeIncrementResult, ViewIncrementResult } from "../types/firestore";
-import { firestoreStatsService } from "./firestore-stats.service";
-import { pocketbaseStatsService } from "./pocketbase-stats.service";
+import { FIRESTORE_ENABLED } from "../lib/firestore.js";
+import type { LikeIncrementResult, ViewIncrementResult } from "../types/firestore.js";
+import { firestoreStatsService } from "./firestore-stats.service.js";
+import { pocketbaseStatsService } from "./pocketbase-stats.service.js";
 
 /**
  * 통합 통계 서비스

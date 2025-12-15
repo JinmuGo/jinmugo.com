@@ -1,10 +1,10 @@
 import { FieldValue } from "firebase-admin/firestore";
-import { db, FIRESTORE_COLLECTIONS, FIRESTORE_ENABLED } from "../lib/firestore";
+import { db, FIRESTORE_COLLECTIONS, FIRESTORE_ENABLED } from "../lib/firestore.js";
 import type {
   LikeIncrementResult,
   PostStatsDocument,
   ViewIncrementResult,
-} from "../types/firestore";
+} from "../types/firestore.js";
 
 const MAX_LIKES_PER_IP = 5;
 

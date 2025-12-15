@@ -1,7 +1,7 @@
 import type { Server } from "node:http";
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import app from "../server";
+import app from "../server.js";
 
 describe("Server", () => {
   let server: Server;

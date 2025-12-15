@@ -3,11 +3,11 @@ import dotenv from "dotenv";
 import express, { type Express } from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-import { startSyncJob } from "./jobs/firestore-sync.job";
-import { initializePocketBase, pb } from "./lib/pocketbase";
-import { likesRouter } from "./routes/likes";
-import { postsRouter } from "./routes/posts";
-import { viewsRouter } from "./routes/views";
+import { startSyncJob } from "./jobs/firestore-sync.job.js";
+import { initializePocketBase, pb } from "./lib/pocketbase.js";
+import { likesRouter } from "./routes/likes.js";
+import { postsRouter } from "./routes/posts.js";
+import { viewsRouter } from "./routes/views.js";
 
 // 환경 변수 로드
 dotenv.config();
