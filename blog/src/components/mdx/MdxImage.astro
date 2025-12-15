@@ -2,7 +2,18 @@
 const props = Astro.props
 
 // Astro automatically passes width and height for local images in markdown
-const { src, alt, width, height, title, ...attrs } = props
+const { src, alt, title, ...attrs } = props
+
+let imageSrc = src
+let width = props.width
+let height = props.height
+
+// MDX에서 이미지가 객체(ImageMetadata)로 전달될 경우 처리
+if (typeof src === "object" && src !== null && "src" in src) {
+  imageSrc = src.src
+  width = src.width
+  height = src.height
+}
 
 const isOptimized = width && height
 ---
@@ -11,14 +22,14 @@ const isOptimized = width && height
   isOptimized ? (
     <a
       class="photo-swipe cursor-zoom-in"
-      href={src}
+      href={imageSrc}
       data-pswp-width={width}
       data-pswp-height={height}
       data-pswp-caption={title || alt}
       target="_blank"
     >
       <img
-        src={src}
+        src={imageSrc}
         alt={alt || ""}
         width={width}
         height={height}
@@ -29,7 +40,7 @@ const isOptimized = width && height
     </a>
   ) : (
     <img
-      src={src}
+      src={imageSrc}
       alt={alt || ""}
       class="mx-auto rounded-lg shadow-md my-8"
       {...attrs}
