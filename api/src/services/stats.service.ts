@@ -1,4 +1,5 @@
 import { FIRESTORE_ENABLED } from "../lib/firestore";
+import type { LikeIncrementResult, ViewIncrementResult } from "../types/firestore";
 import { firestoreStatsService } from "./firestore-stats.service";
 import { pocketbaseStatsService } from "./pocketbase-stats.service";
 
@@ -12,6 +13,23 @@ import { pocketbaseStatsService } from "./pocketbase-stats.service";
  * - Write는 Frontend에서 직접 Firestore로 수행 (Backend는 Sync Job으로 마이그레이션)
  */
 class StatsService {
+  /**
+   * View count 증가
+   */
+  async incrementViews(slug: string, count = 1): Promise<ViewIncrementResult> {
+    if (FIRESTORE_ENABLED) {
+      try {
+        return await firestoreStatsService.incrementViews(slug, count);
+      } catch (error) {
+        console.error(
+          `[StatsService] Firestore increment views failed for ${slug}, falling back to PocketBase:`,
+          error,
+        );
+      }
+    }
+    return await pocketbaseStatsService.incrementViews(slug, count);
+  }
+
   /**
    * View count 조회
    */
@@ -30,6 +48,40 @@ class StatsService {
 
     // PocketBase fallback
     return await pocketbaseStatsService.getViews(slug);
+  }
+
+  /**
+   * Like count 증가
+   */
+  async incrementLikes(slug: string, ipAddress: string, count = 1): Promise<LikeIncrementResult> {
+    if (FIRESTORE_ENABLED) {
+      try {
+        return await firestoreStatsService.incrementLikes(slug, ipAddress, count);
+      } catch (error) {
+        console.error(
+          `[StatsService] Firestore increment likes failed for ${slug}, falling back to PocketBase:`,
+          error,
+        );
+      }
+    }
+    return await pocketbaseStatsService.incrementLikes(slug, ipAddress, count);
+  }
+
+  /**
+   * 내 좋아요 수 조회
+   */
+  async getMyLikes(slug: string, ipAddress: string): Promise<number> {
+    if (FIRESTORE_ENABLED) {
+      try {
+        return await firestoreStatsService.getMyLikes(slug, ipAddress);
+      } catch (error) {
+        console.error(
+          `[StatsService] Firestore get my likes failed for ${slug}, falling back to PocketBase:`,
+          error,
+        );
+      }
+    }
+    return await pocketbaseStatsService.getMyLikes(slug, ipAddress);
   }
 
   /**
