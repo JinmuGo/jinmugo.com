@@ -31,10 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 // IP 주소 추출 미들웨어
 app.use((req, _res, next) => {
   const clientIP =
-    req.headers["x-forwarded-for"] ||
-    req.headers["x-real-ip"] ||
-    req.headers.origin ||
-    "unknown";
+    req.headers["x-forwarded-for"] || req.headers["x-real-ip"] || req.headers.origin || "unknown";
 
   req.clientIP = clientIP as string;
   next();
