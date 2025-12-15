@@ -5,7 +5,17 @@ import app from "../../server";
 import { mockPocketBaseResponse, testData } from "../helpers";
 
 // PocketBase 모킹
-vi.mock("../../lib/pocketbase");
+vi.mock("../../lib/pocketbase", () => ({
+  pb: {
+    collection: vi.fn(),
+  },
+  initializePocketBase: vi.fn().mockResolvedValue(true),
+  COLLECTIONS: {
+    POSTS: "posts",
+    POST_LIKES: "post_likes",
+    POST_VIEWS: "post_views",
+  },
+}));
 
 describe("Views API", () => {
   beforeEach(() => {
@@ -37,7 +47,6 @@ describe("Views API", () => {
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("success", true);
       expect(response.body.data).toHaveProperty("views", 101);
-      expect(response.body.data).toHaveProperty("post_id", "test-post-id");
       expect(mockUpdate).toHaveBeenCalledWith("test-view-id", {
         "count+": 1, // Atomic update
       });

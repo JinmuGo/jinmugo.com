@@ -3,6 +3,20 @@ import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import app from "../server";
 
+// Mock PocketBase
+vi.mock("../lib/pocketbase", () => ({
+  pb: {
+    collection: vi.fn(),
+    baseUrl: "http://mock-pb.com",
+  },
+  initializePocketBase: vi.fn().mockResolvedValue(true),
+  COLLECTIONS: {
+    POSTS: "posts",
+    POST_LIKES: "post_likes",
+    POST_VIEWS: "post_views",
+  },
+}));
+
 describe("Security Features", () => {
   let server: Server;
 

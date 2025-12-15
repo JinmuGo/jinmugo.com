@@ -9,6 +9,7 @@ vi.mock("../../lib/pocketbase", () => ({
   pb: {
     collection: vi.fn(),
   },
+  initializePocketBase: vi.fn().mockResolvedValue(true),
   COLLECTIONS: {
     POSTS: "posts",
     POST_LIKES: "post_likes",

@@ -5,7 +5,17 @@ import app from "../../server";
 import { mockPocketBaseResponse, testData } from "../helpers";
 
 // PocketBase 모킹
-vi.mock("../../lib/pocketbase");
+vi.mock("../../lib/pocketbase", () => ({
+  pb: {
+    collection: vi.fn(),
+  },
+  initializePocketBase: vi.fn().mockResolvedValue(true),
+  COLLECTIONS: {
+    POSTS: "posts",
+    POST_LIKES: "post_likes",
+    POST_VIEWS: "post_views",
+  },
+}));
 
 describe("Likes API", () => {
   beforeEach(() => {
