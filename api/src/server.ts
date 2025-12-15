@@ -48,7 +48,7 @@ const apiLimiter = rateLimit({
 });
 
 // API 라우트에 Rate Limiter 적용
-app.use("/api", apiLimiter);
+app.use("/api", apiLimiter as any);
 
 // Root path 라우터
 app.get("/", (_req, res) => {

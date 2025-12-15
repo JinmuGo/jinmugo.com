@@ -14,7 +14,7 @@ async function syncDocument(slug: string, data: PostStatsDocument) {
     await pocketbaseStatsService.syncViewsFromFirestore(slug, data.total_views);
 
     // Likes 동기화
-    await pocketbaseStatsService.syncLikesFromFirestore(slug, data.total_likes, data.likes_by_user);
+    await pocketbaseStatsService.syncLikesFromFirestore(slug, data.total_likes, data.likes_by_ip);
 
     // Last synced timestamp 업데이트 (Firestore에 다시 쓰기를 유발하므로 무한 루프 방지 필요)
     // 현재 구조에서는 last_synced_to_pb 업데이트가 'modified' 이벤트를 또 발생시킬 수 있음.
