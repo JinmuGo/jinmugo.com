@@ -36,3 +36,17 @@ jobs:
       - name: Run API Tests
         working-directory: apps/api
         run: pnpm test -- --run
+
+  test-blog:
+    name: Test Blog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        uses: ./.github/actions/common-steps
+
+      - name: Run Blog Tests
+        working-directory: apps/blog
+        run: pnpm test

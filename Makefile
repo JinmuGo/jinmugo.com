@@ -30,5 +30,5 @@ format:
 .PHONY: format
 
 migrate-published:
-	cd api && pnpm run migrate:published
+	cd apps/api && pnpm run migrate:published
 .PHONY: migrate-published
