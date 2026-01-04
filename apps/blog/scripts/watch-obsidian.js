@@ -25,7 +25,7 @@ function runPrebuild() {
   console.log("\n[Watcher] Changes detected in blog_obsidian/")
   console.log("[Watcher] Running prebuild...\n")
 
-  const prebuild = spawn("sh", ["scripts/prebuild.sh"], {
+  const prebuild = spawn("node", ["scripts/build-content.js"], {
     cwd: blogRoot,
     stdio: "inherit",
     shell: true,

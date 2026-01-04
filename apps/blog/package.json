@@ -15,7 +15,7 @@
   "scripts": {
     "dev": "concurrently --kill-others \"node scripts/watch-obsidian.js\" \"astro dev --host\"",
     "dev:no-watch": "pnpm prebuild && astro dev --host",
-    "prebuild": "sh scripts/prebuild.sh",
+    "prebuild": "node scripts/build-content.js",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",

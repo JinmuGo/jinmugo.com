@@ -6,4 +6,5 @@ src/content/post
 # build output
 dist/
 
-.astro/
+.astro
+.cache/
