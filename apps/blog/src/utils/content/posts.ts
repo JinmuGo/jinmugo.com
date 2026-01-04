@@ -20,12 +20,15 @@ export async function getKoreanPosts() {
  * 영어 포스트들을 가져오는 함수
  */
 export async function getEnglishPosts() {
-  return (await getCollection("post", filterEnglishContent)).map((post: Post) => ({
-    ...post,
-    slug: slug(post).replace(/en$/, ""),
-    href: `/posts/${slug(post)}`,
-    type: "post",
-  }))
+  return (await getCollection("post", filterEnglishContent)).map((post: Post) => {
+    const cleanSlug = slug(post).replace(/\.en$/, "")
+    return {
+      ...post,
+      slug: cleanSlug,
+      href: `/en/posts/${cleanSlug}`,
+      type: "post",
+    }
+  })
 }
 
 /**

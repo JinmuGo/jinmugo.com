@@ -20,12 +20,15 @@ export async function getKoreanMemos() {
  * 영어 메모들을 가져오는 함수
  */
 export async function getEnglishMemos() {
-  return (await getCollection("memo", filterEnglishContent)).map((memo: Memo) => ({
-    ...memo,
-    slug: slug(memo).replace(/en$/, ""),
-    href: `/memos/${slug(memo)}`,
-    type: "memo",
-  }))
+  return (await getCollection("memo", filterEnglishContent)).map((memo: Memo) => {
+    const cleanSlug = slug(memo).replace(/\.en$/, "")
+    return {
+      ...memo,
+      slug: cleanSlug,
+      href: `/en/memos/${cleanSlug}`,
+      type: "memo",
+    }
+  })
 }
 
 /**

@@ -2,6 +2,7 @@ import type { InferGetStaticParamsType } from "astro"
 
 import { OpenGraphImage } from "@/components/og/image"
 import { getKoreanPosts } from "@/utils/content/posts"
+
 import { PNG } from "@/utils/openGraph"
 
 const posts = await getKoreanPosts()
@@ -29,6 +30,6 @@ export async function GET({ params }: { params: Params }) {
 export async function getStaticPaths() {
   return posts.map((post) => ({
     params: { slug: post.slug },
-    props: post.data,
+    props: post,
   }))
 }
