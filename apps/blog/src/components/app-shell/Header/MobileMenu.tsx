@@ -1,34 +1,16 @@
-import { useEffect, useState } from "react"
+import { ChevronDown, X } from "lucide-react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import headerNavLinks from "./headerNavLinks"
 
 interface MobileMenuProps {
   pathname: string
 }
 
-const ChevronDownIcon = ({ className }: { className: string }) => (
-  <svg
-    width="15"
-    height="15"
-    viewBox="0 0 15 15"
-    fill="none"
-    className={className}
-    xmlns="http://www.w3.org/2000/svg"
-    role="img"
-    aria-label="아래 화살표 아이콘"
-  >
-    <title>아래 화살표 아이콘</title>
-    <path
-      d="M3.13523 6.15803C3.3241 5.95657 3.64052 5.94637 3.84197 6.13523L7.5 9.56464L11.158 6.13523C11.3595 5.94637 11.6759 5.95657 11.8648 6.15803C12.0536 6.35949 12.0434 6.67591 11.842 6.86477L7.84197 10.6148C7.64964 10.7951 7.35036 10.7951 7.15803 10.6148L3.15803 6.86477C2.95657 6.67591 2.94637 6.35949 3.13523 6.15803Z"
-      fill="currentColor"
-      fillRule="evenodd"
-      clipRule="evenodd"
-    />
-  </svg>
-)
-
 const MobileMenu = ({ pathname }: MobileMenuProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
+  const menuPanelRef = useRef<HTMLDivElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
 
   const isEn = pathname.includes("/en")
 
@@ -43,6 +25,57 @@ const MobileMenu = ({ pathname }: MobileMenuProps) => {
       window.removeEventListener("toggleMobileMenu", handleToggle)
     }
   }, [])
+
+  // Focus trap implementation
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
+    // Focus the close button when menu opens
+    closeButtonRef.current?.focus()
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false)
+        return
+      }
+
+      if (e.key !== "Tab") {
+        return
+      }
+
+      const menuPanel = menuPanelRef.current
+      if (!menuPanel) {
+        return
+      }
+
+      const focusableElements = menuPanel.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      )
+
+      if (focusableElements.length === 0) {
+        return
+      }
+
+      const firstElement = focusableElements[0]
+      const lastElement = focusableElements[focusableElements.length - 1]
+
+      // Shift+Tab on first element -> go to last
+      if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault()
+        lastElement.focus()
+      }
+      // Tab on last element -> go to first
+      else if (!e.shiftKey && document.activeElement === lastElement) {
+        e.preventDefault()
+        firstElement.focus()
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [isOpen])
 
   const toggleExpanded = (title: string) => {
     setExpandedItems((prev) => {
@@ -80,6 +113,10 @@ const MobileMenu = ({ pathname }: MobileMenuProps) => {
 
       {/* Menu Panel */}
       <div
+        ref={menuPanelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
         className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-950
           border-l border-gray-200 dark:border-gray-800
           shadow-2xl z-[110]
@@ -91,6 +128,7 @@ const MobileMenu = ({ pathname }: MobileMenuProps) => {
           {/* Header with Close Button */}
           <div className="flex justify-end p-4 border-b border-gray-200 dark:border-gray-700">
             <button
+              ref={closeButtonRef}
               type="button"
               onClick={closeMenu}
               className="p-2 rounded-lg
@@ -100,23 +138,7 @@ const MobileMenu = ({ pathname }: MobileMenuProps) => {
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
               aria-label="Close menu"
             >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 15 15"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                role="img"
-                aria-label="Close icon"
-              >
-                <title>Close icon</title>
-                <path
-                  d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
-                  fill="currentColor"
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <X size={20} aria-hidden="true" />
             </button>
           </div>
 
@@ -144,7 +166,9 @@ const MobileMenu = ({ pathname }: MobileMenuProps) => {
                             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
                         >
                           <span>{link.title}</span>
-                          <ChevronDownIcon
+                          <ChevronDown
+                            size={15}
+                            aria-hidden="true"
                             className={`transition-transform duration-150 ${expandedItems.has(link.title) ? "rotate-180" : ""}`}
                           />
                         </button>

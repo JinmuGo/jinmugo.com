@@ -202,9 +202,12 @@ export const Flower: React.FC<FlowerProps> = ({ slug, frontmatter, maxLikesPerIP
         <TooltipTrigger asChild>
           <button
             type="button"
-            className="w-10 h-10 cursor-pointer transition-transform hover:scale-105 bg-transparent border-none p-0"
+            className={`w-10 h-10 cursor-pointer transition-all hover:scale-105 bg-transparent border-none p-0 ${
+              isLoading ? "opacity-50 cursor-wait" : ""
+            }`}
             onClick={() => void handleSvgClick()}
             aria-label="Like flower"
+            aria-busy={isLoading}
             disabled={isLoading}
           >
             <svg

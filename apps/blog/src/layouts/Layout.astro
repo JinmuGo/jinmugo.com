@@ -4,6 +4,7 @@ import MobileMenu from "@/components/app-shell/Header/MobileMenu.tsx"
 import BaseHead from "@/components/seo/BaseHead.astro"
 import GoogleTag from "@/components/seo/GoogleTag.astro"
 import Umami from "@/components/seo/Umami.astro"
+import { Toaster } from "@/components/ui/sonner"
 import Container from "@/layouts/Container.astro"
 import type { Post } from "@/types/content"
 import StructuredData from "@/utils/structuredData.astro"
@@ -54,5 +55,6 @@ const containerStyles = {
       <slot />
     </Container>
     <MobileMenu pathname={pathname} client:load />
+    <Toaster client:load position="bottom-right" />
   </body>
 </html>

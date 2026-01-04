@@ -1,31 +1,10 @@
 "use client"
 
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
+import { ChevronDown } from "lucide-react"
 import type * as React from "react"
 
 import { cn } from "@/utils/cn"
-
-const ChevronDownIcon = ({ className }: { className?: string }) => {
-  return (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 15 15"
-      fill="none"
-      className={cn("transition ease-in duration-150", className)}
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="Chevron down icon"
-    >
-      <title>Chevron down</title>
-      <path
-        d="M3.13523 6.15803C3.3241 5.95657 3.64052 5.94637 3.84197 6.13523L7.5 9.56464L11.158 6.13523C11.3595 5.94637 11.6759 5.95657 11.8648 6.15803C12.0536 6.35949 12.0434 6.67591 11.842 6.86477L7.84197 10.6148C7.64964 10.7951 7.35036 10.7951 7.15803 10.6148L3.15803 6.86477C2.95657 6.67591 2.94637 6.35949 3.13523 6.15803Z"
-        fill="currentColor"
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-      />
-    </svg>
-  )
-}
 
 function Accordion({ ...props }: React.ComponentProps<typeof AccordionPrimitive.Root>) {
   return <AccordionPrimitive.Root data-slot="accordion" {...props} />
@@ -60,7 +39,12 @@ function AccordionTrigger({
         {...props}
       >
         {children}
-        <ChevronDownIcon className="text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200" />
+        <ChevronDown
+          aria-hidden="true"
+          className={cn(
+            "text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200",
+          )}
+        />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   )

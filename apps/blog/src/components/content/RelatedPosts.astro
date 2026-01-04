@@ -30,8 +30,84 @@ const currentIndex = sortedContents.findIndex((content) => content.slug === curr
 const prevContent = currentIndex > 0 ? sortedContents[currentIndex - 1] : null
 const nextContent =
   currentIndex < sortedContents.length - 1 ? sortedContents[currentIndex + 1] : null
+
+// 관련 글 알고리즘 (가중치 기반)
+const calculateRelevanceScore = (candidate: Post | Memo): number => {
+  if (candidate.slug === current.slug) {
+    return -1 // 현재 글 제외
+  }
+
+  let score = 0
+  const currentData = current.data as Post["data"]
+  const candidateData = candidate.data as Post["data"]
+
+  // 같은 시리즈: +5점 (최우선)
+  if (currentData.series && candidateData.series && currentData.series === candidateData.series) {
+    score += 5
+  }
+
+  // 같은 카테고리: +3점
+  if (
+    currentData.category &&
+    candidateData.category &&
+    currentData.category === candidateData.category
+  ) {
+    score += 3
+  }
+
+  // 공유 태그: 태그당 +1점
+  const currentTags = new Set(currentData.tags || [])
+  const sharedTags = (candidateData.tags || []).filter((tag: string) => currentTags.has(tag))
+  score += sharedTags.length
+
+  // 30일 이내 게시: +1점
+  const daysDiff = Math.abs(
+    (new Date(currentData.date).getTime() - new Date(candidateData.date).getTime()) /
+      (1000 * 60 * 60 * 24),
+  )
+  if (daysDiff < 30) {
+    score += 1
+  }
+
+  return score
+}
+
+// 관련 글 계산 (점수 높은 순, 최대 3개)
+const relatedContents = allContents
+  .map((content) => ({ content, score: calculateRelevanceScore(content) }))
+  .filter(({ score }) => score > 0) // 점수가 있는 것만
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 3)
+  .map(({ content }) => content)
 ---
 
+{/* 관련 글 섹션 */}
+{relatedContents.length > 0 && (
+  <aside class="pt-6 border-t border-gray-200 dark:border-gray-800 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">관련 글</h2>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {relatedContents.map((content) => (
+        <article class="group relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-all hover:ring-1 hover:ring-primary-200 dark:hover:ring-primary-800/40">
+          <a href={`/${content.type === "post" ? "posts" : "memos"}/${content.slug}`} class="block h-full">
+            <h3 class="font-semibold text-sm text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors leading-tight mb-2 line-clamp-2">
+              {content.data.title}
+            </h3>
+            <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+              {content.data.category && (
+                <span class="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs font-medium text-gray-600 dark:text-gray-400">
+                  {content.data.category}
+                </span>
+              )}
+              <FormattedDate date={content.data.date} />
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+  </aside>
+)}
+
+{/* 이전/다음 글 네비게이션 */}
 {(prevContent || nextContent) && (
   <aside class="pt-6 border-t border-gray-200 dark:border-gray-800">
     <div class="flex flex-col gap-3 md:flex-row md:gap-4">
@@ -116,6 +192,12 @@ const nextContent =
   .line-clamp-1 {
     display: -webkit-box;
     -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }

@@ -130,6 +130,7 @@ export function PortfolioGalleryContent({
                 className="group cursor-pointer flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 rounded-lg"
                 style={{
                   zIndex: isHovered ? totalImages + 1 : zIndex,
+                  willChange: "transform, opacity",
                 }}
                 aria-label={`View ${image.alt} project details`}
                 tabIndex={0}

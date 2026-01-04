@@ -43,7 +43,7 @@
   --color-primary-900: oklch(40.8% 0.123 38.172deg);
   --color-primary-950: oklch(26.6% 0.079 36.259deg);
 
-  --color-text-light: #5C6165;
+  --color-text-light: #4A4D50; /* WCAG AA 준수를 위해 더 어두운 색상 사용 */
   --color-text-dark: #BFBDB6;
 }
 

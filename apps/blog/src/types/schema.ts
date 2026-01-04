@@ -117,3 +117,39 @@ export interface WebsiteSchemaOptions {
     "query-input": string
   }
 }
+
+/**
+ * FAQ schema types
+ */
+export interface FAQQuestion {
+  question: string
+  answer: string
+}
+
+export interface FAQSchemaOptions {
+  questions: FAQQuestion[]
+}
+
+/**
+ * HowTo schema types
+ */
+export interface HowToStep {
+  name: string
+  text: string
+  image?: string
+  url?: string
+}
+
+export interface HowToSchemaOptions {
+  name: string
+  description: string
+  totalTime?: string // ISO 8601 duration format (e.g., "PT30M" for 30 minutes)
+  estimatedCost?: {
+    currency: string
+    value: string
+  }
+  supply?: string[]
+  tool?: string[]
+  steps: HowToStep[]
+  image?: string
+}

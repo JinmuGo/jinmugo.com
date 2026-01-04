@@ -1,6 +1,8 @@
 import type {
   ArticleSchemaOptions,
   BreadcrumbItem,
+  FAQSchemaOptions,
+  HowToSchemaOptions,
   ListItem,
   OrganizationSchemaOptions,
   PageSchemaOptions,
@@ -13,6 +15,8 @@ import pkg from "~/package.json"
 export type {
   ArticleSchemaOptions,
   BreadcrumbItem,
+  FAQSchemaOptions,
+  HowToSchemaOptions,
   ListItem,
   OrganizationSchemaOptions,
   PageSchemaOptions,
@@ -276,4 +280,72 @@ export const generateWebsiteSchema = (options: WebsiteSchemaOptions) => {
   }
 
   return generateStructuredData(websiteSchema)
+}
+
+// FAQ 스키마 생성 함수
+export const generateFAQSchema = (options: FAQSchemaOptions) => {
+  const { questions } = options
+
+  return generateStructuredData({
+    "@type": "FAQPage",
+    mainEntity: questions.map((q) => ({
+      "@type": "Question",
+      name: q.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: q.answer,
+      },
+    })),
+  })
+}
+
+// HowTo 스키마 생성 함수
+export const generateHowToSchema = (options: HowToSchemaOptions) => {
+  const { name, description, totalTime, estimatedCost, supply, tool, steps, image } = options
+
+  const howToSchema: Record<string, unknown> = {
+    "@type": "HowTo",
+    name,
+    description,
+    step: steps.map((step, index) => ({
+      "@type": "HowToStep",
+      position: index + 1,
+      name: step.name,
+      text: step.text,
+      ...(step.image && { image: step.image }),
+      ...(step.url && { url: step.url }),
+    })),
+  }
+
+  if (totalTime) {
+    howToSchema.totalTime = totalTime
+  }
+
+  if (image) {
+    howToSchema.image = image
+  }
+
+  if (estimatedCost) {
+    howToSchema.estimatedCost = {
+      "@type": "MonetaryAmount",
+      currency: estimatedCost.currency,
+      value: estimatedCost.value,
+    }
+  }
+
+  if (supply && supply.length > 0) {
+    howToSchema.supply = supply.map((s) => ({
+      "@type": "HowToSupply",
+      name: s,
+    }))
+  }
+
+  if (tool && tool.length > 0) {
+    howToSchema.tool = tool.map((t) => ({
+      "@type": "HowToTool",
+      name: t,
+    }))
+  }
+
+  return generateStructuredData(howToSchema)
 }

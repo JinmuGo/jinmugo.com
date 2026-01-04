@@ -16,6 +16,9 @@ if (typeof src === "object" && src !== null && "src" in src) {
 }
 
 const isOptimized = width && height
+
+// Responsive sizes for better performance
+const sizes = "(max-width: 640px) 100vw, (max-width: 1024px) 80vw, 720px"
 ---
 
 {
@@ -34,6 +37,9 @@ const isOptimized = width && height
         width={width}
         height={height}
         title={title}
+        sizes={sizes}
+        loading="lazy"
+        decoding="async"
         class="mx-auto rounded-lg shadow-md my-8"
         {...attrs}
       />
@@ -42,6 +48,8 @@ const isOptimized = width && height
     <img
       src={imageSrc}
       alt={alt || ""}
+      loading="lazy"
+      decoding="async"
       class="mx-auto rounded-lg shadow-md my-8"
       {...attrs}
     />
