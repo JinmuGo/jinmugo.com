@@ -39,6 +39,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           submodules: recursive
 
       - uses: ./.github/actions/common-steps
@@ -70,6 +71,58 @@ jobs:
 
       - name: Build dependencies
         run: pnpm build --filter=@jinmu/types --filter=@jinmu/utils
+
+      - name: Restore translation cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/translations
+          key: translations-${{ hashFiles('apps/blog/blog_obsidian') }}
+          restore-keys: translations-
+
+      - name: Restore cached translations into Obsidian vault
+        run: |
+          if [ -d ../../.cache/translations ]; then
+            echo "Restoring cached translations..."
+            find ../../.cache/translations -name "*.en.md" | while read f; do
+              REL="${f#../../.cache/translations/}"
+              TARGET="blog_obsidian/$REL"
+              if [ ! -f "$TARGET" ]; then
+                mkdir -p "$(dirname "$TARGET")"
+                cp "$f" "$TARGET"
+              fi
+            done
+            echo "Cached translations restored."
+          else
+            echo "No translation cache found."
+          fi
+        working-directory: ${{ env.BUILD_PATH }}
+
+      - name: Translate content (Korean → English)
+        id: translate
+        run: node scripts/translate.js
+        working-directory: ${{ env.BUILD_PATH }}
+        continue-on-error: true
+        env:
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+
+      - name: Save translations to cache
+        run: |
+          mkdir -p ../../.cache/translations
+          cd blog_obsidian
+          find . -name "*.en.md" -type f | while read f; do
+            mkdir -p "../../.cache/translations/$(dirname "$f")"
+            cp "$f" "../../.cache/translations/$f"
+          done
+          TOTAL=$(find ../../.cache/translations -name "*.en.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+          echo "Translation files cached: $TOTAL"
+          if [ "${{ steps.translate.outcome }}" = "failure" ]; then
+            echo "::warning::Translation step failed. Deploying with existing translations only ($TOTAL files)."
+          fi
+        working-directory: ${{ env.BUILD_PATH }}
+
+      - name: Prebuild (export Obsidian content)
+        run: pnpm prebuild
+        working-directory: ${{ env.BUILD_PATH }}
 
       - name: Build with Astro
         run: |
