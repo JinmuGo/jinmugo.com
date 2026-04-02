@@ -1,9 +1,3 @@
-pre-push:
-  parallel: true
-  commands:
-    ci:
-      run: pnpm run ci
-
 pre-commit:
   commands:
     check:
@@ -11,86 +5,57 @@ pre-commit:
       run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
       stage_fixed: true
 
-    api-test:
-      glob: "apps/api/**/*.{js,ts}"
-      run: cd apps/api && pnpm vitest related --run {staged_files}
-      fail_text: "API 테스트가 실패했습니다. 커밋을 중단합니다."
-
-    type-check-api:
-      glob: "apps/api/**/*.{ts,tsx}"
-      run: pnpm -C apps/api check
-
-    type-check-blog:
-      glob: "apps/blog/**/*.{ts,tsx,astro}"
-      run: pnpm -C apps/blog check
-
-    packages-type-check:
-      glob: "packages/**/*.{ts,tsx}"
-      run: pnpm --filter "@jinmu/*" check
+    type-check:
+      glob: "**/*.{ts,tsx,astro}"
+      run: pnpm check
 
     translate-korean-posts:
-      glob: "apps/blog/blog_obsidian/**/*.md"
+      glob: "blog_obsidian/**/*.md"
       run: |
-        # 서브모듈 커밋 변경 감지 (방법 1: git diff --cached)
-        submodule_changed_via_diff=$(git diff --cached --name-only | grep -E '^apps/blog/blog_obsidian$' || true)
-        
-        # 서브모듈 커밋 변경 감지 (방법 2: git status)
-        submodule_status=$(git status --short apps/blog/blog_obsidian 2>/dev/null | grep -E '^[^?]' || true)
-        
-        # 서브모듈 커밋 변경이 감지된 경우
+        # 서브모듈 커밋 변경 감지
+        submodule_changed_via_diff=$(git diff --cached --name-only | grep -E '^blog_obsidian$' || true)
+        submodule_status=$(git status --short blog_obsidian 2>/dev/null | grep -E '^[^?]' || true)
+
         if [ -n "$submodule_changed_via_diff" ] || [ -n "$submodule_status" ]; then
           echo "📦 서브모듈 커밋 변경 감지: blog_obsidian"
-          
-          # 서브모듈 내부에서 변경된 .md 파일 확인
-          cd apps/blog/blog_obsidian
-          
-          # 현재 커밋 해시
+
+          cd blog_obsidian
           current_hash=$(git rev-parse HEAD)
-          
-          # HEAD에 저장된 서브모듈 커밋 해시 (메인 저장소에서)
-          cd ../..
-          stored_hash=$(git ls-tree HEAD apps/blog/blog_obsidian 2>/dev/null | awk '{print $3}' || echo "")
-          
-          # 변경된 파일 확인
-          cd apps/blog/blog_obsidian
+          cd ..
+          stored_hash=$(git ls-tree HEAD blog_obsidian 2>/dev/null | awk '{print $3}' || echo "")
+
+          cd blog_obsidian
           if [ -n "$stored_hash" ] && [ "$stored_hash" != "$current_hash" ]; then
-            # 이전 커밋과 현재 커밋 비교
             changed_files=$(git diff --name-only "$stored_hash" "$current_hash" 2>/dev/null | grep -E '\.md$' | grep -v '\.en\.md$' || true)
           else
-            # HEAD~1과 비교 (최근 커밋이 있는 경우)
             changed_files=$(git diff --name-only HEAD~1 HEAD 2>/dev/null | grep -E '\.md$' | grep -v '\.en\.md$' || true)
           fi
-          
-          cd ../..
-          
+          cd ..
+
           if [ -n "$changed_files" ]; then
             echo "📝 서브모듈 내부 변경된 한국어 파일:"
             echo "$changed_files" | sed 's/^/  - /'
             echo ""
-            
-            # 변경된 파일들을 임시로 메인 저장소에 스테이징하여 translate:staged가 감지하도록 함
-            # (서브모듈 내부 파일 경로를 메인 저장소 기준으로 변환)
+
             temp_staged_files=""
             while IFS= read -r file; do
               if [ -n "$file" ]; then
-                main_repo_path="apps/blog/blog_obsidian/$file"
+                main_repo_path="blog_obsidian/$file"
                 temp_staged_files="$temp_staged_files$main_repo_path"$'\n'
               fi
             done <<< "$changed_files"
-            
-            # 변경된 파일들을 임시로 스테이징 (번역 스크립트가 감지하도록)
+
             echo "$temp_staged_files" | while IFS= read -r file; do
               if [ -n "$file" ] && [ -f "$file" ]; then
                 git add "$file" 2>/dev/null || true
               fi
             done
-            
+
             echo "🔄 번역 스크립트 실행..."
-            pnpm -C apps/blog translate:staged
-            
-            # 번역된 파일을 서브모듈 내부에서 스테이징
+            pnpm translate:staged
+
             echo "➕ 번역된 파일 스테이징 (서브모듈 내부)..."
-            cd apps/blog/blog_obsidian
+            cd blog_obsidian
             en_files_added=0
             while IFS= read -r file; do
               if [ -n "$file" ]; then
@@ -103,12 +68,11 @@ pre-commit:
                 fi
               fi
             done <<< "$changed_files"
-            cd ../..
-            
+            cd ..
+
             if [ "$en_files_added" -gt 0 ]; then
-              # 메인 저장소에서 서브모듈 변경사항 및 번역된 파일 스테이징
               echo "➕ 서브모듈 변경사항 메인 저장소에 스테이징..."
-              git add apps/blog/blog_obsidian
+              git add blog_obsidian
             else
               echo "ℹ️  번역된 파일이 없거나 이미 스테이징되어 있습니다."
             fi
@@ -116,12 +80,11 @@ pre-commit:
             echo "ℹ️  서브모듈 커밋은 변경되었지만 번역할 한국어 .md 파일이 없습니다."
           fi
         fi
-        
-        # 기존 로직: 서브모듈 내부 파일 직접 변경 감지
-        korean_files=$(echo "{staged_files}" | grep -E 'apps/blog/blog_obsidian.*\.md$' | grep -v '\.en\.md$' || true)
+
+        korean_files=$(echo "{staged_files}" | grep -E 'blog_obsidian.*\.md$' | grep -v '\.en\.md$' || true)
         if [ -n "$korean_files" ]; then
           echo "📝 한국어 파일 직접 변경 감지: 번역 스크립트 실행..."
-          pnpm -C apps/blog translate:staged
+          pnpm translate:staged
           echo "➕ 번역된 파일 스테이징..."
-          git add apps/blog/blog_obsidian/**/*.en.md
+          git add blog_obsidian/**/*.en.md
         fi

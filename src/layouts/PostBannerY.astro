@@ -1,0 +1,64 @@
+---
+import { Image } from "astro:assets"
+import UserSection from "@/components/app-shell/Comment/UserSection.astro"
+import FormattedDate from "@/components/content/FormattedDate.astro"
+import Prose from "@/components/layout/Prose.astro"
+import Breadcrumb from "@/components/seo/Breadcrumb.astro"
+import Layout from "@/layouts/Layout.astro"
+import type { PostMetadata } from "@/types/content"
+import { generateContentSchemas } from "@/utils/contentSchemas"
+
+interface Props {
+  frontmatter: PostMetadata
+  bannerImage: ImageMetadata
+}
+
+const { frontmatter, bannerImage } = Astro.props
+const { title, date, summary, category, slug, tags } = frontmatter
+
+const { width, height } = bannerImage
+
+// Generate all schemas using consolidated utility
+const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentSchemas({
+  frontmatter,
+  pathname: Astro.url.pathname,
+  origin: Astro.url.origin,
+  contentType: "post",
+  imageUrl: bannerImage ? `${Astro.url.origin}/posts/${slug}/banner.webp` : undefined,
+})
+---
+
+<Layout
+  frontmatter={frontmatter}
+  title={title}
+  description={summary || title}
+  lang={lang}
+  jsonLd={[pageSchema, breadcrumbSchema]}
+  ogImage={`/posts/${slug}/og.png`}
+  type="article"
+  tags={tags}
+>
+  <Breadcrumb items={breadcrumbItems}/>
+    <header
+      class="space-y-1 pb-5 md:flex md:flex-row-reverse md:justify-between items-end"
+    >
+      <Image
+        width={width}
+        height={height}
+        src={bannerImage}
+        alt={`${title} 배너`}
+      />
+      <div id="post-title" class="pt-10">
+        <h1 class="font-bold text-xl md:text-2xl">{title}</h1>
+        <p>{summary}</p>
+        <div class="text-sm text-gray-500 dark:text-gray-300">
+          <a href={`/archives/category/${category}`} class="underline">{category}</a>
+          / <FormattedDate date={date} />
+        </div>
+      </div>
+    </header>
+  <Prose as="article">
+    <slot />
+  </Prose>
+  <UserSection slug={slug} frontmatter={frontmatter} type="post" />
+</Layout>

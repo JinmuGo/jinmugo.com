@@ -1,0 +1,70 @@
+---
+import { Image } from "astro:assets"
+import { render } from "astro:content"
+import ArrowButton from "@/components/content/ArrowButton.astro"
+import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
+import { getKoreanApp } from "@/utils/content/apps"
+import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
+import pkg from "~/package.json"
+import Layout from "../layouts/Layout.astro"
+
+// Breadcrumb 항목 생성
+const breadcrumbItems = generateBreadcrumbItems({
+  pathname: "/about",
+  origin: buildPageUrl(pkg.homepage, ""),
+  lang: "ko",
+  title: "About",
+})
+
+const pageSchema = generatePageSchema({
+  title: "About",
+  description: "About Jinmu",
+  url: buildPageUrl(pkg.homepage, "/about"),
+  keywords: "about, author, profile",
+  inLanguage: "ko",
+})
+
+const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
+const jsonLd = [pageSchema, breadcrumbSchema]
+
+const app = await getKoreanApp()
+const { name, bio, avatar } = app[0].data
+const { Content } = await render(app[0])
+const title = "About"
+const description = "About Jinmu"
+---
+
+<Layout
+  title={title}
+  description={description}
+  image={avatar}
+  lang="ko"
+  jsonLd={jsonLd}
+  type="website"
+>
+  <section class="relative w-full mx-auto aspect-square sm:aspect-video">
+    <Image src={avatar} alt={name} width={1200} height={300} loading="eager" />
+    <div class="absolute bottom-6 left-6 text-white drop-shadow-lg">
+      <h1
+        class="text-3xl leading-9 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10 sm:text-gray-50 md:text-6xl md:leading-14 dark:text-gray-50 sm:dark:text-gray-200"
+      >
+        {name}
+      </h1>
+      <h2
+        class="text-sm sm:text-lg leading-8 font-medium text-gray-800 sm:text-gray-100 dark:text-gray-100 sm:dark:text-gray-300"
+      >
+        {bio}
+      </h2>
+    </div>
+  </section>
+  {
+    Content && (
+      <div class="prose dark:prose-invert max-w-none pt-8 pb-8 xl:col-span-2">
+        <Content />
+      </div>
+    )
+  }
+
+  <ArrowButton href="/resume" label="Resume" />
+  <ArrowButton href="/portfolio" label="Portfolio" />
+</Layout>

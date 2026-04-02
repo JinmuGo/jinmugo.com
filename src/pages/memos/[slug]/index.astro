@@ -1,0 +1,36 @@
+---
+import { render } from "astro:content"
+import PhotoSwipe from "@/components/features/PhotoSwipe.astro"
+import { components } from "@/components/mdx/components.astro"
+import MemoDefault from "@/layouts/MemoDefault.astro"
+import type { Memo } from "@/types/content"
+import { getKoreanMemos } from "@/utils/content/memos"
+
+export async function getStaticPaths() {
+  const memos = await getKoreanMemos()
+
+  return memos.map((entry: Memo) => {
+    return {
+      params: {
+        slug: entry.slug,
+      },
+      props: { entry, slug: entry.slug, href: entry.href },
+    }
+  })
+}
+
+const { entry, slug, href }: { entry: Memo; slug: string; href: string } = Astro.props
+const frontmatterWithSlug = {
+  ...entry.data,
+  slug,
+  href,
+}
+
+const { Content } = await render(entry)
+---
+
+<MemoDefault frontmatter={frontmatterWithSlug}>
+  <Content components={components} />
+</MemoDefault>
+
+<PhotoSwipe />
