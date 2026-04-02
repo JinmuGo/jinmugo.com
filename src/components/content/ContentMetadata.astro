@@ -1,0 +1,28 @@
+---
+import FormattedDate from "@/components/content/FormattedDate.astro"
+
+interface Props {
+  category?: string
+  date: Date
+  slug: string
+  variant?: "default" | "compact"
+}
+
+const { category, date, slug, variant = "default" } = Astro.props
+---
+
+<div class:list={[
+	"text-sm",
+	variant === "default" ? "text-gray-500 dark:text-gray-300" : "text-gray-600 dark:text-gray-400"
+]}>
+	{category && (
+		<>
+			<a href={`/archives/category/${category}`} class="underline">
+				{category}
+			</a>
+			<span> / </span>
+		</>
+	)}
+	<FormattedDate date={date} />
+</div>
+

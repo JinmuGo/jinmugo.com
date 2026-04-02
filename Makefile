@@ -14,7 +14,7 @@ install:
 .PHONY: install
 
 fclean:
-	find . -name "node_modules" -type d -exec rm -rf {} +
+	rm -rf node_modules
 .PHONY: fclean
 
 lint:
@@ -28,7 +28,3 @@ lint-fix:
 format:
 	pnpm format
 .PHONY: format
-
-migrate-published:
-	cd apps/api && pnpm run migrate:published
-.PHONY: migrate-published

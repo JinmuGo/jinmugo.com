@@ -1,0 +1,22 @@
+---
+import RelatedPosts from "@/components/content/RelatedPosts.astro"
+import type { MemoMetadata, PostMetadata } from "@/types/content"
+import { GiscusComments } from "./GiscusComments"
+import { Flower } from "./LikeFlower"
+
+interface Props {
+  slug: string
+  frontmatter?: PostMetadata | MemoMetadata
+  type: "post" | "memo"
+}
+
+const { slug, frontmatter, type } = Astro.props
+---
+
+<section class="flex flex-col gap-2 mt-28 mb-6 text md:text-lg">
+	<div class="flex flex-col gap-2 items-center justify-center">
+		<Flower client:load slug={slug} maxLikesPerIP={5} />
+	</div>
+	<GiscusComments client:load />
+	{frontmatter && <RelatedPosts current={{ slug, data: frontmatter, type }} />}
+</section> 

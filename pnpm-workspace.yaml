@@ -1,19 +1,8 @@
-packages:
-  - apps/*
-  - packages/*
-
 onlyBuiltDependencies:
-  - '@prisma/client'
-  - '@prisma/engines'
   - '@tailwindcss/oxide'
-  - aws-sdk
   - esbuild
   - lefthook
-  - msgpackr-extract
-  - prisma
   - sharp
-  - supabase
-  - workerd
 
 patchedDependencies:
   '@r4ai/remark-callout': patches/@r4ai__remark-callout.patch
