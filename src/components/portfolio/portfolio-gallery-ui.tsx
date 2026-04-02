@@ -208,22 +208,22 @@ export function PortfolioGalleryContent({
                 },
               )}
             >
-              {images.map((image) => (
+              {images.map((image, imageIndex) => (
                 <button
                   key={`${image.src}-repeat-${key}`}
                   type="button"
                   className="group cursor-pointer flex-shrink-0"
-                  onClick={() => onImageClick?.(index)}
+                  onClick={() => onImageClick?.(imageIndex)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault()
-                      onImageClick?.(index)
+                      onImageClick?.(imageIndex)
                     }
                   }}
                   aria-label={`View ${image.alt} project details`}
                 >
                   <motion.div
-                    layoutId={`project-image-${index}`}
+                    layoutId={`project-image-${key}-${imageIndex}`}
                     className="relative aspect-video w-64 rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-105"
                     style={{
                       boxShadow: `
