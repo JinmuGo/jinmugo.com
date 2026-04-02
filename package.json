@@ -20,6 +20,7 @@
     "build": "pnpm prebuild && astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "prepare": "sh scripts/setup-submodule-hooks.sh",
     "deploy:gsc": "node scripts/submit-to-gsc.js && node scripts/submit-urls-to-gsc.js",
     "translate": "node --env-file=.env scripts/translate.js",
     "translate:staged": "node --env-file=.env scripts/translate.js --staged-only",

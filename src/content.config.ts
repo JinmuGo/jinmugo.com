@@ -88,7 +88,7 @@ const ProjectSchema = z.object({
   category: z.string(),
   tags: z.array(z.string()),
   timeline: z.string(),
-  github: z.string(),
+  github: z.string().optional(),
   live: z.string().optional(),
   exhibitNumber: z.string(),
   year: z.number(),
@@ -111,7 +111,8 @@ const OpenSourceSchema = z.object({
   description: z.string(),
   role: z.string(),
   tech: z.string(),
-  github: z.string(),
+  github: z.string().optional(),
+  live: z.string().optional(),
   githubRepo: z.string().optional(),
   obsidianPluginId: z.string().optional(),
 })
@@ -159,7 +160,8 @@ const appCollection = defineCollection({
     contact: z
       .object({
         email: z.string(),
-        github: z.string(),
+        github: z.string().optional(),
+        live: z.string().optional(),
       })
       .optional(),
     hero: z

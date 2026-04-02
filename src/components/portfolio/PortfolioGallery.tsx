@@ -53,8 +53,8 @@ export interface Project {
   category: string
   tags: string[]
   timeline: string
-  github: string
-  live: string
+  github?: string
+  live?: string
   exhibitNumber: string
   year: number
   metrics?: ProjectMetrics
@@ -597,20 +597,22 @@ export function PortfolioGallery({
                               View Live Project
                             </a>
                           )}
-                          <a
-                            href={selectedProject.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 border-2 border-foreground text-foreground hover:bg-foreground hover:text-background transition-all duration-300 cursor-pointer"
-                            style={{
-                              fontSize: "0.875rem",
-                              fontWeight: 500,
-                              letterSpacing: "0.02em",
-                            }}
-                          >
-                            <Github size={14} />
-                            Source Code
-                          </a>
+                          {selectedProject.github && (
+                            <a
+                              href={selectedProject.github}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 border-2 border-foreground text-foreground hover:bg-foreground hover:text-background transition-all duration-300 cursor-pointer"
+                              style={{
+                                fontSize: "0.875rem",
+                                fontWeight: 500,
+                                letterSpacing: "0.02em",
+                              }}
+                            >
+                              <Github size={14} />
+                              Source Code
+                            </a>
+                          )}
                         </div>
                       </div>
                     </motion.div>
