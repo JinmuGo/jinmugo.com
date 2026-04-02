@@ -21,15 +21,13 @@ export function GitHubStarsCount({ owner, repo }: GitHubStarsCountProps) {
       setError(null)
 
       try {
-        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
-          cache: "no-store",
-        })
+        const response = await fetch(`https://ungh.cc/repos/${owner}/${repo}`)
         if (!response.ok) {
           throw new Error(`Failed to fetch: ${response.status}`)
         }
 
         const data = await response.json()
-        setStarCount(data.stargazers_count ?? 0)
+        setStarCount(data.repo.stars ?? 0)
         setError(null)
       } catch (err) {
         console.error("Failed to fetch star count:", err)
