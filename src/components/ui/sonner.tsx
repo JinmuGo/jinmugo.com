@@ -43,10 +43,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       style={
         {
-          "--normal-bg": "var(--cmdk-bg, #fff)",
-          "--normal-text": "var(--cmdk-fg, #222)",
-          "--normal-border": "var(--cmdk-border, #e5e7eb)",
-          "--border-radius": "0.5rem",
+          "--normal-bg": "var(--cmdk-bg)",
+          "--normal-text": "var(--cmdk-fg)",
+          "--normal-border": "var(--cmdk-border)",
+          "--border-radius": "var(--radius-md)",
         } as React.CSSProperties
       }
       {...props}

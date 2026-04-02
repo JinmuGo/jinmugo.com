@@ -11,9 +11,10 @@ export const Table: FC<TableProps> = ({ children, className }) => {
     <div className="my-6 w-full overflow-x-auto">
       <table
         className={cn(
-          "w-full border-collapse rounded-xl border border-gray-200 bg-card dark:bg-[#18181b] dark:border-gray-700",
+          "w-full border-collapse rounded-xl border border-gray-200 dark:border-gray-700",
           className,
         )}
+        style={{ backgroundColor: "var(--table-bg)" }}
       >
         {children}
       </table>
@@ -27,7 +28,11 @@ export type TableHeaderProps = {
 }
 
 export const TableHeader: FC<TableHeaderProps> = ({ children, className }) => {
-  return <thead className={cn("bg-gray-100 dark:bg-[#232326]", className)}>{children}</thead>
+  return (
+    <thead className={cn(className)} style={{ backgroundColor: "var(--table-header-bg)" }}>
+      {children}
+    </thead>
+  )
 }
 
 export type TableBodyProps = {
@@ -37,7 +42,7 @@ export type TableBodyProps = {
 
 export const TableBody: FC<TableBodyProps> = ({ children, className }) => {
   return (
-    <tbody className={cn("divide-y divide-border dark:divide-[#232326]", className)}>
+    <tbody className={cn("divide-y", className)} style={{ borderColor: "var(--table-divider)" }}>
       {children}
     </tbody>
   )
@@ -52,7 +57,7 @@ export const TableRow: FC<TableRowProps> = ({ children, className }) => {
   return (
     <tr
       className={cn(
-        "transition-colors hover:bg-gray-200 dark:hover:bg-[#232326] first:text-center",
+        "transition-colors hover:bg-gray-200 dark:hover:bg-gray-800 first:text-center",
         className,
       )}
     >

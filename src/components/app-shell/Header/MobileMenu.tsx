@@ -105,7 +105,7 @@ const MobileMenu = ({ pathname }: MobileMenuProps) => {
       <button
         type="button"
         tabIndex={-1}
-        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] sm:hidden transition-all duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[var(--z-mobile-backdrop)] sm:hidden transition-all duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         onClick={closeMenu}
         onKeyDown={(e) => e.key === "Escape" && closeMenu()}
         aria-label="Close menu"
@@ -119,7 +119,7 @@ const MobileMenu = ({ pathname }: MobileMenuProps) => {
         aria-label="Navigation menu"
         className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-950
           border-l border-gray-200 dark:border-gray-800
-          shadow-2xl z-[110]
+          shadow-2xl z-[var(--z-mobile-menu)]
           transform transition-all duration-300 ease-out
           sm:hidden
           ${isOpen ? "translate-x-0" : "translate-x-full"}`}

@@ -29,8 +29,10 @@
 }
 
 @theme inline {
+  /* ===== Typography ===== */
   --font-sans: var(--font-geist), sans-serif;
 
+  /* ===== Primary Color Scale (oklch) ===== */
   --color-primary-50: oklch(98% 0.016 73.684deg);
   --color-primary-100: oklch(95.4% 0.038 75.164deg);
   --color-primary-200: oklch(90.1% 0.076 70.697deg);
@@ -43,8 +45,104 @@
   --color-primary-900: oklch(40.8% 0.123 38.172deg);
   --color-primary-950: oklch(26.6% 0.079 36.259deg);
 
-  --color-text-light: #4A4D50; /* WCAG AA 준수를 위해 더 어두운 색상 사용 */
+  /* ===== Semantic Text Colors (WCAG AA) ===== */
+  --color-text-light: #4A4D50;
   --color-text-dark: #BFBDB6;
+
+  /* ===== Border Radius Scale ===== */
+  --radius-sm: 0.25rem;   /* 4px - small chips, inline code */
+  --radius-md: 0.5rem;    /* 8px - buttons, inputs, cards */
+  --radius-lg: 0.75rem;   /* 12px - larger cards, dialogs */
+  --radius-xl: 1rem;      /* 16px - modals, command palette */
+
+  /* ===== Z-Index Scale ===== */
+  --z-header: 50;
+  --z-mobile-backdrop: 100;
+  --z-mobile-menu: 110;
+  --z-overlay: 1000;
+
+  /* ===== Transition Duration ===== */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+
+  /* ===== Shadows ===== */
+  --shadow-dialog-light: 0 8px 32px rgb(0 0 0 / 12%), 0 1.5px 6px rgb(0 0 0 / 4%);
+  --shadow-dialog-dark: 0 8px 32px rgb(0 0 0 / 40%), 0 1.5px 6px rgb(0 0 0 / 20%);
+
+  /* ===== Layout ===== */
+  --container-sm: 42rem;   /* max-w-2xl (672px) */
+  --container-md: 56rem;   /* max-w-4xl (896px) - lg breakpoint */
+  --container-lg: 64rem;   /* max-w-5xl (1024px) - xl breakpoint */
+}
+
+/* ===== Semantic Color Tokens (theme-aware) ===== */
+:root {
+  /* Surface */
+  --surface-primary: #ffffff;
+  --surface-secondary: #f3f4f6;
+  --surface-tertiary: #f9fafb;
+  --surface-invert: #111827;
+
+  /* Border */
+  --border-default: #e5e7eb;
+  --border-muted: #d1d5db;
+
+  /* Text */
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-tertiary: #6b7280;
+  --text-muted: #9ca3af;
+  --text-invert: #f9fafb;
+
+  /* Table */
+  --table-bg: var(--surface-primary);
+  --table-header-bg: #f3f4f6;
+  --table-hover-bg: #e5e7eb;
+  --table-divider: var(--border-default);
+
+  /* Command palette */
+  --cmdk-bg: var(--surface-primary);
+  --cmdk-fg: #222222;
+  --cmdk-border: var(--border-default);
+  --cmdk-input-bg: var(--surface-secondary);
+  --cmdk-hover: var(--surface-secondary);
+  --cmdk-muted: var(--text-muted);
+  --cmdk-input-border: var(--border-default);
+}
+
+html[data-theme="dark"] {
+  /* Surface */
+  --surface-primary: #111827;
+  --surface-secondary: #1f2937;
+  --surface-tertiary: #374151;
+  --surface-invert: #f9fafb;
+
+  /* Border */
+  --border-default: #374151;
+  --border-muted: #4b5563;
+
+  /* Text */
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-tertiary: #9ca3af;
+  --text-muted: #9ca3af;
+  --text-invert: #111827;
+
+  /* Table */
+  --table-bg: #18181b;
+  --table-header-bg: #232326;
+  --table-hover-bg: #232326;
+  --table-divider: #232326;
+
+  /* Command palette */
+  --cmdk-bg: var(--surface-secondary);
+  --cmdk-fg: #f3f4f6;
+  --cmdk-border: var(--border-default);
+  --cmdk-input-bg: var(--surface-tertiary);
+  --cmdk-hover: #4b5563;
+  --cmdk-muted: var(--text-muted);
+  --cmdk-input-border: var(--border-muted);
 }
 
 html[data-theme="light"] {
@@ -83,7 +181,7 @@ body {
 *:focus-visible {
   outline: 2px solid oklch(var(--color-primary-500));
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 
 /* 모션 감소 설정을 존중 */
