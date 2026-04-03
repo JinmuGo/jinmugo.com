@@ -14,9 +14,9 @@
   },
   "packageManager": "pnpm@10.13.1",
   "scripts": {
-    "dev": "concurrently --kill-others \"node scripts/watch-obsidian.js\" \"astro dev --host\"",
+    "dev": "concurrently --kill-others \"node --env-file=.env scripts/watch-obsidian.js\" \"astro dev --host\"",
     "dev:no-watch": "pnpm prebuild && astro dev --host",
-    "prebuild": "node scripts/build-content.js",
+    "prebuild": "node --env-file=.env scripts/build-content.js",
     "build": "pnpm prebuild && astro build",
     "preview": "astro preview",
     "astro": "astro",

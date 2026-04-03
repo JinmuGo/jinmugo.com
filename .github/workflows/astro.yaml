@@ -7,6 +7,9 @@ on:
     types:
       - completed
 
+  repository_dispatch:
+    types: [content-update]
+
   workflow_dispatch:
 
 permissions:
@@ -23,7 +26,7 @@ env:
 
 jobs:
   build:
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch' }}
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -32,6 +35,12 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           submodules: recursive
+
+      - name: Update blog_obsidian submodule to latest
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          git submodule update --remote blog_obsidian
+          echo "Updated blog_obsidian to $(git -C blog_obsidian rev-parse --short HEAD)"
 
       - uses: ./.github/actions/common-steps
 

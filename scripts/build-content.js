@@ -9,7 +9,9 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const BLOG_ROOT = path.resolve(__dirname, "..")
-const OBSIDIAN_DIR = path.join(BLOG_ROOT, "blog_obsidian")
+const OBSIDIAN_DIR = process.env.OBSIDIAN_VAULT_PATH
+  ? path.resolve(process.env.OBSIDIAN_VAULT_PATH)
+  : path.join(BLOG_ROOT, "blog_obsidian")
 const CACHE_DIR = path.join(BLOG_ROOT, ".cache/content-export")
 const TARGET_DIR = path.join(BLOG_ROOT, "src/content")
 const SCRIPTS_DIR = path.join(BLOG_ROOT, "scripts")

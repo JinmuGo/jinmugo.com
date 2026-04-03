@@ -9,7 +9,9 @@ const __dirname = dirname(__filename)
 const blogRoot = join(__dirname, "..")
 
 // 감시할 디렉토리
-const watchDir = join(blogRoot, "blog_obsidian")
+const watchDir = process.env.OBSIDIAN_VAULT_PATH
+  ? join(process.env.OBSIDIAN_VAULT_PATH)
+  : join(blogRoot, "blog_obsidian")
 
 let isRebuilding = false
 let pendingRebuild = false
@@ -22,7 +24,7 @@ function runPrebuild() {
   }
 
   isRebuilding = true
-  console.log("\n[Watcher] Changes detected in blog_obsidian/")
+  console.log(`\n[Watcher] Changes detected in ${watchDir}`)
   console.log("[Watcher] Running prebuild...\n")
 
   const prebuild = spawn("node", ["scripts/build-content.js"], {
@@ -36,7 +38,7 @@ function runPrebuild() {
 
     if (code === 0) {
       console.log("\n[Watcher] Prebuild completed successfully!")
-      console.log("[Watcher] Watching for changes in blog_obsidian/...\n")
+      console.log(`[Watcher] Watching for changes in ${watchDir}...\n`)
     } else {
       console.error(`\n[Watcher] Prebuild failed with code ${code}\n`)
     }
