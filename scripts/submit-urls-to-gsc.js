@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { existsSync, readFileSync, unlinkSync, writeFileSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 import { config } from "dotenv"
 import { GoogleAuth } from "google-auth-library"
@@ -59,18 +59,12 @@ async function submitUrlsToGSC(urls) {
   try {
     console.log("🚀 Submitting URLs to Google Indexing API...")
 
-    // 서비스 계정 JSON 키를 임시 파일로 저장
-    const tempKeyPath = join(process.cwd(), "temp-service-account.json")
-    writeFileSync(tempKeyPath, GOOGLE_APPLICATION_CREDENTIALS)
-
-    // Google Auth 클라이언트 생성
+    // Google Auth 클라이언트 생성 (credentials 객체 직접 전달)
+    const credentials = JSON.parse(GOOGLE_APPLICATION_CREDENTIALS)
     const auth = new GoogleAuth({
-      keyFile: tempKeyPath,
+      credentials,
       scopes: ["https://www.googleapis.com/auth/indexing"],
     })
-
-    const client = await auth.getClient()
-    const accessToken = await client.getAccessToken()
 
     console.log(`📤 Submitting ${urls.length} URLs to Google Indexing API...`)
 
@@ -88,6 +82,10 @@ async function submitUrlsToGSC(urls) {
     for (let i = 0; i < batches.length; i++) {
       const batch = batches[i]
       console.log(`📤 Submitting batch ${i + 1}/${batches.length} (${batch.length} URLs)...`)
+
+      // 배치마다 토큰을 갱신하여 만료 방지
+      const client = await auth.getClient()
+      const accessToken = await client.getAccessToken()
 
       // 각 URL을 개별적으로 제출 (Indexing API는 개별 URL 제출만 지원)
       for (const url of batch) {
@@ -160,13 +158,6 @@ async function submitUrlsToGSC(urls) {
       console.log(`   1. Go to Google Search Console: https://search.google.com/search-console`)
       console.log(`   2. Add your service account email as owner/full user`)
       console.log(`   3. Verify site ownership is complete`)
-    }
-
-    // 임시 파일 삭제
-    try {
-      unlinkSync(tempKeyPath)
-    } catch {
-      // 무시
     }
   } catch (error) {
     console.error("❌ Failed to submit URLs:", error.message)

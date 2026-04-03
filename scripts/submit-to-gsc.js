@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-import { unlinkSync, writeFileSync } from "node:fs"
-import { join } from "node:path"
 import { config } from "dotenv"
 import { GoogleAuth } from "google-auth-library"
 
@@ -19,12 +17,17 @@ if (!GOOGLE_APPLICATION_CREDENTIALS || !GSC_SITE_URL || !GSC_PROPERTY_ID) {
   process.exit(1)
 }
 
+async function getAccessToken(auth) {
+  const client = await auth.getClient()
+  const accessToken = await client.getAccessToken()
+  return accessToken.token
+}
+
 async function submitUrlToGSC(auth, url, urlType) {
   try {
     console.log(`🚀 Submitting ${urlType} (${url}) to Google Search Console...`)
 
-    const client = await auth.getClient()
-    const accessToken = await client.getAccessToken()
+    const token = await getAccessToken(auth)
 
     // webmasters/v3 엔드포인트 사용
     const response = await fetch(
@@ -32,7 +35,7 @@ async function submitUrlToGSC(auth, url, urlType) {
       {
         method: "PUT",
         headers: {
-          Authorization: `Bearer ${accessToken.token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         // body는 비워둠 - URL 경로에 sitemap 정보가 포함됨
@@ -58,9 +61,12 @@ async function submitUrlToGSC(auth, url, urlType) {
         console.error("1. Google Search Console에서 사이트 속성으로 이동")
         console.error("2. 설정 > 사용자 및 권한으로 이동")
         console.error("3. 서비스 계정 이메일을 소유자 또는 전체 사용자로 추가")
-        console.error(
-          `4. 서비스 계정 이메일: ${JSON.parse(GOOGLE_APPLICATION_CREDENTIALS).client_email}`,
-        )
+        try {
+          const creds = JSON.parse(GOOGLE_APPLICATION_CREDENTIALS)
+          console.error(`4. 서비스 계정 이메일: ${creds.client_email}`)
+        } catch {
+          console.error("4. 서비스 계정 이메일을 확인하세요")
+        }
         console.error("5. 또는 GSC_SITE_URL이 올바른지 확인하세요")
       }
       throw new Error(`${urlType} HTTP ${response.status}: ${responseText}`)
@@ -89,13 +95,10 @@ async function submitAllToGSC() {
   try {
     console.log("🚀 Starting submission to Google Search Console...")
 
-    // 서비스 계정 JSON 키를 임시 파일로 저장
-    const tempKeyPath = join(process.cwd(), "temp-service-account.json")
-    writeFileSync(tempKeyPath, GOOGLE_APPLICATION_CREDENTIALS)
-
-    // Google Auth 클라이언트 생성
+    // Google Auth 클라이언트 생성 (credentials 객체 직접 전달)
+    const credentials = JSON.parse(GOOGLE_APPLICATION_CREDENTIALS)
     const auth = new GoogleAuth({
-      keyFile: tempKeyPath,
+      credentials,
       scopes: ["https://www.googleapis.com/auth/webmasters"],
     })
 
@@ -110,7 +113,8 @@ async function submitAllToGSC() {
     let failureCount = 0
 
     // 각 URL을 순차적으로 제출
-    for (const { url, type } of urlsToSubmit) {
+    for (let i = 0; i < urlsToSubmit.length; i++) {
+      const { url, type } = urlsToSubmit[i]
       const success = await submitUrlToGSC(auth, url, type)
       if (success) {
         successCount++
@@ -119,17 +123,10 @@ async function submitAllToGSC() {
       }
 
       // 요청 간 간격을 두어 API 제한을 피함
-      if (urlsToSubmit.indexOf({ url, type }) < urlsToSubmit.length - 1) {
+      if (i < urlsToSubmit.length - 1) {
         console.log("⏳ Waiting 1 second before next submission...")
         await new Promise((resolve) => setTimeout(resolve, 1000))
       }
-    }
-
-    // 임시 파일 삭제
-    try {
-      unlinkSync(tempKeyPath)
-    } catch {
-      // 무시
     }
 
     // 최종 결과 요약
