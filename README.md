@@ -1,41 +1,35 @@
 # Jinmu.me
 
-개인 블로그 및 API 서버 프로젝트입니다.
+Obsidian에서 콘텐츠를 가져오는 Astro 기반 이중언어(한국어/영어) 개인 블로그.
 
 ## 프로젝트 구조
 
-- `blog/` - Astro 기반 블로그 프론트엔드
-- `api/` - Express + PocketBase 기반 API 서버
-- `blog/blog_obsidian/` - Obsidian 마크다운 콘텐츠
-
-## 주요 기능
-
-### 블로그 콘텐츠 마이그레이션
-
-Obsidian 마크다운 파일을 PocketBase DB로 자동 마이그레이션하는 시스템을 제공합니다.
-
-#### Published 콘텐츠 마이그레이션 (권장)
-
-draft가 false인 파일들만 마이그레이션합니다:
-
-```bash
-# 로컬에서 실행
-make migrate-published
-
-# 또는 API 디렉토리에서 직접 실행
-cd api && pnpm run migrate:published
+```
+src/
+├── content/          # Obsidian에서 동기화된 콘텐츠 (.mdx)
+├── components/       # React islands + Astro 컴포넌트
+├── layouts/          # 페이지 레이아웃 (PostDefault, PostBanner 등)
+├── pages/            # Astro 라우트
+├── styles/           # 글로벌 CSS, prose 스타일
+└── utils/            # 유틸리티 함수
+scripts/              # 콘텐츠 빌드, 번역, GSC 제출 스크립트
+blog_obsidian/        # Obsidian 마크다운 (git 서브모듈)
 ```
 
+## 콘텐츠 워크플로우
 
+Obsidian 마크다운 (`blog_obsidian/`) → `scripts/build-content.js`가 `src/content/`로 동기화 (.md→.mdx 변환) → Astro 정적 사이트 빌드.
 
-### GitHub Actions 워크플로우
+영어 번역은 DeepL API를 통해 자동으로 생성됩니다 (`*.en.md`).
 
-#### Published Content Migration (권장)
-- `blog/blog_obsidian/` 디렉토리의 `.md` 파일 변경 시 자동 실행
-- draft가 false인 파일들만 마이그레이션
-- PocketBase DB 자동 업데이트
+## 기술 스택
 
-
+- **Astro 6** (정적 사이트 생성)
+- **React** (인터랙티브 islands)
+- **Tailwind CSS v4** + **shadcn/ui**
+- **Biome** (린팅/포맷팅)
+- **Vitest** (테스트)
+- **Lefthook** (pre-commit 훅)
 
 ## 개발 환경 설정
 
@@ -47,73 +41,45 @@ pnpm install
 
 ### 2. 환경 변수 설정
 
-#### API 서버 환경 변수
-
-`api/.env` 파일을 생성하고 PocketBase 설정을 추가하세요:
+`.env` 파일을 생성하세요:
 
 ```bash
-# PocketBase 설정
-PB_URL=http://127.0.0.1:8090
-
-# API 서버 설정  
-PORT=3001
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:4321
-```
-
-#### 블로그 환경 변수
-
-블로그 프로젝트에서 API 서버를 사용하려면 `blog/.env` 파일을 생성하세요:
-
-```bash
-# API 서버 설정
-PUBLIC_API_URL=http://localhost:3001
+PUBLIC_API_URL=http://localhost:3001  # 외부 API 서버 (조회수/좋아요)
 PUBLIC_ENV=development
+DEEPL_API_KEY=...                     # 번역 스크립트용 (선택)
 ```
 
 ### 3. 개발 서버 실행
 
 ```bash
-# PocketBase 서버 시작 (먼저 실행)
-cd api && pnpm run pocketbase:start
-
-# API 서버 실행 (새 터미널에서)
-cd api && pnpm run dev
-
-# 블로그 개발 서버 (새 터미널에서)
 pnpm dev
 ```
 
-## 사용 가능한 명령어
+Obsidian 파일 변경 감시 + Astro dev 서버가 동시에 실행됩니다.
+
+## 주요 명령어
 
 | 명령어 | 설명 |
 |--------|------|
-| `make migrate-published` | Published 콘텐츠만 마이그레이션 (draft=false) |
-| `pnpm dev` | 블로그 개발 서버 실행 |
-| `pnpm build` | 블로그 빌드 |
-| `pnpm lint` | 코드 린팅 |
+| `pnpm dev` | 개발 서버 (Obsidian 감시 + Astro dev) |
+| `pnpm build` | 프로덕션 빌드 |
+| `pnpm prebuild` | Obsidian → src/content/ 동기화 |
+| `pnpm lint` | Biome 린팅 |
+| `pnpm lint:fix` | Biome 자동 수정 |
 | `pnpm format` | 코드 포맷팅 |
+| `pnpm check` | lint + format 통합 검사 |
+| `pnpm test` | Vitest 실행 |
+| `pnpm translate` | 전체 게시물 번역 (DeepL) |
+| `pnpm translate:staged` | staged 파일만 번역 |
 
-## 마이그레이션 스크립트
+## 디자인 시스템
 
-### 로컬 테스트
+`DESIGN.md`에 정의되어 있습니다. 주요 결정:
 
-환경 변수가 설정되지 않은 상태에서도 스크립트를 테스트할 수 있습니다:
-
-```bash
-cd api
-pnpm run migrate:published  # 시뮬레이션 모드로 실행
-```
-
-### 실제 마이그레이션
-
-환경 변수가 설정된 상태에서 실제 DB에 마이그레이션:
-
-```bash
-cd api
-pnpm run migrate:published  # 실제 DB에 마이그레이션
-```
+- **타이포그래피:** Geist (디스플레이) + Pretendard (본문, 한국어)
+- **색상:** 따뜻한 Stone 중성색 + 오렌지 액센트 (#D97706)
+- **레이아웃:** max-w-prose (65ch) 본문, max-w-5xl (1024px) 컨테이너
 
 ## 라이센스
 
-MIT License 
+MIT License
