@@ -75,10 +75,13 @@ export default function HeaderSlider({
         <div
           className={`w-full mx-auto flex md:items-center flex-col md:flex-row justify-between ${containerStyles.header}`}
         >
-          <h1 className="text-xl md:text-2xl font-bold whitespace-pre text-ellipsis overflow-hidden ">
+          <p
+            className="text-xl md:text-2xl font-bold whitespace-pre text-ellipsis overflow-hidden"
+            aria-hidden="true"
+          >
             {title}
-          </h1>
-          <h2 className="min-w-fit">
+          </p>
+          <p className="min-w-fit">
             <span className="text-sm md:text text-gray-500 dark:text-gray-300">
               <a className="underline" href={href}>
                 {category}
@@ -90,7 +93,7 @@ export default function HeaderSlider({
                 day: "numeric",
               })}
             </span>
-          </h2>
+          </p>
         </div>
       </section>
       <button
