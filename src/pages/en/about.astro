@@ -1,7 +1,6 @@
 ---
 import { Image } from "astro:assets"
 import { render } from "astro:content"
-import ArrowButton from "@/components/content/ArrowButton.astro"
 import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Layout from "@/layouts/Layout.astro"
 import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
@@ -73,6 +72,4 @@ const description = "About Jinmu"
     )
   }
 
-  <ArrowButton href="/en/resume" label="Resume" />
-  <ArrowButton href="/en/portfolio" label="Portfolio" />
 </Layout>

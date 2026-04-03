@@ -8,7 +8,25 @@ export interface HeaderNavLink {
 
 const headerNavLinks: HeaderNavLink[] = [
   { href: "/", title: "Home", shortCut: "h" },
-  { href: "/about", title: "About", shortCut: "a" },
+  {
+    href: "/about",
+    title: "About",
+    shortCut: "a",
+    subLinks: [
+      {
+        href: "/about",
+        title: "About",
+        description: "About me",
+        shortCut: "a",
+      },
+      {
+        href: "/resume",
+        title: "Resume",
+        description: "My resume and career",
+        shortCut: "r",
+      },
+    ],
+  },
   {
     href: "/blog",
     title: "Blog",
