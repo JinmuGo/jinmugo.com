@@ -125,7 +125,7 @@ const jsonLd = [pageSchema, breadcrumbSchema]
   <div class="columns-1 sm:columns-2 lg:columns-3 gap-4" id="gallery">
     {
       images.map(
-        (img: { key: string; src: string; width: number; height: number }) => (
+        (img: { key: string; src: string; width: number; height: number }, index: number) => (
           <a
             href={img.src}
             data-pswp-width={img.width}
@@ -138,6 +138,10 @@ const jsonLd = [pageSchema, breadcrumbSchema]
               alt={img.key}
               width={img.width}
               height={img.height}
+              loading={index < 6 ? "eager" : "lazy"}
+              decoding="async"
+              fetchpriority={index === 0 ? "high" : undefined}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               class="rounded-lg shadow-md w-full h-auto object-cover"
             />
           </a>
