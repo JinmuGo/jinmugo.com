@@ -20,6 +20,8 @@ const jsonLd = Astro.props.jsonLd
 const ogImage = Astro.props.ogImage
 const type = Astro.props.type ?? "website"
 const tags = Astro.props.tags ?? frontmatter?.tags
+const publishedTime = Astro.props.publishedTime as Date | undefined
+const modifiedTime = Astro.props.modifiedTime as Date | undefined
 
 // 공통 컨테이너 스타일 정의
 const containerStyles = {
@@ -39,6 +41,8 @@ const containerStyles = {
       ogImage={ogImage}
       type={type}
       tags={tags}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
     />
     {jsonLd && <StructuredData schema={jsonLd} />}
     <GoogleTag />

@@ -12,7 +12,7 @@ interface Props {
 }
 
 const { frontmatter } = Astro.props
-const { title, date, summary, category, slug, tags } = frontmatter
+const { title, date, lastmod, summary, category, slug, tags } = frontmatter
 
 // Generate all schemas using consolidated utility
 const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentSchemas({
@@ -32,6 +32,8 @@ const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentS
   ogImage={`/memos/${slug}/og.png`}
   type="article"
   tags={tags}
+  publishedTime={date}
+  modifiedTime={lastmod}
 >
   <Breadcrumb items={breadcrumbItems} />
   <main>
