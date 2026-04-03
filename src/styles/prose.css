@@ -1,7 +1,7 @@
 @layer components {
 	.prose-custom {
 		@apply prose dark:prose-invert;
-		@apply mx-auto max-w-none;
+		@apply mx-auto max-w-prose;
 		@apply mt-14;
 		@apply text-base md:text-lg leading-7 md:leading-8;
     @apply prose-h2:text-xl prose-h2:md:text-2xl prose-h2:lg:text-3xl;
