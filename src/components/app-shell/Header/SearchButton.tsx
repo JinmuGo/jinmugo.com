@@ -14,7 +14,7 @@ const SearchButton = ({ setOpen }: SearchButtonProps) => {
     <button
       type="button"
       aria-label="Search Button"
-      className="cursor-pointer"
+      className="cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px]"
       onClick={handleClick}
     >
       <Search

@@ -49,6 +49,7 @@ const ThemeSwitch: React.FC = () => {
         aria-label="automatic/system"
         aria-live="polite"
         type="button"
+        className="flex items-center justify-center min-w-[44px] min-h-[44px]"
       >
         <Sun className="light h-6 w-6" aria-hidden="true" />
         <Moon className="dark h-6 w-6" aria-hidden="true" />

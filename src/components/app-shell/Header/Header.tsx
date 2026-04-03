@@ -93,7 +93,7 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
                     <a
                       key={link.title}
                       href={isEn ? `/en${link.href}` : link.href}
-                      className="hover:text-primary-500 dark:hover:text-primary-400 m-1 text-gray-900 dark:text-gray-100"
+                      className="hover:text-primary-500 dark:hover:text-primary-400 m-1 py-2 text-gray-900 dark:text-gray-100"
                     >
                       {link.title}
                     </a>
@@ -106,7 +106,7 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
             <button
               type="button"
               onClick={() => window.dispatchEvent(new Event("toggleMobileMenu"))}
-              className="sm:hidden rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="sm:hidden rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center min-w-[44px] min-h-[44px]"
               aria-label="Open navigation menu"
             >
               <Menu size={24} aria-hidden="true" />
