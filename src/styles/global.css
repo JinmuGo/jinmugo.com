@@ -33,7 +33,7 @@
 
 @theme inline {
   /* ===== Typography ===== */
-  --font-sans: var(--font-geist), sans-serif;
+  --font-sans: var(--font-geist), "Pretendard", sans-serif;
 
   /* ===== Primary Color Scale (oklch) ===== */
   --color-primary-50: oklch(98% 0.016 73.684deg);
@@ -48,9 +48,22 @@
   --color-primary-900: oklch(40.8% 0.123 38.172deg);
   --color-primary-950: oklch(26.6% 0.079 36.259deg);
 
-  /* ===== Semantic Text Colors (WCAG AA) ===== */
-  --color-text-light: #4A4D50;
-  --color-text-dark: #BFBDB6;
+  /* ===== Semantic Text Colors (WCAG AA, warm stone) ===== */
+  --color-text-light: #292524;
+  --color-text-dark: #F5F5F0;
+
+  /* ===== Neutral Gray → Warm Stone (DESIGN.md) ===== */
+  --color-gray-50: #FAFAF8;
+  --color-gray-100: #F5F5F0;
+  --color-gray-200: #E7E5E0;
+  --color-gray-300: #D6D3CC;
+  --color-gray-400: #A8A29E;
+  --color-gray-500: #78716C;
+  --color-gray-600: #57534E;
+  --color-gray-700: #44403C;
+  --color-gray-800: #292524;
+  --color-gray-900: #1C1917;
+  --color-gray-950: #0C0A09;
 
   /* ===== Border Radius Scale ===== */
   --radius-sm: 0.25rem;   /* 4px - small chips, inline code */
@@ -79,34 +92,34 @@
   --container-lg: 64rem;   /* max-w-5xl (1024px) - xl breakpoint */
 }
 
-/* ===== Semantic Color Tokens (theme-aware) ===== */
+/* ===== Semantic Color Tokens (theme-aware, warm stone) ===== */
 :root {
-  /* Surface */
+  /* Surface (warm stone from DESIGN.md) */
   --surface-primary: #ffffff;
-  --surface-secondary: #f3f4f6;
-  --surface-tertiary: #f9fafb;
-  --surface-invert: #111827;
+  --surface-secondary: #F5F5F0;
+  --surface-tertiary: #FAFAF8;
+  --surface-invert: #1C1917;
 
-  /* Border */
-  --border-default: #e5e7eb;
-  --border-muted: #d1d5db;
+  /* Border (warm stone) */
+  --border-default: #E7E5E0;
+  --border-muted: #D6D3CC;
 
-  /* Text */
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --text-tertiary: #6b7280;
-  --text-muted: #9ca3af;
-  --text-invert: #f9fafb;
+  /* Text (warm stone from DESIGN.md) */
+  --text-primary: #292524;
+  --text-secondary: #57534E;
+  --text-tertiary: #78716C;
+  --text-muted: #A8A29E;
+  --text-invert: #FAFAF8;
 
   /* Table */
   --table-bg: var(--surface-primary);
-  --table-header-bg: #f3f4f6;
-  --table-hover-bg: #e5e7eb;
+  --table-header-bg: #F5F5F0;
+  --table-hover-bg: #E7E5E0;
   --table-divider: var(--border-default);
 
   /* Command palette */
   --cmdk-bg: var(--surface-primary);
-  --cmdk-fg: #222222;
+  --cmdk-fg: #292524;
   --cmdk-border: var(--border-default);
   --cmdk-input-bg: var(--surface-secondary);
   --cmdk-hover: var(--surface-secondary);
@@ -115,35 +128,35 @@
 }
 
 html[data-theme="dark"] {
-  /* Surface */
-  --surface-primary: #111827;
-  --surface-secondary: #1f2937;
-  --surface-tertiary: #374151;
-  --surface-invert: #f9fafb;
+  /* Surface (warm stone dark from DESIGN.md) */
+  --surface-primary: #1C1917;
+  --surface-secondary: #292524;
+  --surface-tertiary: #44403C;
+  --surface-invert: #FAFAF8;
 
-  /* Border */
-  --border-default: #374151;
-  --border-muted: #4b5563;
+  /* Border (warm stone dark) */
+  --border-default: #44403C;
+  --border-muted: #57534E;
 
-  /* Text */
-  --text-primary: #f9fafb;
-  --text-secondary: #d1d5db;
-  --text-tertiary: #9ca3af;
-  --text-muted: #9ca3af;
-  --text-invert: #111827;
+  /* Text (warm stone dark — off-white per DESIGN.md) */
+  --text-primary: #F5F5F0;
+  --text-secondary: #D6D3CC;
+  --text-tertiary: #A8A29E;
+  --text-muted: #A8A29E;
+  --text-invert: #1C1917;
 
   /* Table */
-  --table-bg: #18181b;
-  --table-header-bg: #232326;
-  --table-hover-bg: #232326;
-  --table-divider: #232326;
+  --table-bg: #1C1917;
+  --table-header-bg: #292524;
+  --table-hover-bg: #292524;
+  --table-divider: #292524;
 
   /* Command palette */
   --cmdk-bg: var(--surface-secondary);
-  --cmdk-fg: #f3f4f6;
+  --cmdk-fg: #F5F5F0;
   --cmdk-border: var(--border-default);
   --cmdk-input-bg: var(--surface-tertiary);
-  --cmdk-hover: #4b5563;
+  --cmdk-hover: #57534E;
   --cmdk-muted: var(--text-muted);
   --cmdk-input-border: var(--border-muted);
 }
@@ -183,7 +196,7 @@ body {
 
 /* 접근성: 포커스 스타일 개선 */
 *:focus-visible {
-  outline: 2px solid oklch(var(--color-primary-500));
+  outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }

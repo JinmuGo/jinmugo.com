@@ -83,7 +83,10 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
             </div>
           </a>
           <div className="flex items-center space-x-4 leading-5 sm:-mr-6 sm:space-x-6">
-            <div className="no-scrollbar hidden max-w-40 items-center gap-x-4 overflow-x-auto sm:flex md:max-w-72 lg:max-w-96">
+            <nav
+              aria-label="Main navigation"
+              className="no-scrollbar hidden max-w-40 items-center gap-x-4 overflow-x-auto sm:flex md:max-w-72 lg:max-w-96"
+            >
               {headerNavLinks
                 .filter((link) => link.href !== "/")
                 .map((link) =>
@@ -93,13 +96,13 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
                     <a
                       key={link.title}
                       href={isEn ? `/en${link.href}` : link.href}
-                      className="hover:text-primary-500 dark:hover:text-primary-400 m-1 py-2 text-gray-900 dark:text-gray-100"
+                      className="hover:text-primary-500 dark:hover:text-primary-400 m-1 py-2 text-gray-900 dark:text-gray-100 min-h-[44px] flex items-center"
                     >
                       {link.title}
                     </a>
                   ),
                 )}
-            </div>
+            </nav>
             <SearchButton setOpen={setOpen} />
             <ThemeSwitch />
             {/* Hamburger menu button for mobile */}

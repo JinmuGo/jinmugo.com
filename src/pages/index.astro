@@ -95,12 +95,13 @@ const jsonLd = [websiteSchema, organizationSchema, pageSchema]
   <Bleed>
     <Image
       src={HeroImageSrc}
-      alt="boat"
+      alt="해변에 정박된 작은 보트 — jinmu.me 블로그 히어로 이미지"
       class="object-cover w-full h-full"
       loading="eager"
       fetchpriority="high"
       data-blur-src="sea-boat-blur.webp"
     />
   </Bleed>
+  <h1 class="sr-only">{title}</h1>
   <PostTimeline posts={sortedPosts} memos={sortedMemos} />
 </Layout>
