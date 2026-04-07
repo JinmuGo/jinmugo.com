@@ -11,38 +11,38 @@ export async function GET() {
   const enMemos = await getEnglishMemos()
 
   const renderUrl = (
-    slug: string,
+    koHref: string,
     {
-      hasEn = true,
+      enHref,
       lastMod,
     }: {
-      hasEn?: boolean
+      enHref?: string
       lastMod?: string
     } = {},
   ) => {
-    const enSlug = `/en${slug}`
+    const fullEnHref = enHref ?? undefined
     let result = ""
 
     result += "<url>"
-    result += `<loc>${siteUrl}${slug}</loc>`
+    result += `<loc>${siteUrl}${koHref}</loc>`
     if (lastMod) {
       result += `<lastmod>${lastMod}</lastmod>`
     }
-    result += `<xhtml:link rel="alternate" hreflang="ko" href="${siteUrl}${slug}"/>`
-    if (hasEn) {
-      result += `<xhtml:link rel="alternate" hreflang="en" href="${siteUrl}${enSlug}"/>`
+    result += `<xhtml:link rel="alternate" hreflang="ko" href="${siteUrl}${koHref}"/>`
+    if (fullEnHref) {
+      result += `<xhtml:link rel="alternate" hreflang="en" href="${siteUrl}${fullEnHref}"/>`
     }
-    result += `<xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}${slug}"/>`
+    result += `<xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}${koHref}"/>`
     result += "</url>"
 
-    if (hasEn) {
+    if (fullEnHref) {
       result += "<url>"
-      result += `<loc>${siteUrl}${enSlug}</loc>`
+      result += `<loc>${siteUrl}${fullEnHref}</loc>`
       if (lastMod) {
         result += `<lastmod>${lastMod}</lastmod>`
       }
-      result += `<xhtml:link rel="alternate" hreflang="en" href="${siteUrl}${enSlug}"/>`
-      result += `<xhtml:link rel="alternate" hreflang="ko" href="${siteUrl}${slug}"/>`
+      result += `<xhtml:link rel="alternate" hreflang="en" href="${siteUrl}${fullEnHref}"/>`
+      result += `<xhtml:link rel="alternate" hreflang="ko" href="${siteUrl}${koHref}"/>`
       result += "</url>"
     }
 
@@ -51,28 +51,28 @@ export async function GET() {
   const result = `
   <?xml version="1.0" encoding="UTF-8"?>
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-    ${renderUrl("/")}
-    ${renderUrl("/about")}
-    ${renderUrl("/archives")}
-    ${renderUrl("/memos")}
-    ${renderUrl("/posts")}
-    ${renderUrl("/series")}
-    ${renderUrl("/gallery")}
-    ${renderUrl("/projects")}
+    ${renderUrl("/", { enHref: "/en" })}
+    ${renderUrl("/about", { enHref: "/en/about" })}
+    ${renderUrl("/archives", { enHref: "/en/archives" })}
+    ${renderUrl("/memos", { enHref: "/en/memos" })}
+    ${renderUrl("/posts", { enHref: "/en/posts" })}
+    ${renderUrl("/series", { enHref: "/en/series" })}
+    ${renderUrl("/gallery", { enHref: "/en/gallery" })}
+    ${renderUrl("/projects", { enHref: "/en/projects" })}
     ${koPosts
       .map((post: Post) => {
         const lastMod = format(post.data.lastmod ?? post.data.date, "yyyy-MM-dd")
-        const hasEn = enPosts.some((p: Post) => p.slug === post.slug)
+        const enPost = enPosts.find((p: Post) => p.slug === post.slug)
 
-        return renderUrl(post.href, { hasEn, lastMod })
+        return renderUrl(post.href, { enHref: enPost?.href, lastMod })
       })
       .join("\n")}
     ${koMemos
       .map((memo: Memo) => {
         const lastMod = format(memo.data.lastmod ?? memo.data.date, "yyyy-MM-dd")
-        const hasEn = enMemos.some((m: Memo) => m.slug === memo.slug)
+        const enMemo = enMemos.find((m: Memo) => m.slug === memo.slug)
 
-        return renderUrl(memo.href, { hasEn, lastMod })
+        return renderUrl(memo.href, { enHref: enMemo?.href, lastMod })
       })
       .join("\n")}
   </urlset>
