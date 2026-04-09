@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@fuma-comment/react/preset.css";
 @import "./cmdk.css";
 @import "./prose.css";
 @import "tw-animate-css";
@@ -199,6 +200,92 @@ body {
   outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
+}
+
+/* 텍스트 선택 색상 — 브랜드 오렌지 */
+::selection {
+  background: oklch(93% 0.05 70);
+  color: #292524;
+}
+
+html[data-theme="dark"] ::selection {
+  background: oklch(35% 0.1 40);
+  color: #F5F5F0;
+}
+
+/* 인쇄 스타일시트 */
+@media print {
+  header, footer, nav, aside,
+  .fc-comment, .like-counter, .view-counter,
+  .series-accordion, [data-search], [data-lang-switch],
+  button:not(.print-visible) {
+    display: none !important;
+  }
+
+  @page {
+    margin: 2cm 2.5cm;
+    size: A4;
+  }
+
+  body {
+    font-family: "Pretendard", "Georgia", serif;
+    font-size: 11pt;
+    line-height: 1.6;
+    color: #000;
+    background: #fff;
+  }
+
+  article {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .prose-custom {
+    max-width: 100% !important;
+    font-size: 11pt;
+  }
+
+  .prose-custom h2 { font-size: 16pt; page-break-after: avoid; }
+  .prose-custom h3 { font-size: 13pt; page-break-after: avoid; }
+  .prose-custom h4 { page-break-after: avoid; }
+
+  .prose-custom img,
+  .prose-custom pre {
+    page-break-inside: avoid;
+  }
+
+  .prose-custom a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: #57534E;
+    word-break: break-all;
+  }
+
+  .prose-custom a[href^="#"]::after,
+  .prose-custom a[href^="/"]::after {
+    content: none;
+  }
+
+  .prose-custom pre {
+    background: #F5F5F0 !important;
+    border: 1px solid #E7E5E0;
+    font-size: 9pt;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .prose-custom blockquote {
+    background: transparent !important;
+    border-left: 3pt solid #D97706;
+    padding-left: 1em;
+  }
+
+  .prose-custom img {
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
 }
 
 /* 모션 감소 설정을 존중 */

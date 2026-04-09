@@ -1,7 +1,7 @@
 ---
 import RelatedPosts from "@/components/content/RelatedPosts.astro"
 import type { MemoMetadata, PostMetadata } from "@/types/content"
-import { GiscusComments } from "./GiscusComments"
+import { FumaComments } from "./FumaComments"
 import { Flower } from "./LikeFlower"
 
 interface Props {
@@ -17,6 +17,6 @@ const { slug, frontmatter, type } = Astro.props
 	<div class="flex flex-col gap-2 items-center justify-center">
 		<Flower client:load slug={slug} maxLikesPerIP={5} />
 	</div>
-	<GiscusComments client:load />
+	<FumaComments client:load slug={slug} />
 	{frontmatter && <RelatedPosts current={{ slug, data: frontmatter, type }} />}
 </section> 

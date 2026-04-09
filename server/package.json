@@ -1,0 +1,27 @@
+{
+  "name": "jinmu-comment-server",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@fuma-comment/server": "latest",
+    "@hono/node-server": "latest",
+    "better-auth": "latest",
+    "better-sqlite3": "latest",
+    "drizzle-orm": "latest",
+    "hono": "latest"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "latest",
+    "@types/node": "latest",
+    "drizzle-kit": "latest",
+    "tsx": "latest",
+    "typescript": "latest"
+  }
+}
