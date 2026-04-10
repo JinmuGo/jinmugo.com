@@ -5,7 +5,11 @@ import { cors } from "hono/cors"
 import { auth } from "./auth.js"
 import { commentAuth, storage } from "./comment.js"
 
-const app = new Hono()
+// strict: false → treat /foo and /foo/ as the same route. fuma-comment's
+// client appends a trailing slash before the query string (/api/comments/[page]/?sort=...)
+// while its server-side route is registered as /comments/[page] without
+// a trailing slash, so strict matching produces 404 on every list fetch.
+const app = new Hono({ strict: false })
 
 const allowedOrigins = (process.env.FRONTEND_URL ?? "http://localhost:4321")
   .split(",")
