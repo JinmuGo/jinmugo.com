@@ -25,14 +25,14 @@ app.use(
 // BetterAuth routes — /api/auth/*
 app.on(["POST", "GET"], "/api/auth/**", (c) => auth.handler(c.req.raw))
 
-// fuma-comment routes — /api/comments/*
-// baseUrl is required: without it the routes mount at /comments/* and the
-// frontend (which calls /api/comments/*) gets 404 on every request.
+// fuma-comment routes — final paths become /api/comments/*
+// fuma-comment's internal routes are already prefixed with /comments,
+// so baseUrl must be "/api" (not "/api/comments") to avoid double-prefix.
 HonoComment({
   app,
   storage,
   auth: commentAuth,
-  baseUrl: "/api/comments",
+  baseUrl: "/api",
 })
 
 // Health check
