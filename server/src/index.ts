@@ -26,10 +26,13 @@ app.use(
 app.on(["POST", "GET"], "/api/auth/**", (c) => auth.handler(c.req.raw))
 
 // fuma-comment routes — /api/comments/*
+// baseUrl is required: without it the routes mount at /comments/* and the
+// frontend (which calls /api/comments/*) gets 404 on every request.
 HonoComment({
   app,
   storage,
   auth: commentAuth,
+  baseUrl: "/api/comments",
 })
 
 // Health check

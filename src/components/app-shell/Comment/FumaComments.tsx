@@ -17,7 +17,12 @@ export function FumaComments({ slug }: FumaCommentsProps) {
       auth={{
         type: "api",
         signIn: () => {
-          authClient.signIn.social({ provider: "github" })
+          // callbackURL: come back to the same page after OAuth instead of
+          // landing on the comment server's baseURL.
+          authClient.signIn.social({
+            provider: "github",
+            callbackURL: window.location.href,
+          })
         },
       }}
     />
