@@ -38,10 +38,15 @@ export const auth = betterAuth({
     // Cross-origin cookie attributes so browsers accept the session cookie
     // when the frontend runs on a different origin (e.g. localhost during
     // local testing against the production comment server).
+    //
+    // NOTE: do NOT enable `partitioned` here. Partitioned cookies (CHIPS)
+    // are scoped per top-level site, so the OAuth state cookie set during
+    // a cross-origin sign-in fetch (top=localhost) becomes invisible when
+    // the OAuth provider redirects directly to the callback URL
+    // (top=comment.jinmu.me), causing a state_mismatch on every login.
     defaultCookieAttributes: {
       sameSite: "none",
       secure: true,
-      partitioned: true,
     },
   },
 })
