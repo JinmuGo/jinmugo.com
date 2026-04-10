@@ -9,6 +9,10 @@ const trustedOrigins = (process.env.FRONTEND_URL ?? "http://localhost:4321")
   .filter(Boolean)
 
 export const auth = betterAuth({
+  // Explicit baseURL so OAuth callback URLs always use https. Coolify
+  // terminates TLS at the proxy, so requests reach the container as plain
+  // http and BetterAuth would otherwise infer the wrong scheme.
+  baseURL: process.env.BETTER_AUTH_URL,
   database: drizzleAdapter(db, {
     provider: "sqlite",
     schema: {
