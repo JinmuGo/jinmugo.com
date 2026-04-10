@@ -7,13 +7,17 @@ import { commentAuth, storage } from "./comment.js"
 
 const app = new Hono()
 
-const frontendUrl = process.env.FRONTEND_URL ?? "http://localhost:4321"
+const allowedOrigins = (process.env.FRONTEND_URL ?? "http://localhost:4321")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean)
 
 // CORS — credentials: true for BetterAuth session cookies
+// Dynamic origin: echo the request origin back if it's in the allowlist
 app.use(
   "*",
   cors({
-    origin: frontendUrl,
+    origin: (origin) => (allowedOrigins.includes(origin) ? origin : null),
     credentials: true,
   }),
 )
