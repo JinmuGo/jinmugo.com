@@ -20,19 +20,21 @@ export async function GET() {
       lastMod?: string
     } = {},
   ) => {
-    const enSlug = `/en${slug}`
+    // Ensure trailing slash to match GitHub Pages canonical URLs
+    const normalizedSlug = slug.endsWith("/") ? slug : `${slug}/`
+    const enSlug = `/en${normalizedSlug}`
     let result = ""
 
     result += "<url>"
-    result += `<loc>${siteUrl}${slug}</loc>`
+    result += `<loc>${siteUrl}${normalizedSlug}</loc>`
     if (lastMod) {
       result += `<lastmod>${lastMod}</lastmod>`
     }
-    result += `<xhtml:link rel="alternate" hreflang="ko" href="${siteUrl}${slug}"/>`
+    result += `<xhtml:link rel="alternate" hreflang="ko" href="${siteUrl}${normalizedSlug}"/>`
     if (hasEn) {
       result += `<xhtml:link rel="alternate" hreflang="en" href="${siteUrl}${enSlug}"/>`
     }
-    result += `<xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}${slug}"/>`
+    result += `<xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}${normalizedSlug}"/>`
     result += "</url>"
 
     if (hasEn) {
@@ -42,7 +44,7 @@ export async function GET() {
         result += `<lastmod>${lastMod}</lastmod>`
       }
       result += `<xhtml:link rel="alternate" hreflang="en" href="${siteUrl}${enSlug}"/>`
-      result += `<xhtml:link rel="alternate" hreflang="ko" href="${siteUrl}${slug}"/>`
+      result += `<xhtml:link rel="alternate" hreflang="ko" href="${siteUrl}${normalizedSlug}"/>`
       result += "</url>"
     }
 
