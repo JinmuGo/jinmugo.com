@@ -36,4 +36,5 @@ src/content/post
 
 # AI
 .omx/
+.omc/
 .gstack/

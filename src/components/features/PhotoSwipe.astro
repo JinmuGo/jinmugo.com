@@ -2,9 +2,10 @@
 
 ---
 
-<script>
+<script lang="ts">
   import PhotoSwipeLightbox from "photoswipe/lightbox";
-  import PhotoSwipe, { type PhotoSwipeOptions } from "photoswipe";
+  import PhotoSwipe from "photoswipe";
+  import type { PhotoSwipeOptions } from "photoswipe";
   import "photoswipe/style.css";
 
   interface PostBodyPhotoSwipeProps extends PhotoSwipeOptions {
