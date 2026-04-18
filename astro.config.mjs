@@ -19,6 +19,7 @@ import { transformerNotationDiff, transformerNotationHighlight } from "@shikijs/
 export default defineConfig({
   site: process.env.NODE_ENV === "development" ? "http://localhost:4321" : pkg.homepage,
   output: "static",
+  trailingSlash: "always",
   fonts: [
     {
       provider: fontProviders.google(),

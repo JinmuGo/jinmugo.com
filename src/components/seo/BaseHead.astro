@@ -46,7 +46,7 @@ const {
 } = Astro.props
 ---
 
-<title>{title}</title>
+<title>{title.includes("Jinmu Go") ? title : `${title} | Jinmu Go`}</title>
 <Font cssVariable="--font-geist" preload />
 <link rel="preload" href="/fonts/Pretendard-Regular.woff2" as="font" type="font/woff2" crossorigin />
 

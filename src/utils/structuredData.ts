@@ -40,6 +40,7 @@ export const generateBreadcrumbSchema = (items: BreadcrumbItem[]) =>
         "@type": "WebPage",
         "@id": breadcrumbItem.item,
         url: breadcrumbItem.item,
+        name: breadcrumbItem.name,
       },
     })),
   })

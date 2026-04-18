@@ -70,7 +70,7 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
     case "posts":
       items.push({
         name: t.posts,
-        item: `${origin}${basePath}/posts`,
+        item: `${origin}${basePath}/posts/`,
       })
 
       if (secondSegment && title) {
@@ -85,7 +85,7 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
     case "memos":
       items.push({
         name: t.memos,
-        item: `${origin}${basePath}/memos`,
+        item: `${origin}${basePath}/memos/`,
       })
 
       if (secondSegment && title) {
@@ -100,7 +100,7 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
     case "archives":
       items.push({
         name: t.archives,
-        item: `${origin}${basePath}/archives`,
+        item: `${origin}${basePath}/archives/`,
       })
 
       if (secondSegment && thirdSegment) {
