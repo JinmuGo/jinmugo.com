@@ -30,7 +30,6 @@ function runPrebuild() {
   const prebuild = spawn("node", ["scripts/build-content.js"], {
     cwd: blogRoot,
     stdio: "inherit",
-    shell: true,
   })
 
   prebuild.on("close", (code) => {
