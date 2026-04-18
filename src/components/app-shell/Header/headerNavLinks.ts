@@ -9,18 +9,18 @@ export interface HeaderNavLink {
 const headerNavLinks: HeaderNavLink[] = [
   { href: "/", title: "Home", shortCut: "h" },
   {
-    href: "/about",
+    href: "/about/",
     title: "About",
     shortCut: "a",
     subLinks: [
       {
-        href: "/about",
+        href: "/about/",
         title: "About",
         description: "About me",
         shortCut: "a",
       },
       {
-        href: "/resume",
+        href: "/resume/",
         title: "Resume",
         description: "My resume and career",
         shortCut: "r",
@@ -28,38 +28,38 @@ const headerNavLinks: HeaderNavLink[] = [
     ],
   },
   {
-    href: "/blog",
+    href: "/blog/",
     title: "Blog",
     shortCut: "b",
     subLinks: [
       {
-        href: "/archives",
+        href: "/archives/",
         title: "Archives",
         description: "Archive all my posts",
         shortCut: "ar",
       },
       {
-        href: "/memos",
+        href: "/memos/",
         title: "Memos",
         description: "Notes and thoughts shortly",
         shortCut: "m",
       },
       {
-        href: "/posts",
+        href: "/posts/",
         title: "Posts",
         description: "Posts",
         shortCut: "p",
       },
       {
-        href: "/series",
+        href: "/series/",
         title: "Series",
         description: "Blog post series collections",
         shortCut: "s",
       },
     ],
   },
-  { href: "/gallery", title: "Gallery", shortCut: "g" },
-  { href: "/projects", title: "Projects", shortCut: "pr" },
+  { href: "/gallery/", title: "Gallery", shortCut: "g" },
+  { href: "/projects/", title: "Projects", shortCut: "pr" },
 ]
 
 export default headerNavLinks
