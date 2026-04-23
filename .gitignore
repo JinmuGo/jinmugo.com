@@ -38,3 +38,4 @@ src/content/post
 .omx/
 .omc/
 .gstack/
+.playwright-mcp/
