@@ -78,7 +78,7 @@ Obsidian 파일 변경 감시 + Astro dev 서버가 동시에 실행됩니다.
 
 - **타이포그래피:** Geist (디스플레이) + Pretendard (본문, 한국어)
 - **색상:** 따뜻한 Stone 중성색 + 오렌지 액센트 (#D97706)
-- **레이아웃:** max-w-prose (65ch) 본문, max-w-5xl (1024px) 컨테이너
+- **레이아웃:** max-w-max 본문, max-w-5xl (1024px) 컨테이너
 
 ## 라이센스
 

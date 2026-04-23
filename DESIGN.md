@@ -4,8 +4,7 @@
 - **What this is:** Bilingual (Korean/English) personal developer blog with technical deep-dives, running logs, movie reviews, and philosophical essays
 - **Who it's for:** Fellow developers, Korean tech community, anyone who finds the posts via search
 - **Space/industry:** Personal developer blog. Peers: leerob.io, rauno.me, paco.me, brianlovin.com
-- **Project type:** Static editorial site (Astro 6 + React islands)
-
+- **Project type:** Static editorial site (Astro 6 + max-w-maxx
 ## Aesthetic Direction
 - **Direction:** Editorial/Magazine — strong typographic hierarchy, content-first, personality through typography and warmth rather than decoration
 - **Decoration level:** Intentional — hero photo for personality, subtle warm surfaces, no decorative elements
@@ -31,7 +30,7 @@
   - 3xl: 36px — H1 (article title)
   - 4xl: 48px — hero/display
 - **Line height:** 1.7-1.8 for body (Korean text needs more), 1.1-1.3 for headings
-- **Measure:** max-w-prose (~65ch) for article body text
+- **Measure:** max-w-max for article body text
 
 ## Color
 - **Approach:** Restrained — one accent + warm neutrals. Color is rare and meaningful.
@@ -75,7 +74,7 @@
 
 ## Layout
 - **Approach:** Grid-disciplined — clean columns, predictable alignment
-- **Grid:** Single-column content, max-w-5xl (1024px) outer container, max-w-prose (65ch) for article body
+- **Grid:** Single-column content, max-w-5xl (1024px) outer container, max-w-max for article body
 - **Max content width:** 1024px for page layout, 65ch for prose
 - **Border radius hierarchy:**
   - sm: 4px — inline code, small chips
