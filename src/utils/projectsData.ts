@@ -17,7 +17,7 @@ export const projectsData: Project[] = [
     section: "42cursus",
     person: 1,
     description: "My very first own library in C",
-    href: "https://github.com/JinmuGo/libft",
+    href: "https://github.com/42seoul-jgo/libft",
   },
   {
     name: "get_next_line",
@@ -25,14 +25,14 @@ export const projectsData: Project[] = [
     person: 1,
     description:
       "This project is about programming a function that returns a line read from a file descriptor.",
-    href: "https://github.com/JinmuGo/get_next_line",
+    href: "https://github.com/42seoul-jgo/get_next_line",
   },
   {
     name: "ft_printf",
     section: "42cursus",
     person: 1,
     description: "The goal of this project is pretty straightforward. I will recode printf(3).",
-    href: "https://github.com/JinmuGo/ft_printf",
+    href: "https://github.com/42seoul-jgo/ft_printf",
   },
   {
     name: "push_swap",
@@ -40,7 +40,7 @@ export const projectsData: Project[] = [
     person: 1,
     description:
       "This project will make you sort data on a stack, with a limited set of instructions, using the lowest possible number of actions. To succeed i'll have to manipulate various types of algorithms and choose the most appropriate solution (out of many) for an optimized data sorting.",
-    href: "https://github.com/JinmuGo/push_swap",
+    href: "https://github.com/42seoul-jgo/push_swap",
   },
   {
     name: "pipex",
@@ -48,7 +48,7 @@ export const projectsData: Project[] = [
     person: 1,
     description:
       "This project will let you discover in detail a UNIX mechanism that you already know by using it in your program.",
-    href: "https://github.com/JinmuGo/pipex",
+    href: "https://github.com/42seoul-jgo/pipex",
   },
   {
     name: "fdf",
@@ -56,7 +56,7 @@ export const projectsData: Project[] = [
     person: 1,
     description:
       "This project is about representing a landscape as a 3D object in which all surfaces are outlined in lines.",
-    href: "https://github.com/JinmuGo/fdf",
+    href: "https://github.com/42seoul-jgo/fdf",
   },
   {
     name: "minishell",
@@ -64,7 +64,7 @@ export const projectsData: Project[] = [
     person: 2,
     description:
       "This project is about creating a simple shell. My own little bash. will learn a lot about processes and file descriptors.",
-    href: "https://github.com/JinmuGo/minishell",
+    href: "https://github.com/42seoul-jgo/minishell",
   },
   {
     name: "philosophers",
@@ -72,75 +72,75 @@ export const projectsData: Project[] = [
     person: 1,
     description:
       "In this project, will learn the basics of threading a process. will see how to create threads and will discover mutexes",
-    href: "https://github.com/JinmuGo/philo",
+    href: "https://github.com/42seoul-jgo/philo",
   },
   {
     name: "cpp_modules",
     section: "42cursus",
     person: 1,
     description: "Object-Oriented Programming a.k.a OOP with C++",
-    href: "https://github.com/JinmuGo/cpp_modules",
+    href: "https://github.com/42seoul-jgo/cpp_modules",
     subProject: [
       {
         name: "cpp_module_00",
         section: "42cursus",
         description:
           "Namespace, class, member functions, stdio stream, initialization lists, static, const, and lots of basic stuff",
-        href: "https://github.com/JinmuGo/cpp_module_00",
+        href: "https://github.com/42seoul-jgo/cpp_module_00",
       },
       {
         name: "cpp_module_01",
         section: "42cursus",
         description: "Memory allocation, pointers to members, references, switch statements",
-        href: "https://github.com/JinmuGo/cpp_module_01",
+        href: "https://github.com/42seoul-jgo/cpp_module_01",
       },
       {
         name: "cpp_module_02",
         section: "42cursus",
         description: "Ad-hoc polymorphism, operator overloading and Orthodox Canonical class form",
-        href: "https://github.com/JinmuGo/cpp_module_02",
+        href: "https://github.com/42seoul-jgo/cpp_module_02",
       },
       {
         name: "cpp_module_03",
         section: "42cursus",
         description: "Inheritance",
-        href: "https://github.com/JinmuGo/cpp_module_03",
+        href: "https://github.com/42seoul-jgo/cpp_module_03",
       },
       {
         name: "cpp_module_04",
         section: "42cursus",
         description: "Subtype polymorphism, abstract classes, interfaces",
-        href: "https://github.com/JinmuGo/cpp_module_04",
+        href: "https://github.com/42seoul-jgo/cpp_module_04",
       },
       {
         name: "cpp_module_05",
         section: "42cursus",
         description: "Repetition and Exceptions",
-        href: "https://github.com/JinmuGo/cpp_module_05",
+        href: "https://github.com/42seoul-jgo/cpp_module_05",
       },
       {
         name: "cpp_module_06",
         section: "42cursus",
         description: "C++ Casts",
-        href: "https://github.com/JinmuGo/cpp_module_06",
+        href: "https://github.com/42seoul-jgo/cpp_module_06",
       },
       {
         name: "cpp_module_07",
         section: "42cursus",
         description: "C++ Templates",
-        href: "https://github.com/JinmuGo/cpp_module_07",
+        href: "https://github.com/42seoul-jgo/cpp_module_07",
       },
       {
         name: "cpp_module_08",
         section: "42cursus",
         description: "Templated containers, iterators, algorithms",
-        href: "https://github.com/JinmuGo/cpp_module_08",
+        href: "https://github.com/42seoul-jgo/cpp_module_08",
       },
       {
         name: "cpp_module_09",
         section: "42cursus",
         description: "The STL (Standard Template Library)",
-        href: "https://github.com/JinmuGo/cpp_module_09",
+        href: "https://github.com/42seoul-jgo/cpp_module_09",
       },
     ],
   },
@@ -150,14 +150,14 @@ export const projectsData: Project[] = [
     person: 2,
     description:
       "This project is an introduction to the beautiful world of Raytracing. Once completed you will be able to render simple Computer-Generated-Images and will never be afraid of implementing mathematical formulas again.",
-    href: "https://github.com/JinmuGo/miniRT",
+    href: "https://github.com/42seoul-jgo/miniRT",
   },
   {
     name: "inception",
     section: "42cursus",
     person: 1,
     description: "This document is a System Administration related exercise.",
-    href: "https://github.com/JinmuGo/inception",
+    href: "https://github.com/42seoul-jgo/inception",
   },
   {
     name: "webserv",
