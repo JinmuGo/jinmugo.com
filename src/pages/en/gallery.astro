@@ -1,7 +1,7 @@
 ---
 import { Image } from "astro:assets"
 import type { _Object } from "@aws-sdk/client-s3"
-import { HeadObjectCommand, ListObjectsCommand, S3Client } from "@aws-sdk/client-s3"
+import { HeadObjectCommand, ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3"
 import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Layout from "@/layouts/Layout.astro"
 import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
@@ -9,14 +9,52 @@ import { generateBreadcrumbSchema, generatePageSchema } from "@/utils/structured
 import pkg from "~/package.json"
 
 // S3 클라이언트 생성 (CI/preview에서는 비활성화)
+const GALLERY_PREFIX = "jinmu.me/"
+const galleryDisableReasons: string[] = []
+const isForcedDisabled =
+  (import.meta.env.DISABLE_REMOTE_GALLERY ?? process.env.DISABLE_REMOTE_GALLERY) === "true"
+if (isForcedDisabled) {
+  galleryDisableReasons.push("DISABLE_REMOTE_GALLERY=true")
+}
+if (!import.meta.env.R2_BUCKET_NAME) {
+  galleryDisableReasons.push("missing R2_BUCKET_NAME")
+}
+if (!import.meta.env.R2_ACCESS_KEY_ID) {
+  galleryDisableReasons.push("missing R2_ACCESS_KEY_ID")
+}
+if (!import.meta.env.R2_SECRET_ACCESS_KEY) {
+  galleryDisableReasons.push("missing R2_SECRET_ACCESS_KEY")
+}
+if (!import.meta.env.R2_ACCOUNT_ID) {
+  galleryDisableReasons.push("missing R2_ACCOUNT_ID")
+}
+
 const DISABLE_REMOTE_GALLERY =
-  (import.meta.env.DISABLE_REMOTE_GALLERY ?? process.env.DISABLE_REMOTE_GALLERY) === "true" ||
+  isForcedDisabled ||
   !import.meta.env.R2_BUCKET_NAME ||
   !import.meta.env.R2_ACCESS_KEY_ID ||
   !import.meta.env.R2_SECRET_ACCESS_KEY ||
   !import.meta.env.R2_ACCOUNT_ID
 
+const decodeS3Key = (key: string): string => {
+  try {
+    return decodeURIComponent(key)
+  } catch {
+    return key
+  }
+}
+
+const encodeCdnKey = (key: string): string =>
+  key
+    .split("/")
+    .map((part) => encodeURIComponent(part))
+    .join("/")
+
 let images: Array<{ key: string; src: string; width: number; height: number }> = []
+
+if (DISABLE_REMOTE_GALLERY) {
+  console.warn(`[gallery/en] remote gallery disabled: ${galleryDisableReasons.join(", ")}`)
+}
 
 if (!DISABLE_REMOTE_GALLERY) {
   const bucketName = import.meta.env.R2_BUCKET_NAME
@@ -36,15 +74,28 @@ if (!DISABLE_REMOTE_GALLERY) {
 
     try {
       // S3에서 이미지 목록 가져오기 (빌드 타임)
-      const { Contents } = await s3Client.send(
-        new ListObjectsCommand({
+      const { Contents, KeyCount } = await s3Client.send(
+        new ListObjectsV2Command({
           Bucket: bucketName,
-          Prefix: "jinmu.me/",
+          Prefix: GALLERY_PREFIX,
+          EncodingType: "url",
         }),
       )
 
-      const filtered = ((Contents ?? []) as _Object[]).filter(
-        (obj: _Object) => obj.Key && !obj.Key.toLowerCase().endsWith(".heic"),
+      const normalizedContents = ((Contents ?? []) as _Object[]).map((obj) => ({
+        ...obj,
+        Key: obj.Key ? decodeS3Key(obj.Key) : obj.Key,
+      }))
+
+      const filtered = normalizedContents.filter(
+        (obj: _Object) =>
+          obj.Key &&
+          !obj.Key.toLowerCase().endsWith(".heic") &&
+          !obj.Key.toLowerCase().endsWith(".mov"),
+      )
+
+      console.info(
+        `[gallery/en] fetched ${filtered.length}/${KeyCount ?? 0} objects from prefix "${GALLERY_PREFIX}"`,
       )
 
       images = await Promise.all(
@@ -70,14 +121,14 @@ if (!DISABLE_REMOTE_GALLERY) {
           }
           return {
             key: obj.Key ?? "",
-            src: obj.Key ? `${pkg.cdnUrl}/${obj.Key}` : "",
+            src: obj.Key ? `${pkg.cdnUrl}/${encodeCdnKey(obj.Key)}` : "",
             width,
             height,
           }
         }),
       )
     } catch (error) {
-      console.error("Failed to fetch images from S3:", error)
+      console.error("[gallery/en] failed to fetch images from S3:", error)
       images = []
     }
   }
@@ -124,28 +175,34 @@ const jsonLd = [pageSchema, breadcrumbSchema]
   </div>
   <div class="columns-1 sm:columns-2 lg:columns-3 gap-4" id="gallery">
     {
-      images.map(
-        (img: { key: string; src: string; width: number; height: number }, index: number) => (
-          <a
-            href={img.src}
-            data-pswp-width={img.width}
-            data-pswp-height={img.height}
-            class="break-inside-avoid mb-4 block cursor-zoom-in"
-            target="_blank"
-          >
-            <Image
-              src={img.src}
-              alt={img.key}
-              width={img.width}
-              height={img.height}
-              loading={index < 6 ? "eager" : "lazy"}
-              decoding="async"
-              fetchpriority={index === 0 ? "high" : undefined}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              class="rounded-lg shadow-md w-full h-auto object-cover"
-            />
-          </a>
-        ),
+      images.length === 0 ? (
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          Images could not be loaded right now. Please try again later.
+        </p>
+      ) : (
+        images.map(
+          (img: { key: string; src: string; width: number; height: number }, index: number) => (
+            <a
+              href={img.src}
+              data-pswp-width={img.width}
+              data-pswp-height={img.height}
+              class="break-inside-avoid mb-4 block cursor-zoom-in"
+              target="_blank"
+            >
+              <Image
+                src={img.src}
+                alt={img.key}
+                width={img.width}
+                height={img.height}
+                loading={index < 6 ? "eager" : "lazy"}
+                decoding="async"
+                fetchpriority={index === 0 ? "high" : undefined}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                class="rounded-lg shadow-md w-full h-auto object-cover"
+              />
+            </a>
+          ),
+        )
       )
     }
   </div>
