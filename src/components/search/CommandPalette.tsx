@@ -1,6 +1,8 @@
+import { Description as DialogDescription, Title as DialogTitle } from "@radix-ui/react-dialog"
 import { Command } from "cmdk"
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react"
 import type { Lang } from "@/types/utils"
+import { withTrailingSlash } from "@/utils/language"
 
 /**
  * Search result item from search-index.json
@@ -43,7 +45,7 @@ export default function CommandPalette({ lang, open, setOpen }: CommandPalettePr
   }, [setOpen])
 
   const handleSelect = (slug: string) => {
-    window.location.href = `${lang === "en" ? "/en" : ""}/posts/${slug}`
+    window.location.href = withTrailingSlash(`${lang === "en" ? "/en" : ""}/posts/${slug}`)
     setOpen(false)
   }
 
@@ -61,6 +63,14 @@ export default function CommandPalette({ lang, open, setOpen }: CommandPalettePr
         label="Global Command Menu"
         className="cmdk-dialog"
       >
+        <DialogTitle className="sr-only">
+          {lang === "en" ? "Search posts" : "게시물 검색"}
+        </DialogTitle>
+        <DialogDescription className="sr-only">
+          {lang === "en"
+            ? "Search blog posts and select a result to open it."
+            : "블로그 게시물을 검색하고 결과를 선택해 엽니다."}
+        </DialogDescription>
         <Command.Input placeholder={placeholderText[lang]} className="cmdk-input" />
         <Command.List className="cmdk-list">
           <Command.Empty>No results found.</Command.Empty>
