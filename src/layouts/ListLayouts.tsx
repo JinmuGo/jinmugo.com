@@ -1,15 +1,19 @@
 import { useState } from "react"
 import SearchInput from "@/components/search/SearchInput"
 import type { MemoMetadata, PostMetadata } from "@/types/content"
+import type { Lang } from "@/types/utils"
+import { getLanguagePrefix, withTrailingSlash } from "@/utils/language"
 
 type ListLayoutProps = {
   posts: (PostMetadata | MemoMetadata)[]
   title: string
   postType: "post" | "memo"
+  lang?: Lang
 }
 
-export default function ListLayouts({ posts, title, postType }: ListLayoutProps) {
+export default function ListLayouts({ posts, title, postType, lang = "ko" }: ListLayoutProps) {
   const [searchValue, setSearchValue] = useState("")
+  const languagePrefix = getLanguagePrefix(lang)
   const filteredBlogPosts = posts.filter((post) => {
     const searchContent = post.title + post.summary + (post.tags ? post.tags.join(" ") : "")
     return searchContent.toLowerCase().includes(searchValue.toLowerCase())
@@ -23,7 +27,7 @@ export default function ListLayouts({ posts, title, postType }: ListLayoutProps)
         {filteredBlogPosts.map((post) => (
           <li key={post.slug} className="flex justify-between items-center py-3">
             <a
-              href={`/${postType}s/${post.slug}`}
+              href={withTrailingSlash(`${languagePrefix}/${postType}s/${post.slug}`)}
               className="text-base sm:text-lg font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
             >
               {post.title}

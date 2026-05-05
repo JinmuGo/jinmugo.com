@@ -5,6 +5,7 @@ import type { Memo, Post } from "@/types/content"
 import { generateArchiveBreadcrumbs } from "@/utils/breadcrumbUtils"
 import { getKoreanMemos } from "@/utils/content/memos"
 import { getKoreanPosts } from "@/utils/content/posts"
+import { withTrailingSlash } from "@/utils/language"
 import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
 
 export async function getStaticPaths() {
@@ -130,9 +131,11 @@ const jsonLd = [pageSchema, breadcrumbSchema]
             <div class="flex items-center space-x-2">
               <a
                 href={
-                  item.type === "post"
-                    ? `/posts/${item.slug}`
-                    : `/memos/${item.slug}`
+                  withTrailingSlash(
+                    item.type === "post"
+                      ? `/posts/${item.slug}`
+                      : `/memos/${item.slug}`,
+                  )
                 }
                 class="text-base sm:text-lg font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
               >

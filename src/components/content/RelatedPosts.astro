@@ -3,6 +3,7 @@ import FormattedDate from "@/components/content/FormattedDate.astro"
 import type { Memo, Post } from "@/types/content"
 import { getEnglishMemos, getKoreanMemos } from "@/utils/content/memos"
 import { getEnglishPosts, getKoreanPosts } from "@/utils/content/posts"
+import { withTrailingSlash } from "@/utils/language"
 
 interface Props {
   current: Post | Memo
@@ -88,7 +89,7 @@ const relatedContents = allContents
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {relatedContents.map((content) => (
         <article class="group relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-all hover:ring-1 hover:ring-primary-200 dark:hover:ring-primary-800/40">
-          <a href={`/${content.type === "post" ? "posts" : "memos"}/${content.slug}`} class="block h-full">
+          <a href={withTrailingSlash(`/${content.type === "post" ? "posts" : "memos"}/${content.slug}`)} class="block h-full">
             <h3 class="font-semibold text-base text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors leading-tight mb-2 line-clamp-2">
               {content.data.title}
             </h3>
@@ -114,7 +115,7 @@ const relatedContents = allContents
       {/* 이전 글 */}
       {prevContent && (
         <article class="group flex-1 relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-all hover:-translate-x-0.5 hover:ring-1 hover:ring-primary-200 dark:hover:ring-primary-800/40 hover:bg-gradient-to-r hover:from-primary-50/60 hover:to-transparent dark:hover:from-primary-900/30 dark:hover:to-transparent">
-          <a href={`/${prevContent.type === "post" ? "posts" : "memos"}/${prevContent.slug}`} class="block h-full">
+          <a href={withTrailingSlash(`/${prevContent.type === "post" ? "posts" : "memos"}/${prevContent.slug}`)} class="block h-full">
             <div class="flex items-center gap-2 mb-2">
               <svg class="w-4 h-4 text-primary-500 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -151,7 +152,7 @@ const relatedContents = allContents
       {/* 다음 글 */}
       {nextContent && (
         <article class="group flex-1 relative bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-all hover:-translate-x-0.5 hover:ring-1 hover:ring-primary-200 dark:hover:ring-primary-800/40 hover:bg-gradient-to-r hover:from-primary-50/60 hover:to-transparent dark:hover:from-primary-900/30 dark:hover:to-transparent">
-          <a href={`/${nextContent.type === "post" ? "posts" : "memos"}/${nextContent.slug}`} class="block h-full">
+          <a href={withTrailingSlash(`/${nextContent.type === "post" ? "posts" : "memos"}/${nextContent.slug}`)} class="block h-full">
             <div class="flex items-center gap-2 mb-2 justify-end">
               <span class="text-xs font-medium text-primary-600 dark:text-primary-400">다음 글</span>
               <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,4 +203,3 @@ const relatedContents = allContents
     overflow: hidden;
   }
 </style>
-

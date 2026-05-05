@@ -18,6 +18,18 @@ export function getLanguagePrefix(lang: Lang): string {
   return lang === "en" ? "/en" : ""
 }
 
+export function withTrailingSlash(url: string): string {
+  const suffixIndex = url.search(/[?#]/)
+  const pathname = suffixIndex === -1 ? url : url.slice(0, suffixIndex)
+  const suffix = suffixIndex === -1 ? "" : url.slice(suffixIndex)
+
+  if (!pathname) {
+    return `/${suffix}`
+  }
+
+  return pathname.endsWith("/") ? `${pathname}${suffix}` : `${pathname}/${suffix}`
+}
+
 /**
  * Builds a localized URL path
  * @param basePath - The base path without language prefix (e.g., "/posts/my-post")
@@ -28,5 +40,5 @@ export function buildLocalizedUrl(basePath: string, lang: Lang): string {
   const prefix = getLanguagePrefix(lang)
   // Ensure basePath starts with /
   const normalizedPath = basePath.startsWith("/") ? basePath : `/${basePath}`
-  return `${prefix}${normalizedPath}`
+  return withTrailingSlash(`${prefix}${normalizedPath}`)
 }

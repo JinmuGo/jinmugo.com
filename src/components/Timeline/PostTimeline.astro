@@ -2,6 +2,7 @@
 import DraftLabel from "@/components/content/DraftLabel.astro"
 import MemoLabel from "@/components/content/MemoLabel.astro"
 import type { Memo, Post } from "@/types/content"
+import { withTrailingSlash } from "@/utils/language"
 import Timeline from "./Timeline.astro"
 import TimelineDescription from "./TimelineDescription.astro"
 import TimelineDot from "./TimelineDot.astro"
@@ -25,7 +26,7 @@ const allContent = [...posts, ...memos].sort(
 <Timeline>
   {
     allContent.map((item: Post | Memo, index: number) => {
-      const itemUrl = `${basePath}${item.type === 'post' ? '/posts' : '/memos'}/${item.slug}`;
+      const itemUrl = withTrailingSlash(`${basePath}${item.type === 'post' ? '/posts' : '/memos'}/${item.slug}`);
       const formattedDate = item.data.date.toISOString().split("T")[0]; // yyyy-MM-dd 형식
       const isLatest = index === 0;
       const isDraft = item.data.draft && import.meta.env.DEV;

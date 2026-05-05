@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { buildLocalizedUrl, detectLanguage, getLanguagePrefix } from "./language"
+import { buildLocalizedUrl, detectLanguage, getLanguagePrefix, withTrailingSlash } from "./language"
 
 describe("language utils", () => {
   describe("detectLanguage", () => {
@@ -27,13 +27,24 @@ describe("language utils", () => {
 
   describe("buildLocalizedUrl", () => {
     it("should prepend /en for English", () => {
-      expect(buildLocalizedUrl("/post", "en")).toBe("/en/post")
-      expect(buildLocalizedUrl("post", "en")).toBe("/en/post")
+      expect(buildLocalizedUrl("/post", "en")).toBe("/en/post/")
+      expect(buildLocalizedUrl("post", "en")).toBe("/en/post/")
     })
 
     it("should not prepend anything for Korean", () => {
-      expect(buildLocalizedUrl("/post", "ko")).toBe("/post")
-      expect(buildLocalizedUrl("post", "ko")).toBe("/post")
+      expect(buildLocalizedUrl("/post", "ko")).toBe("/post/")
+      expect(buildLocalizedUrl("post", "ko")).toBe("/post/")
+    })
+  })
+
+  describe("withTrailingSlash", () => {
+    it("should add a trailing slash before query strings and hashes", () => {
+      expect(withTrailingSlash("/posts/example?ref=home")).toBe("/posts/example/?ref=home")
+      expect(withTrailingSlash("/posts/example#comments")).toBe("/posts/example/#comments")
+    })
+
+    it("should not duplicate an existing trailing slash", () => {
+      expect(withTrailingSlash("/posts/example/")).toBe("/posts/example/")
     })
   })
 })

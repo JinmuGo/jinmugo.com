@@ -1,6 +1,7 @@
 import { getCollection } from "astro:content"
 import type { Memo } from "@/types/content"
 import { filterEnglishContent, filterKoreanContent, slugFromId } from "@/utils/content"
+import { withTrailingSlash } from "@/utils/language"
 
 const slug = (memo: Memo) => slugFromId(memo.id)
 
@@ -11,7 +12,7 @@ export async function getKoreanMemos() {
   return (await getCollection("memo", filterKoreanContent)).map((memo: Memo) => ({
     ...memo,
     slug: slug(memo),
-    href: `/memos/${slug(memo)}`,
+    href: withTrailingSlash(`/memos/${slug(memo)}`),
     type: "memo",
   }))
 }
@@ -25,7 +26,7 @@ export async function getEnglishMemos() {
     return {
       ...memo,
       slug: cleanSlug,
-      href: `/en/memos/${cleanSlug}`,
+      href: withTrailingSlash(`/en/memos/${cleanSlug}`),
       type: "memo",
     }
   })

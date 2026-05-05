@@ -8,6 +8,7 @@ import {
 import type { PostMetadata } from "@/types/content"
 import type { Lang } from "@/types/utils"
 import { cn } from "@/utils/cn"
+import { withTrailingSlash } from "@/utils/language"
 
 /**
  * Props for SeriesPostsAccordion
@@ -93,7 +94,7 @@ export function SeriesPostsAccordion({
                   </span>
                 )}
                 <a
-                  href={post.href ?? `/posts/${post.slug}`}
+                  href={post.href ?? withTrailingSlash(`/posts/${post.slug}`)}
                   className={[
                     "truncate",
                     index === currentPostIndex
