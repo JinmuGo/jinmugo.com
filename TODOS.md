@@ -1,5 +1,26 @@
 # TODOS
 
+## Deferred QA bugs
+
+### Giscus discussion bootstrap logs 404s on post pages
+
+**Severity:** Low
+
+**Category:** Console
+
+**Found by:** /qa on `main`, 2026-05-05
+
+**Repro:**
+1. Run `pnpm dev:no-watch`.
+2. Open `http://localhost:4321/posts/http-pipelining/`.
+3. Check browser console.
+
+**Observed:** Giscus logs 404 resource errors, then reports that a new discussion will be created if a comment/reaction is submitted.
+
+**Expected:** Comment initialization should not add noisy console errors for normal readers.
+
+**Context:** No visible user-facing breakage was observed. Deferred because the behavior appears tied to third-party Giscus discussion bootstrap.
+
 ## Unit tests for content pipeline scripts
 
 **What:** Add Vitest tests for `apps/blog/scripts/build-content.js` and `apps/blog/scripts/translate.js`.
