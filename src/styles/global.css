@@ -201,6 +201,12 @@ body {
   border-radius: var(--radius-sm);
 }
 
+/* Radix 팝오버 패널 컨테이너: 전역 링 제거(패널 주위 주황 테두리). 내부 링크·버튼은 위 규칙 유지 */
+[data-slot="popover-content"]:focus-visible {
+  outline: none;
+  outline-offset: 0;
+}
+
 /* 모션 감소 설정을 존중 */
 @media (prefers-reduced-motion: reduce) {
   *,

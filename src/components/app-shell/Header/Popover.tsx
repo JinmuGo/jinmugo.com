@@ -1,16 +1,28 @@
 import { ChevronDown } from "lucide-react"
 import type React from "react"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { type ComponentRef, useCallback, useEffect, useRef } from "react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import type { HeaderNavLink } from "./headerNavLinks"
+
+interface CustomPopoverProps extends HeaderNavLink {
+  isEn: boolean
+  isNavVisible: boolean
+  onOpenChange: (open: boolean) => void
+  open: boolean
+  pathname: string
+}
 
 export default function CustomPopover({
   title,
   subLinks,
   isEn,
-}: HeaderNavLink & { isEn: boolean; pathname: string }): React.ReactElement {
-  const [open, setOpen] = useState(false)
+  isNavVisible,
+  onOpenChange,
+  open,
+}: CustomPopoverProps): React.ReactElement {
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const blurDeferRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const contentRef = useRef<ComponentRef<typeof PopoverContent>>(null)
 
   const clearCloseTimeout = useCallback(() => {
     if (closeTimeoutRef.current) {
@@ -19,32 +31,92 @@ export default function CustomPopover({
     }
   }, [])
 
+  const clearBlurDefer = useCallback(() => {
+    if (blurDeferRef.current) {
+      clearTimeout(blurDeferRef.current)
+      blurDeferRef.current = null
+    }
+  }, [])
+
   const handleOpen = useCallback(() => {
+    if (!isNavVisible) {
+      return
+    }
     clearCloseTimeout()
-    setOpen(true)
-  }, [clearCloseTimeout])
+    onOpenChange(true)
+  }, [clearCloseTimeout, isNavVisible, onOpenChange])
 
   const handleCloseWithDelay = useCallback(() => {
     clearCloseTimeout()
     closeTimeoutRef.current = setTimeout(() => {
-      setOpen(false)
+      onOpenChange(false)
     }, 80)
-  }, [clearCloseTimeout])
+  }, [clearCloseTimeout, onOpenChange])
+
+  const handleRootOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      if (nextOpen && !isNavVisible) {
+        return
+      }
+      onOpenChange(nextOpen)
+    },
+    [isNavVisible, onOpenChange],
+  )
+
+  const handleTriggerBlur = useCallback(
+    (event: React.FocusEvent<HTMLButtonElement>) => {
+      const related = event.relatedTarget
+      if (related instanceof Node && contentRef.current?.contains(related)) {
+        return
+      }
+      clearBlurDefer()
+      blurDeferRef.current = setTimeout(() => {
+        blurDeferRef.current = null
+        const active = document.activeElement
+        if (active instanceof Node && contentRef.current?.contains(active)) {
+          return
+        }
+        handleCloseWithDelay()
+      }, 0)
+    },
+    [clearBlurDefer, handleCloseWithDelay],
+  )
 
   useEffect(() => {
     return () => {
       clearCloseTimeout()
+      clearBlurDefer()
     }
-  }, [clearCloseTimeout])
+  }, [clearBlurDefer, clearCloseTimeout])
+
+  useEffect(() => {
+    if (isNavVisible || !open) {
+      return
+    }
+    clearCloseTimeout()
+    clearBlurDefer()
+    onOpenChange(false)
+  }, [clearBlurDefer, clearCloseTimeout, isNavVisible, onOpenChange, open])
+
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+    const onScroll = () => {
+      onOpenChange(false)
+    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [onOpenChange, open])
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleRootOpenChange}>
       <PopoverTrigger
         className="flex m-1 items-center gap-1 py-2 hover:text-primary-500 dark:hover:text-primary-400 text-gray-900 dark:text-gray-100 cursor-pointer min-h-[44px]"
         onMouseEnter={handleOpen}
         onFocus={handleOpen}
         onMouseLeave={handleCloseWithDelay}
-        onBlur={handleCloseWithDelay}
+        onBlur={handleTriggerBlur}
       >
         {title}
         <ChevronDown
@@ -54,7 +126,9 @@ export default function CustomPopover({
         />
       </PopoverTrigger>
       <PopoverContent
-        className="z-100 bg-white rounded-xl dark:bg-black text-sm/6 transition duration-200 ease-in-out [--anchor-gap:1rem] data-[closed]:-translate-y-1 data-[closed]:opacity-0 hover:bg-white dark:hover:bg-black"
+        ref={contentRef}
+        sideOffset={0}
+        className="z-100 mt-1 bg-white rounded-xl dark:bg-black text-sm/6 transition duration-200 ease-in-out data-[state=closed]:-translate-y-1 data-[state=closed]:opacity-0 hover:bg-white dark:hover:bg-black"
         onMouseEnter={handleOpen}
         onMouseLeave={handleCloseWithDelay}
       >

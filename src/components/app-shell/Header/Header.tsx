@@ -26,6 +26,7 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
   const [isSlideOpen, setIsSlideOpen] = useState<boolean>(false)
   const [isEndofContent, setIsEndofContent] = useState<boolean>(false)
   const [open, setOpen] = useState<boolean>(false)
+  const [openPopoverTitle, setOpenPopoverTitle] = useState<string | null>(null)
   const handleScroll = useCallback(() => {
     const target = document.querySelector("#post-title, #memo-title")
     const rect = target?.getBoundingClientRect()
@@ -66,6 +67,12 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
     }
   }, [debouncedHandleScroll, debouncedHandleLastScroll])
 
+  useEffect(() => {
+    if (isSlideOpen || isEndofContent) {
+      setOpenPopoverTitle(null)
+    }
+  }, [isEndofContent, isSlideOpen])
+
   const isEn = pathname.includes("/en")
   const lang = isEn ? "en" : "ko"
 
@@ -91,7 +98,19 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
                 .filter((link) => link.href !== "/")
                 .map((link) =>
                   link.subLinks ? (
-                    <CustomPopover isEn={isEn} key={link.title} {...link} pathname={pathname} />
+                    <CustomPopover
+                      isEn={isEn}
+                      isNavVisible={!isSlideOpen && !isEndofContent}
+                      key={link.title}
+                      onOpenChange={(nextOpen) => {
+                        setOpenPopoverTitle((currentTitle) =>
+                          nextOpen ? link.title : currentTitle === link.title ? null : currentTitle,
+                        )
+                      }}
+                      open={openPopoverTitle === link.title}
+                      {...link}
+                      pathname={pathname}
+                    />
                   ) : (
                     <a
                       key={link.title}
