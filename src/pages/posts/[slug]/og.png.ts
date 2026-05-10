@@ -1,8 +1,7 @@
 import type { InferGetStaticParamsType } from "astro"
-
+import { format } from "date-fns"
 import { OpenGraphImage } from "@/components/og/image"
 import { getKoreanPosts } from "@/utils/content/posts"
-
 import { PNG } from "@/utils/openGraph"
 
 const posts = await getKoreanPosts()
@@ -18,6 +17,8 @@ export async function GET({ params }: { params: Params }) {
   const element = OpenGraphImage({
     title: post.data.title,
     summary: post.data.summary,
+    category: post.data.category ?? undefined,
+    date: format(post.data.date, "yyyy.MM.dd"),
   })
   const png = await PNG(element)
   return new Response(png, {
