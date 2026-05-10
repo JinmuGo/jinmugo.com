@@ -1,4 +1,4 @@
-import type { Memo, Post } from "./content"
+import type { Post } from "./content"
 import type { Lang } from "./utils"
 
 /**
@@ -6,7 +6,7 @@ import type { Lang } from "./utils"
  */
 export interface SeriesMetadata {
   name: string
-  posts: (Post | Memo)[]
+  posts: Post[]
   totalPosts: number
   firstPublished: Date
   lastUpdated: Date

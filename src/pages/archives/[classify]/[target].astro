@@ -1,20 +1,25 @@
 ---
-import MemoLabel from "@/components/content/MemoLabel.astro"
 import Layout from "@/layouts/Layout.astro"
-import type { Memo, Post } from "@/types/content"
+import type { Post, Weekly } from "@/types/content"
 import { generateArchiveBreadcrumbs } from "@/utils/breadcrumbUtils"
-import { getKoreanMemos } from "@/utils/content/memos"
 import { getKoreanPosts } from "@/utils/content/posts"
+import { getKoreanWeeklies } from "@/utils/content/weekly"
 import { withTrailingSlash } from "@/utils/language"
 import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
 
 export async function getStaticPaths() {
   const posts = await getKoreanPosts()
-  const memos = await getKoreanMemos()
+  const weeklies = await getKoreanWeeklies()
 
-  const allContent = [...posts, ...memos] as (Post | Memo)[]
+  const allContent = [...posts, ...weeklies] as (Post | Weekly)[]
 
-  const categories = [...new Set(allContent.map((item) => item.data.category).filter(Boolean))]
+  const categories = [
+    ...new Set(
+      allContent
+        .map((item) => ("category" in item.data ? item.data.category : undefined))
+        .filter(Boolean),
+    ),
+  ]
   const tags = [...new Set([...allContent.flatMap((item) => item.data.tags ?? [])].filter(Boolean))]
   const years = [
     ...new Set([
@@ -43,12 +48,12 @@ const { classify, target } = Astro.params
 const decodeTarget = decodeURIComponent(target ?? "")
 
 const posts = await getKoreanPosts()
-const memos = await getKoreanMemos()
-const allContent = [...posts, ...memos] as (Post | Memo)[]
+const weeklies = await getKoreanWeeklies()
+const allContent = [...posts, ...weeklies] as (Post | Weekly)[]
 
 const capitalizeFirst = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
-function getContentBySlug(allContent: (Post | Memo)[], classify: string, target: string) {
+function getContentBySlug(allContent: (Post | Weekly)[], classify: string, target: string) {
   if (!classify || !target) {
     return []
   }
@@ -56,7 +61,7 @@ function getContentBySlug(allContent: (Post | Memo)[], classify: string, target:
   switch (classify) {
     case "category":
       return allContent
-        .filter((item) => item.data.category === target)
+        .filter((item) => "category" in item.data && item.data.category === target)
         .map((item) => ({ ...item, type: item.type }))
     case "tag":
       return [
@@ -132,16 +137,20 @@ const jsonLd = [pageSchema, breadcrumbSchema]
               <a
                 href={
                   withTrailingSlash(
-                    item.type === "post"
-                      ? `/posts/${item.slug}`
-                      : `/memos/${item.slug}`,
+                    item.type === "weekly"
+                      ? `/weekly/${item.slug}`
+                      : `/posts/${item.slug}`,
                   )
                 }
                 class="text-base sm:text-lg font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
               >
                 {item.data.title}
               </a>
-              {item.type === "memo" && <MemoLabel />}
+              {item.type === "weekly" && (
+                <span class="rounded bg-primary-50 px-1.5 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-950/40 dark:text-primary-300">
+                  Weekly
+                </span>
+              )}
             </div>
             <div class="flex-1 border-b-2 min-w-2.5 border-dotted border-gray-300 mx-2" />
             <span class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 min-w-[90px] text-right">

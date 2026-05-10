@@ -203,30 +203,29 @@ async function main() {
       }
 
       // Fields to translate from frontmatter
-      let title = ""
-      let summary = ""
+      const frontmatterFields = [
+        { key: "title", value: "" },
+        { key: "summary", value: "" },
+        { key: "coverAlt", value: "" },
+      ]
 
       if (hasFrontmatter) {
-        // Simple extraction for title and summary
-        const titleMatch = frontmatter.match(/^title:\s*(.+)$/m)
-        if (titleMatch) {
-          title = titleMatch[1].trim()
-        }
-
-        const summaryMatch = frontmatter.match(/^summary:\s*(.+)$/m)
-        if (summaryMatch) {
-          summary = summaryMatch[1].trim()
+        // Simple extraction for short text fields
+        for (const field of frontmatterFields) {
+          const fieldMatch = frontmatter.match(new RegExp(`^${field.key}:\\s*(.+)$`, "m"))
+          if (fieldMatch) {
+            field.value = fieldMatch[1].trim()
+          }
         }
       }
 
       // Prepare translation requests
-      // We will send multiple 'text' parameters: title (optional), summary (optional), body
+      // We will send multiple 'text' parameters: selected frontmatter fields and body
       const textsToTranslate = []
-      if (title) {
-        textsToTranslate.push(title)
-      }
-      if (summary) {
-        textsToTranslate.push(summary)
+      for (const field of frontmatterFields) {
+        if (field.value) {
+          textsToTranslate.push(field.value)
+        }
       }
       textsToTranslate.push(body)
 
@@ -275,17 +274,18 @@ async function main() {
 
       // Reconstruct content
       let transIdx = 0
-      let translatedTitle = title
-      let translatedSummary = summary
+      const translatedFrontmatterFields = frontmatterFields.map((field) => {
+        if (!field.value) {
+          return field
+        }
 
-      if (title) {
-        translatedTitle = data.translations[transIdx].text
+        const translatedField = {
+          ...field,
+          value: data.translations[transIdx].text,
+        }
         transIdx++
-      }
-      if (summary) {
-        translatedSummary = data.translations[transIdx].text
-        transIdx++
-      }
+        return translatedField
+      })
 
       let translatedBody = data.translations[transIdx].text
 
@@ -294,11 +294,13 @@ async function main() {
 
       // Reconstruct frontmatter
       let newFrontmatter = frontmatter
-      if (title) {
-        newFrontmatter = newFrontmatter.replace(/^title:.+$/m, `title: ${translatedTitle}`)
-      }
-      if (summary) {
-        newFrontmatter = newFrontmatter.replace(/^summary:.+$/m, `summary: ${translatedSummary}`)
+      for (const field of translatedFrontmatterFields) {
+        if (field.value) {
+          newFrontmatter = newFrontmatter.replace(
+            new RegExp(`^${field.key}:.+$`, "m"),
+            `${field.key}: ${field.value}`,
+          )
+        }
       }
 
       const translatedContent = hasFrontmatter

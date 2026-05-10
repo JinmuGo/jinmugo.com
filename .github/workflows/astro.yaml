@@ -104,6 +104,9 @@ jobs:
             echo "No translation cache found."
           fi
 
+      - name: Validate content frontmatter
+        run: pnpm content:doctor
+
       - name: Translate content (Korean → English)
         id: translate
         run: node scripts/translate.js

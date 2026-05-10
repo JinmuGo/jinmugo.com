@@ -1,11 +1,11 @@
-import type { Memo, Post } from "@/types/content"
+import type { Post } from "@/types/content"
 import type { SeriesMetadata, SeriesSortOption, SeriesTranslations } from "@/types/series"
 import type { Lang } from "@/types/utils"
 
 /**
  * Groups content by series with enhanced metadata
  */
-export function groupContentBySeries(contents: (Post | Memo)[]): SeriesMetadata[] {
+export function groupContentBySeries(contents: Post[]): SeriesMetadata[] {
   const map = new Map<string, SeriesMetadata>()
 
   for (const content of contents) {

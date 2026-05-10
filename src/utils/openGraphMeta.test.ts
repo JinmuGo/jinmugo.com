@@ -13,16 +13,6 @@ describe("open graph metadata utils", () => {
       ).toBe("/en/posts/12th-9oormthon/og.png")
     })
 
-    it("builds a localized English memo OG image path", () => {
-      expect(
-        buildContentOgImagePath({
-          contentType: "memo",
-          pathname: "/en/memos/if-snow-is-silence-falling-from-the-sky/",
-          slug: "if-snow-is-silence-falling-from-the-sky",
-        }),
-      ).toBe("/en/memos/if-snow-is-silence-falling-from-the-sky/og.png")
-    })
-
     it("keeps Korean content OG image paths at the root locale", () => {
       expect(
         buildContentOgImagePath({
@@ -31,6 +21,16 @@ describe("open graph metadata utils", () => {
           slug: "12th-9oormthon",
         }),
       ).toBe("/posts/12th-9oormthon/og.png")
+    })
+
+    it("builds a weekly OG image path", () => {
+      expect(
+        buildContentOgImagePath({
+          contentType: "weekly",
+          pathname: "/weekly/001/",
+          slug: "001",
+        }),
+      ).toBe("/weekly/001/og.png")
     })
   })
 

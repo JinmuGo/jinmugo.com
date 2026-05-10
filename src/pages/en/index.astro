@@ -3,16 +3,13 @@ import { Image } from "astro:assets"
 import Bleed from "@/components/layout/Bleed.astro"
 import PostTimeline from "@/components/Timeline/PostTimeline.astro"
 import Layout from "@/layouts/Layout.astro"
-import { getEnglishMemos, sortMemosByDate } from "@/utils/content/memos"
 import { getEnglishPosts, sortPostsByDate } from "@/utils/content/posts"
 import { generatePageSchema } from "@/utils/structuredData"
 import pkg from "~/package.json"
 import HeroImageSrc from "~/public/sea-boat.webp"
 
 const posts = await getEnglishPosts()
-const memos = await getEnglishMemos()
 const sortedPosts = sortPostsByDate(posts)
-const sortedMemos = sortMemosByDate(memos)
 
 const title = "Jinmu Go"
 const description = pkg.description
@@ -21,7 +18,7 @@ const jsonLd = generatePageSchema({
   title,
   description,
   url,
-  keywords: "blog, posts, memos, timeline",
+  keywords: "blog, posts, timeline",
   inLanguage: "en",
 })
 ---
@@ -44,5 +41,5 @@ const jsonLd = generatePageSchema({
       data-blur-src="sea-boat-blur.webp"
     />
   </Bleed>
-  <PostTimeline posts={sortedPosts} memos={sortedMemos} />
+  <PostTimeline posts={sortedPosts} />
 </Layout>

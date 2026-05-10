@@ -7,7 +7,7 @@
 export type { ApiResponse, LikeData, TotalLikesData, ViewData } from "./api"
 
 // Content types
-export type { Memo, MemoMetadata, Post, PostMetadata, Series } from "./content"
+export type { Post, PostMetadata, Series } from "./content"
 
 // Schema types
 export type {

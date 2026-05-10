@@ -1,7 +1,6 @@
 ---
 import DraftLabel from "@/components/content/DraftLabel.astro"
-import MemoLabel from "@/components/content/MemoLabel.astro"
-import type { Memo, Post } from "@/types/content"
+import type { Post } from "@/types/content"
 import { withTrailingSlash } from "@/utils/language"
 import Timeline from "./Timeline.astro"
 import TimelineDescription from "./TimelineDescription.astro"
@@ -11,23 +10,21 @@ import TimelineItem from "./TimelineItem.astro"
 import TimelineTime from "./TimelineTime.astro"
 import TimelineTitle from "./TimelineTitle.astro"
 
-const { posts, memos = [] } = Astro.props
+const { posts } = Astro.props
 
-// 현재 경로가 영어 버전인지 확인
 const isEnglish = Astro.url.pathname.startsWith("/en")
 const basePath = isEnglish ? "/en" : ""
 
-// 모든 콘텐츠를 날짜순으로 정렬
-const allContent = [...posts, ...memos].sort(
+const allContent = [...posts].sort(
   (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
 )
 ---
 
 <Timeline>
   {
-    allContent.map((item: Post | Memo, index: number) => {
-      const itemUrl = withTrailingSlash(`${basePath}${item.type === 'post' ? '/posts' : '/memos'}/${item.slug}`);
-      const formattedDate = item.data.date.toISOString().split("T")[0]; // yyyy-MM-dd 형식
+    allContent.map((item: Post, index: number) => {
+      const itemUrl = withTrailingSlash(`${basePath}/posts/${item.slug}`);
+      const formattedDate = item.data.date.toISOString().split("T")[0];
       const isLatest = index === 0;
       const isDraft = item.data.draft && import.meta.env.DEV;
 
@@ -41,7 +38,6 @@ const allContent = [...posts, ...memos].sort(
             <TimelineTitle href={itemUrl}>
               <div class="flex items-center space-x-2">
                 <span>{item.data.title}</span>
-                {item.type === 'memo' && <MemoLabel />}
                 {isDraft && <DraftLabel />}
               </div>
               {item.data.summary && (

@@ -2,24 +2,25 @@
 import ArchiveSection from "@/components/content/ArchiveSection.astro"
 import Title from "@/components/layout/Title"
 import Layout from "@/layouts/Layout.astro"
-import type { Memo, Post } from "@/types/content"
+import type { Post, Weekly } from "@/types/content"
 import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
 import { countBy } from "@/utils/cn"
-import { getKoreanMemos } from "@/utils/content/memos"
 import { getKoreanPosts } from "@/utils/content/posts"
+import { getKoreanWeeklies } from "@/utils/content/weekly"
 import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
 
 const posts = await getKoreanPosts()
-const memos = await getKoreanMemos()
+const weeklies = await getKoreanWeeklies()
 
-// 모든 콘텐츠를 하나로 합치기
 const allContent = [
   ...posts.map((post: Post) => ({ ...post, type: post.type })),
-  ...memos.map((memo: Memo) => ({ ...memo, type: memo.type })),
+  ...weeklies.map((weekly: Weekly) => ({ ...weekly, type: weekly.type })),
 ]
 
 const years = countBy(allContent, (item) => new Date(item.data.date).getFullYear().toString())
-const categories = countBy(allContent, (item) => item.data.category ?? [])
+const categories = countBy(allContent, (item) =>
+  "category" in item.data ? (item.data.category ?? []) : [],
+)
 const tags = countBy(allContent, (item) => item.data.tags ?? [])
 
 const title = "Archives"

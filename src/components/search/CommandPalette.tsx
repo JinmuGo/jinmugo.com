@@ -9,7 +9,8 @@ import { withTrailingSlash } from "@/utils/language"
  */
 interface SearchResultPost {
   slug: string
-  category: string
+  category?: string
+  type?: "post" | "weekly"
   title: string
   summary: string
 }
@@ -44,8 +45,12 @@ export default function CommandPalette({ lang, open, setOpen }: CommandPalettePr
     return () => document.removeEventListener("keydown", down)
   }, [setOpen])
 
-  const handleSelect = (slug: string) => {
-    window.location.href = withTrailingSlash(`${lang === "en" ? "/en" : ""}/posts/${slug}`)
+  const handleSelect = (post: SearchResultPost) => {
+    const contentType = post.type ?? "post"
+    const collectionPath = contentType === "weekly" ? "weekly" : "posts"
+    window.location.href = withTrailingSlash(
+      `${lang === "en" ? "/en" : ""}/${collectionPath}/${post.slug}`,
+    )
     setOpen(false)
   }
 
@@ -78,11 +83,11 @@ export default function CommandPalette({ lang, open, setOpen }: CommandPalettePr
             <Command.Item
               key={post.slug}
               value={`${post.title} ${post.summary}`}
-              onSelect={() => handleSelect(post.slug)}
+              onSelect={() => handleSelect(post)}
               className="cmdk-item"
             >
               <div className="item-content">
-                <span className="category">{post.category}</span>
+                <span className="category">{post.category ?? post.type ?? "post"}</span>
                 <span className="title">{post.title}</span>
               </div>
             </Command.Item>

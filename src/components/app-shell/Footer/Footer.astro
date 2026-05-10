@@ -1,9 +1,16 @@
 ---
 import pkg from "~/package.json"
 import SocialIcon from "./SocialIcon.astro"
+
+const isEn = Astro.url.pathname.startsWith("/en")
+const base = isEn ? "/en" : ""
 ---
 
 <footer id="footer" class="mt-16 py-12 border-t border-gray-200 dark:border-gray-700/50">
+  <div class="mb-5 flex gap-5 text-sm text-gray-500 dark:text-gray-400">
+    <a href={`${base}/archives/`} class="hover:text-gray-800 dark:hover:text-gray-200 transition-colors">Archives</a>
+    <a href={`${base}/series/`} class="hover:text-gray-800 dark:hover:text-gray-200 transition-colors">Series</a>
+  </div>
   <div
     class="flex flex-col gap-6 justify-end w-full md:flex-row md:justify-between md:items-center"
   >

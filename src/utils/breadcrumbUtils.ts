@@ -6,7 +6,7 @@ export interface BreadcrumbConfig {
   lang?: "ko" | "en"
   title?: string
   category?: string
-  postType?: "post" | "memo"
+  postType?: "post" | "weekly"
 }
 
 /**
@@ -22,6 +22,7 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
       home: "Home",
       posts: "Posts",
       memos: "Memos",
+      weekly: "Weekly",
       archives: "Archives",
       about: "About",
       gallery: "Gallery",
@@ -33,6 +34,7 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
       home: "Home",
       posts: "Posts",
       memos: "Memos",
+      weekly: "Weekly",
       archives: "Archives",
       about: "About",
       gallery: "Gallery",
@@ -82,14 +84,13 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
       }
       break
 
-    case "memos":
+    case "weekly":
       items.push({
-        name: t.memos,
-        item: `${origin}${basePath}/memos/`,
+        name: t.weekly,
+        item: `${origin}${basePath}/weekly/`,
       })
 
       if (secondSegment && title) {
-        // 개별 메모 페이지
         items.push({
           name: title,
           item: `${origin}${pathname}`,
@@ -153,7 +154,7 @@ export function generateContentBreadcrumbs(config: {
   lang?: "ko" | "en"
   title: string
   category?: string
-  contentType: "post" | "memo"
+  contentType: "post" | "weekly"
 }): BreadcrumbItem[] {
   const { pathname, origin, lang = "ko", title, category, contentType } = config
 

@@ -2,7 +2,7 @@ import debounce from "lodash.debounce"
 import { Menu } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import CommandPalette from "@/components/search/CommandPalette"
-import type { MemoMetadata, PostMetadata } from "@/types/content"
+import type { PostMetadata } from "@/types/content"
 import HeaderSlider from "./HeaderSlider"
 import headerNavLinks from "./headerNavLinks"
 import Logo from "./Logo"
@@ -18,7 +18,7 @@ interface ContainerStyles {
 }
 
 interface HeaderProps {
-  frontmatter?: PostMetadata | MemoMetadata
+  frontmatter?: PostMetadata
   pathname: string
   containerStyles: ContainerStyles
 }
@@ -67,11 +67,13 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
     }
   }, [debouncedHandleScroll, debouncedHandleLastScroll])
 
+  const suppressNavForReadingChrome = Boolean(frontmatter) && isEndofContent
+
   useEffect(() => {
-    if (isSlideOpen || isEndofContent) {
+    if (isSlideOpen || suppressNavForReadingChrome) {
       setOpenPopoverTitle(null)
     }
-  }, [isEndofContent, isSlideOpen])
+  }, [isSlideOpen, suppressNavForReadingChrome])
 
   const isEn = pathname.includes("/en")
   const lang = isEn ? "en" : "ko"
@@ -100,7 +102,7 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
                   link.subLinks ? (
                     <CustomPopover
                       isEn={isEn}
-                      isNavVisible={!isSlideOpen && !isEndofContent}
+                      isNavVisible={!isSlideOpen && !suppressNavForReadingChrome}
                       key={link.title}
                       onOpenChange={(nextOpen) => {
                         setOpenPopoverTitle((currentTitle) =>

@@ -46,25 +46,23 @@ const postCollection = defineCollection({
   }),
 })
 
-const memoCollection = defineCollection({
+const weeklyCollection = defineCollection({
   loader: glob({
     pattern: "**/*.{md,mdx}",
-    base: "./src/content/memo",
+    base: "./src/content/weekly",
     generateId: stripExtension,
   }),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
-    // null을 undefined로 변환 후 기본값 false 적용
-    draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
-    // null 허용 + 기본값 []
+    year: z.number().int().positive(),
+    week: z.number().int().positive(),
+    summary: z.string(),
     tags: z.preprocess((v: unknown) => v ?? undefined, z.array(z.string()).optional().default([])),
-    // null 허용
-    category: categorySchema.nullish(),
-    summary: z.string().or(z.undefined()),
+    cover: z.preprocess((v: unknown) => v ?? undefined, z.string().optional()),
+    coverAlt: z.preprocess((v: unknown) => v ?? undefined, z.string().optional()),
+    draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
     lastmod: z.preprocess((v: unknown) => v ?? undefined, z.coerce.date().optional()),
-    series: z.string().nullish(),
-    seriesOrder: z.preprocess((v: unknown) => v ?? undefined, z.number().optional()),
   }),
 })
 
@@ -183,6 +181,6 @@ const appCollection = defineCollection({
 
 export const collections = {
   post: postCollection,
-  memo: memoCollection,
+  weekly: weeklyCollection,
   app: appCollection,
 }

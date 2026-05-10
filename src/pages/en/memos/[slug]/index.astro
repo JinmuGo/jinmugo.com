@@ -1,36 +1,16 @@
 ---
-import { render } from "astro:content"
-import PhotoSwipe from "@/components/features/PhotoSwipe.astro"
-import { components } from "@/components/mdx/components.astro"
-import MemoDefault from "@/layouts/MemoDefault.astro"
-import type { Memo } from "@/types/content"
-import { getEnglishMemos } from "@/utils/content/memos"
-
-export async function getStaticPaths() {
-  // .en.md 파일(영문)만 필터링
-  const memos = await getEnglishMemos()
-
-  return memos.map((entry: Memo) => {
-    return {
-      params: {
-        slug: entry.slug,
-      },
-      props: { entry, slug: entry.slug },
-    }
-  })
+export function getStaticPaths() {
+  return [
+    "ces-2026-planning",
+    "first-15km-running",
+    "first-split-keyboard",
+    "if-snow-is-silence-falling-from-the-sky",
+    "snail-sprinting-in-its-own-way",
+    "ssh-copy-id",
+    "sunshine-run-half-marathon",
+    "where-are-we-now",
+  ].map((slug) => ({ params: { slug } }))
 }
-
-const { entry, slug }: { entry: Memo; slug: string } = Astro.props
-const frontmatterWithSlug = {
-  ...entry.data,
-  slug,
-}
-
-const { Content } = await render(entry)
+const { slug } = Astro.params
+return Astro.redirect(`/en/posts/${slug}/`, 301)
 ---
-
-<MemoDefault frontmatter={frontmatterWithSlug}>
-  <Content components={components} />
-</MemoDefault>
-
-<PhotoSwipe />

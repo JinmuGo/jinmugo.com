@@ -1,0 +1,35 @@
+---
+import { render } from "astro:content"
+import PhotoSwipe from "@/components/features/PhotoSwipe.astro"
+import { components } from "@/components/mdx/components.astro"
+import WeeklyDefault from "@/layouts/WeeklyDefault.astro"
+import type { Weekly } from "@/types/content"
+import { getEnglishWeeklies } from "@/utils/content/weekly"
+import { getWeeklyCoverImage } from "@/utils/weeklyCover"
+
+export async function getStaticPaths() {
+  const weeklies = await getEnglishWeeklies()
+
+  return weeklies.map((entry: Weekly) => ({
+    params: {
+      slug: entry.slug,
+    },
+    props: { entry, slug: entry.slug, href: entry.href },
+  }))
+}
+
+const { entry, slug, href }: { entry: Weekly; slug: string; href: string } = Astro.props
+const { Content } = await render(entry)
+const frontmatterWithSlug = {
+  ...entry.data,
+  slug,
+  href,
+}
+const coverImage = getWeeklyCoverImage(entry)
+---
+
+<WeeklyDefault frontmatter={frontmatterWithSlug} coverImage={coverImage}>
+  <Content components={components} />
+</WeeklyDefault>
+
+<PhotoSwipe />
