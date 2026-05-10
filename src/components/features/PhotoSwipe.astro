@@ -2,37 +2,33 @@
 
 ---
 
-<script lang="ts">
+<script>
   import PhotoSwipeLightbox from "photoswipe/lightbox";
-  import PhotoSwipe from "photoswipe";
   import type { PhotoSwipeOptions } from "photoswipe";
   import "photoswipe/style.css";
 
-  interface PostBodyPhotoSwipeProps extends PhotoSwipeOptions {
-    readonly photo_scale: number;
-  }
-
   const initPhotoSwipe = () => {
-    const options: PostBodyPhotoSwipeProps = {
-      photo_scale: 2,
+    const photoScale = 2;
+    const gallerySelector = "#prose";
+    const childrenSelector = "a.photo-swipe";
+    const options: PhotoSwipeOptions = {
       arrowNext: false,
       arrowPrev: false,
-      children: "a.photo-swipe",
+      children: childrenSelector,
       counter: false,
-      gallery: "#prose",
-      // dynamic import is not supported in UMD version
-      pswpModule: PhotoSwipe,
+      gallery: gallerySelector,
+      pswpModule: () => import("photoswipe"),
       showHideAnimationType: "fade",
       zoom: false,
       pinchToClose: true,
       escKey: true,
     };
-    const galleryEl = document.querySelector(options.gallery as string);
+    const galleryEl = document.querySelector(gallerySelector);
     if (!galleryEl) {
       return;
     }
     const imgEls: HTMLImageElement[] = [];
-    const els: NodeListOf<HTMLImageElement> = galleryEl.querySelectorAll(
+    const els = galleryEl.querySelectorAll<HTMLImageElement>(
       "img:not(.emoji):not(#embed-card-image)",
     );
 
@@ -48,15 +44,15 @@
         imgEls.push(el);
       }
     });
-    if (imgEls.length === 0) {
+    if (imgEls.length === 0 && !galleryEl.querySelector(childrenSelector)) {
       return;
     }
     imgEls.forEach((imgEl) => {
       imgEl.outerHTML = `
   <a class="photo-swipe cursor-zoom-in"
     href="${imgEl.src}"
-    data-pswp-width="${(Math.max(imgEl.naturalWidth, imgEl.width) * options.photo_scale).toString()}"
-    data-pswp-height="${(Math.max(imgEl.naturalHeight, imgEl.height) * options.photo_scale).toString()}"
+    data-pswp-width="${(Math.max(imgEl.naturalWidth, imgEl.width) * photoScale).toString()}"
+    data-pswp-height="${(Math.max(imgEl.naturalHeight, imgEl.height) * photoScale).toString()}"
     data-pswp-caption="${imgEl.getAttribute("caption") ?? imgEl.alt}"
     target="_blank">
     ${imgEl.outerHTML}
