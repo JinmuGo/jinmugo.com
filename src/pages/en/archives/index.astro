@@ -3,21 +3,15 @@ import ArchiveSection from "@/components/content/ArchiveSection.astro"
 import Title from "@/components/layout/Title"
 import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Layout from "@/layouts/Layout.astro"
-import type { Memo, Post } from "@/types/content"
+import type { Post } from "@/types/content"
 import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
 import { countBy } from "@/utils/cn"
-import { getEnglishMemos } from "@/utils/content/memos"
 import { getEnglishPosts } from "@/utils/content/posts"
 import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
 
 const posts = await getEnglishPosts()
-const memos = await getEnglishMemos()
 
-// 모든 콘텐츠를 하나로 합치기
-const allContent = [
-  ...posts.map((post: Post) => ({ ...post, type: post.type })),
-  ...memos.map((memo: Memo) => ({ ...memo, type: memo.type })),
-]
+const allContent = posts.map((post: Post) => ({ ...post, type: post.type }))
 
 const years = countBy(allContent, (item) => new Date(item.data.date).getFullYear().toString())
 const categories = countBy(allContent, (item) => item.data.category ?? [])

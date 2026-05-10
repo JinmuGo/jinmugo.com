@@ -1,7 +1,6 @@
 ---
 import SeriesListIsland from "@/components/features/SeriesListIsland.tsx"
 import Layout from "@/layouts/Layout.astro"
-import { getEnglishMemos } from "@/utils/content/memos"
 import { getEnglishPosts } from "@/utils/content/posts"
 import { getSeriesTranslations, groupContentBySeries } from "@/utils/series"
 import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
@@ -10,8 +9,7 @@ const lang = "en"
 const t = getSeriesTranslations(lang)
 
 const posts = await getEnglishPosts()
-const memos = await getEnglishMemos()
-const allContent = [...posts, ...memos]
+const allContent = [...posts]
 const seriesList = groupContentBySeries(allContent)
 
 const title = t.pageTitle

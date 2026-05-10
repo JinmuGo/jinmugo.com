@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 import { spawn } from "node:child_process"
-import { dirname, join } from "node:path"
-import { fileURLToPath } from "node:url"
 import chokidar from "chokidar"
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-const blogRoot = join(__dirname, "..")
+import { ensureContentSourceRoot, getContentSourceLabel, repoRoot } from "./content-paths.js"
 
 // 감시할 디렉토리
-const watchDir = process.env.OBSIDIAN_VAULT_PATH
-  ? join(process.env.OBSIDIAN_VAULT_PATH)
-  : join(blogRoot, "blog_obsidian")
+let watchDir
+try {
+  watchDir = ensureContentSourceRoot()
+} catch (error) {
+  console.error(`[Watcher] ${error.message}`)
+  process.exit(1)
+}
 
 let isRebuilding = false
 let pendingRebuild = false
+const skipInitialBuild = process.argv.includes("--skip-initial-build")
 
 function runPrebuild() {
   if (isRebuilding) {
@@ -28,7 +28,7 @@ function runPrebuild() {
   console.log("[Watcher] Running prebuild...\n")
 
   const prebuild = spawn("node", ["scripts/build-content.js"], {
-    cwd: blogRoot,
+    cwd: repoRoot,
     stdio: "inherit",
   })
 
@@ -56,10 +56,15 @@ function runPrebuild() {
 }
 
 console.log("[Watcher] Starting Obsidian content watcher...")
-console.log(`[Watcher] Watching: ${watchDir}\n`)
+console.log(`[Watcher] Watching: ${getContentSourceLabel()}\n`)
 
 // 초기 prebuild 실행
-runPrebuild()
+if (skipInitialBuild) {
+  console.log("[Watcher] Initial prebuild already completed by parent command.")
+  console.log(`[Watcher] Watching for changes in ${watchDir}...\n`)
+} else {
+  runPrebuild()
+}
 
 // 파일 watcher 설정
 const watcher = chokidar.watch(watchDir, {

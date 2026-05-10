@@ -1,33 +1,62 @@
 import { useState } from "react"
 import SearchInput from "@/components/search/SearchInput"
-import type { MemoMetadata, PostMetadata } from "@/types/content"
+import type { PostMetadata, WeeklyMetadata } from "@/types/content"
 import type { Lang } from "@/types/utils"
 import { getLanguagePrefix, withTrailingSlash } from "@/utils/language"
 
 type ListLayoutProps = {
-  posts: (PostMetadata | MemoMetadata)[]
+  posts: (PostMetadata | WeeklyMetadata)[]
   title: string
-  postType: "post" | "memo"
+  postType: "post" | "weekly"
   lang?: Lang
+  /** When false, renders the dotted leader list only (same as posts/memos) with no search bar. */
+  showSearch?: boolean
 }
 
-export default function ListLayouts({ posts, title, postType, lang = "ko" }: ListLayoutProps) {
+function listHref(
+  postType: ListLayoutProps["postType"],
+  slug: string,
+  languagePrefix: string,
+): string {
+  const segment = postType === "post" ? "posts" : "weekly"
+  const path = `${languagePrefix}/${segment}/${slug}`.replace(/\/{2,}/g, "/")
+  return withTrailingSlash(path.startsWith("/") ? path : `/${path}`)
+}
+
+function emptyFilterMessage(postType: ListLayoutProps["postType"], lang: Lang): string {
+  if (postType === "weekly") {
+    return lang === "ko" ? "아직 발행된 Weekly가 없습니다." : "No Weekly issues yet."
+  }
+  return lang === "ko" ? "글을 찾을 수 없습니다." : "No posts found."
+}
+
+export default function ListLayouts({
+  posts,
+  title,
+  postType,
+  lang = "ko",
+  showSearch = true,
+}: ListLayoutProps) {
   const [searchValue, setSearchValue] = useState("")
   const languagePrefix = getLanguagePrefix(lang)
-  const filteredBlogPosts = posts.filter((post) => {
-    const searchContent = post.title + post.summary + (post.tags ? post.tags.join(" ") : "")
-    return searchContent.toLowerCase().includes(searchValue.toLowerCase())
-  })
+  const filteredBlogPosts = showSearch
+    ? posts.filter((post) => {
+        const searchContent = post.title + post.summary + (post.tags ? post.tags.join(" ") : "")
+        return searchContent.toLowerCase().includes(searchValue.toLowerCase())
+      })
+    : posts
 
   return (
     <div className="px-2 sm:px-4">
-      <SearchInput title={title} onChange={setSearchValue} />
-      {!filteredBlogPosts.length && (postType === "memo" ? "No memos found." : "No posts found.")}
-      <ul>
+      {showSearch && <SearchInput title={title} onChange={setSearchValue} />}
+      {!filteredBlogPosts.length && (
+        <p className="text-gray-500 dark:text-gray-400">{emptyFilterMessage(postType, lang)}</p>
+      )}
+      <ul className={showSearch ? "" : "pt-1"}>
         {filteredBlogPosts.map((post) => (
           <li key={post.slug} className="flex justify-between items-center py-3">
             <a
-              href={withTrailingSlash(`${languagePrefix}/${postType}s/${post.slug}`)}
+              href={listHref(postType, post.slug, languagePrefix)}
               className="text-base sm:text-lg font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
             >
               {post.title}

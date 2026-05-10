@@ -1,4 +1,4 @@
-import type { Memo, PostMetadata } from "@/types/content"
+import type { PostMetadata, WeeklyMetadata } from "@/types/content"
 import type { ContentType, Lang } from "@/types/utils"
 import { generateContentBreadcrumbs } from "@/utils/breadcrumbUtils"
 import { detectLanguage } from "@/utils/language"
@@ -13,8 +13,8 @@ import {
  * Options for generating content schemas
  */
 export interface GenerateContentSchemasOptions {
-  /** Post or Memo frontmatter */
-  frontmatter: PostMetadata | Memo
+  /** Post or Weekly frontmatter */
+  frontmatter: PostMetadata | WeeklyMetadata
   /** Current page pathname */
   pathname: string
   /** Site origin URL */
@@ -42,7 +42,7 @@ export interface ContentSchemas {
 }
 
 /**
- * Generates all schemas needed for a content page (post or memo)
+ * Generates all schemas needed for a content page (post, memo, or weekly)
  * Consolidates schema generation logic used across all layout files
  *
  * @param options - Schema generation options
@@ -50,7 +50,8 @@ export interface ContentSchemas {
  */
 export function generateContentSchemas(options: GenerateContentSchemasOptions): ContentSchemas {
   const { frontmatter, pathname, origin, contentType, imageUrl } = options
-  const { title, date, summary, category, slug, tags, href } = frontmatter
+  const { title, date, summary, tags, href } = frontmatter
+  const category = "category" in frontmatter ? frontmatter.category : undefined
 
   // Detect language from pathname
   const lang = detectLanguage(pathname)

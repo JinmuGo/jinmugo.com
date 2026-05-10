@@ -20,6 +20,10 @@ export default defineConfig({
   site: process.env.NODE_ENV === "development" ? "http://localhost:4321" : pkg.homepage,
   output: "static",
   trailingSlash: "always",
+  redirects: {
+    "/memos/": "/posts/",
+    "/en/memos/": "/en/posts/",
+  },
   fonts: [
     {
       provider: fontProviders.google(),

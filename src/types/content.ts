@@ -1,8 +1,8 @@
 import type { CollectionEntry } from "astro:content"
-import type { getKoreanMemos } from "@/utils/content/memos"
 import type { getKoreanPosts } from "@/utils/content/posts"
+import type { getKoreanWeeklies } from "@/utils/content/weekly"
 
-type ContentType = "post" | "memo"
+type ContentType = "post" | "weekly"
 
 // 공통 필드만 타입으로 정의
 interface BaseMetadata {
@@ -17,13 +17,19 @@ interface BaseMetadata {
 }
 
 export type PostMetadata = BaseMetadata & Partial<CollectionEntry<"post">["data"]>
-export type MemoMetadata = BaseMetadata & Partial<CollectionEntry<"memo">["data"]>
+export type WeeklyMetadata = BaseMetadata &
+  Partial<CollectionEntry<"weekly">["data"]> & {
+    cover?: string
+    coverAlt?: string
+    year: number
+    week: number
+  }
 
 export type Post = Awaited<ReturnType<typeof getKoreanPosts>>[number] & {
   type: ContentType
 }
 
-export type Memo = Awaited<ReturnType<typeof getKoreanMemos>>[number] & {
+export type Weekly = Awaited<ReturnType<typeof getKoreanWeeklies>>[number] & {
   type: ContentType
 }
 

@@ -27,37 +27,8 @@ const headerNavLinks: HeaderNavLink[] = [
       },
     ],
   },
-  {
-    href: "/blog/",
-    title: "Blog",
-    shortCut: "b",
-    subLinks: [
-      {
-        href: "/archives/",
-        title: "Archives",
-        description: "Archive all my posts",
-        shortCut: "ar",
-      },
-      {
-        href: "/memos/",
-        title: "Memos",
-        description: "Notes and thoughts shortly",
-        shortCut: "m",
-      },
-      {
-        href: "/posts/",
-        title: "Posts",
-        description: "Posts",
-        shortCut: "p",
-      },
-      {
-        href: "/series/",
-        title: "Series",
-        description: "Blog post series collections",
-        shortCut: "s",
-      },
-    ],
-  },
+  { href: "/posts/", title: "Posts", shortCut: "p" },
+  { href: "/weekly/", title: "Weekly", shortCut: "w" },
   { href: "/gallery/", title: "Gallery", shortCut: "g" },
   { href: "/projects/", title: "Projects", shortCut: "pr" },
 ]

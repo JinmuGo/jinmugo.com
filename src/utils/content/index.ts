@@ -6,7 +6,7 @@ export function slugFromId(id: string): string {
   return id.split("/").pop() ?? ""
 }
 
-function filterDraft<T extends "post" | "memo">(entry: CollectionEntry<T>): boolean {
+function filterDraft<T extends "post" | "weekly">(entry: CollectionEntry<T>): boolean {
   return import.meta.env.PROD ? !entry.data.draft : true
 }
 
@@ -14,7 +14,9 @@ function filterDraft<T extends "post" | "memo">(entry: CollectionEntry<T>): bool
  * 한국어 콘텐츠만 필터링하는 함수
  * .en 파일을 제외하고 draft가 아닌 콘텐츠만 반환
  */
-export function filterKoreanContent<T extends "post" | "memo">(entry: CollectionEntry<T>): boolean {
+export function filterKoreanContent<T extends "post" | "weekly">(
+  entry: CollectionEntry<T>,
+): boolean {
   return filterDraft(entry) && !entry.id.endsWith(".en")
 }
 
@@ -22,7 +24,7 @@ export function filterKoreanContent<T extends "post" | "memo">(entry: Collection
  * 영어 콘텐츠만 필터링하는 함수
  * .en 파일만 포함하고 draft가 아닌 콘텐츠만 반환
  */
-export function filterEnglishContent<T extends "post" | "memo">(
+export function filterEnglishContent<T extends "post" | "weekly">(
   entry: CollectionEntry<T>,
 ): boolean {
   return filterDraft(entry) && entry.id.endsWith(".en")

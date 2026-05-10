@@ -1,6 +1,6 @@
 import { detectLanguage } from "@/utils/language"
 
-type ContentType = "memo" | "post"
+type ContentType = "post" | "weekly"
 
 interface BuildContentOgImagePathOptions {
   contentType: ContentType
@@ -20,7 +20,11 @@ export function buildContentOgImagePath({
   slug,
 }: BuildContentOgImagePathOptions): string {
   const localePrefix = detectLanguage(pathname) === "en" ? "/en" : ""
-  const collectionPath = contentType === "post" ? "posts" : "memos"
+  const collectionPathByType: Record<ContentType, string> = {
+    post: "posts",
+    weekly: "weekly",
+  }
+  const collectionPath = collectionPathByType[contentType]
 
   return `${localePrefix}/${collectionPath}/${slug}/og.png`
 }

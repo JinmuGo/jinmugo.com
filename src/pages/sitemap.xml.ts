@@ -1,14 +1,14 @@
 import { format } from "date-fns"
-import type { Memo, Post } from "@/types/content"
-import { getEnglishMemos, getKoreanMemos } from "@/utils/content/memos"
+import type { Post, Weekly } from "@/types/content"
 import { getEnglishPosts, getKoreanPosts } from "@/utils/content/posts"
+import { getEnglishWeeklies, getKoreanWeeklies } from "@/utils/content/weekly"
 
 export async function GET() {
   const siteUrl = import.meta.env.SITE
   const koPosts = await getKoreanPosts()
   const enPosts = await getEnglishPosts()
-  const koMemos = await getKoreanMemos()
-  const enMemos = await getEnglishMemos()
+  const koWeeklies = await getKoreanWeeklies()
+  const enWeeklies = await getEnglishWeeklies()
 
   const renderUrl = (
     slug: string,
@@ -56,8 +56,8 @@ export async function GET() {
     ${renderUrl("/")}
     ${renderUrl("/about")}
     ${renderUrl("/archives")}
-    ${renderUrl("/memos")}
     ${renderUrl("/posts")}
+    ${renderUrl("/weekly")}
     ${renderUrl("/series")}
     ${renderUrl("/gallery")}
     ${renderUrl("/projects")}
@@ -69,12 +69,12 @@ export async function GET() {
         return renderUrl(post.href, { hasEn, lastMod })
       })
       .join("\n")}
-    ${koMemos
-      .map((memo: Memo) => {
-        const lastMod = format(memo.data.lastmod ?? memo.data.date, "yyyy-MM-dd")
-        const hasEn = enMemos.some((m: Memo) => m.slug === memo.slug)
+    ${koWeeklies
+      .map((weekly: Weekly) => {
+        const lastMod = format(weekly.data.lastmod ?? weekly.data.date, "yyyy-MM-dd")
+        const hasEn = enWeeklies.some((w: Weekly) => w.slug === weekly.slug)
 
-        return renderUrl(memo.href, { hasEn, lastMod })
+        return renderUrl(weekly.href, { hasEn, lastMod })
       })
       .join("\n")}
   </urlset>

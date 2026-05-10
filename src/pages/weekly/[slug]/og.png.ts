@@ -1,24 +1,24 @@
 import type { InferGetStaticParamsType } from "astro"
 import { format } from "date-fns"
 import { OpenGraphImage } from "@/components/og/image"
-import { getKoreanMemos } from "@/utils/content/memos"
+import { formatWeeklyLabel, getKoreanWeeklies } from "@/utils/content/weekly"
 import { PNG } from "@/utils/openGraph"
 
-const memos = await getKoreanMemos()
+const weeklies = await getKoreanWeeklies()
 
 type Params = InferGetStaticParamsType<typeof getStaticPaths>
 
 export async function GET({ params }: { params: Params }) {
-  const memo = memos.find((memo) => memo.slug === params.slug)
-  if (!memo) {
-    return new Response("Memo not found", { status: 404 })
+  const weekly = weeklies.find((weekly) => weekly.slug === params.slug)
+  if (!weekly) {
+    return new Response("Weekly not found", { status: 404 })
   }
 
   const element = OpenGraphImage({
-    title: memo.data.title,
-    summary: memo.data.summary,
-    category: memo.data.category ?? undefined,
-    date: format(memo.data.date, "yyyy.MM.dd"),
+    title: weekly.data.title,
+    summary: weekly.data.summary,
+    category: `Weekly ${formatWeeklyLabel(weekly)}`,
+    date: format(weekly.data.date, "yyyy.MM.dd"),
   })
   const png = await PNG(element)
   return new Response(png, {
@@ -29,8 +29,8 @@ export async function GET({ params }: { params: Params }) {
 }
 
 export async function getStaticPaths() {
-  return memos.map((memo) => ({
-    params: { slug: memo.slug },
-    props: memo,
+  return weeklies.map((weekly) => ({
+    params: { slug: weekly.slug },
+    props: weekly,
   }))
 }

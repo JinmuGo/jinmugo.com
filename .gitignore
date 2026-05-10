@@ -30,6 +30,8 @@ src/content/app
 src/content/banner
 src/content/memo
 src/content/post
+src/content/weekly/*
+!src/content/weekly/.gitkeep
 
 # turbo (legacy)
 .turbo/

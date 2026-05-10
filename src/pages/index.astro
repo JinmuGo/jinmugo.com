@@ -3,7 +3,6 @@ import { Image } from "astro:assets"
 import Bleed from "@/components/layout/Bleed.astro"
 import PostTimeline from "@/components/Timeline/PostTimeline.astro"
 import Layout from "@/layouts/Layout.astro"
-import { getKoreanMemos, sortMemosByDate } from "@/utils/content/memos"
 import { getKoreanPosts, sortPostsByDate } from "@/utils/content/posts"
 import {
   generateOrganizationSchema,
@@ -15,16 +14,12 @@ import Avatar from "~/public/avatar.webp"
 import HeroImageSrc from "~/public/sea-boat.webp"
 
 const posts = await getKoreanPosts()
-const memos = await getKoreanMemos()
 const sortedPosts = sortPostsByDate(posts)
-const sortedMemos = sortMemosByDate(memos)
 
 const title = "Jinmu Go"
 const description = pkg.description
 const url = pkg.homepage
-// 최신 포스트와 메모를 ItemList로 구성
 const recentPosts = sortedPosts.slice(0, 5)
-const recentMemos = sortedMemos.slice(0, 5)
 
 // Website 스키마
 const websiteSchema = generateWebsiteSchema({
@@ -53,7 +48,7 @@ const pageSchema = generatePageSchema({
   title,
   description,
   url,
-  keywords: "blog, posts, memos, timeline",
+  keywords: "blog, posts, timeline",
   inLanguage: "ko",
   itemListElements: [
     ...recentPosts.map((post, index) => ({
@@ -65,17 +60,6 @@ const pageSchema = generatePageSchema({
         name: post.data.title,
         url: post.href,
         description: post.data.summary,
-      },
-    })),
-    ...recentMemos.map((memo, index) => ({
-      "@type": "ListItem" as const,
-      url: memo.href,
-      position: recentPosts.length + index + 1,
-      item: {
-        "@type": "Article" as const,
-        name: memo.data.title,
-        url: memo.href,
-        description: memo.data.summary,
       },
     })),
   ],
@@ -103,5 +87,5 @@ const jsonLd = [websiteSchema, organizationSchema, pageSchema]
     />
   </Bleed>
   <h1 class="sr-only">{title}</h1>
-  <PostTimeline posts={sortedPosts} memos={sortedMemos} />
+  <PostTimeline posts={sortedPosts} />
 </Layout>

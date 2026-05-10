@@ -1,20 +1,15 @@
-import { execSync } from "node:child_process"
-import crypto from "node:crypto"
+import { execFileSync } from "node:child_process"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
-import { fileURLToPath } from "node:url"
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-const BLOG_ROOT = path.resolve(__dirname, "..")
-const OBSIDIAN_DIR = process.env.OBSIDIAN_VAULT_PATH
-  ? path.resolve(process.env.OBSIDIAN_VAULT_PATH)
-  : path.join(BLOG_ROOT, "blog_obsidian")
-const CACHE_DIR = path.join(BLOG_ROOT, ".cache/content-export")
-const TARGET_DIR = path.join(BLOG_ROOT, "src/content")
-const SCRIPTS_DIR = path.join(BLOG_ROOT, "scripts")
+import {
+  cacheContentExportDir,
+  contentCollectionDirs,
+  ensureContentSourceRoot,
+  getContentSourceLabel,
+  scriptsDir,
+  targetContentDir,
+} from "./content-paths.js"
 
 // 1. Select binary
 function getExportBinary() {
@@ -22,30 +17,50 @@ function getExportBinary() {
   const arch = os.arch()
 
   if (platform === "darwin") {
-    return path.join(SCRIPTS_DIR, "obsidian-export-mac")
+    return path.join(scriptsDir, "obsidian-export-mac")
   } else if (arch === "arm64") {
-    return path.join(SCRIPTS_DIR, "obsidian-export-aarch64")
+    return path.join(scriptsDir, "obsidian-export-aarch64")
   } else {
-    return path.join(SCRIPTS_DIR, "obsidian-export")
+    return path.join(scriptsDir, "obsidian-export")
   }
 }
 
 // 2. Execute export to cache
 function exportContent() {
   const binary = getExportBinary()
+  const obsidianDir = ensureContentSourceRoot()
   // console.log(`[Build] Using binary: ${binary}`);
 
-  if (!fs.existsSync(CACHE_DIR)) {
-    fs.mkdirSync(CACHE_DIR, { recursive: true })
-  }
+  fs.rmSync(cacheContentExportDir, { recursive: true, force: true })
+  fs.mkdirSync(cacheContentExportDir, { recursive: true })
 
   // console.log('[Build] Exporting Obsidian content to cache...');
   try {
+    console.log(`[Build] Exporting ${getContentSourceLabel()}`)
     // obsidian-export processes the obsidian vault and outputs to cache dir
-    execSync(`"${binary}" "${OBSIDIAN_DIR}" "${CACHE_DIR}"`, { stdio: "inherit" })
+    execFileSync(binary, [obsidianDir, cacheContentExportDir], { stdio: "inherit" })
   } catch (e) {
     console.error("[Build] Export failed:", e)
     process.exit(1)
+  }
+}
+
+function dryRunExport() {
+  const binary = getExportBinary()
+  const obsidianDir = ensureContentSourceRoot()
+  const dryRunCacheDir = fs.mkdtempSync(path.join(os.tmpdir(), "jinmu-content-export-"))
+
+  try {
+    console.log(`[Build] Dry run exporting ${getContentSourceLabel()}`)
+    execFileSync(binary, [obsidianDir, dryRunCacheDir], { stdio: "inherit" })
+
+    const exportedFiles = getAllFiles(dryRunCacheDir)
+    console.log(`[Build] Dry run complete. Exported files: ${exportedFiles.length}`)
+  } catch (e) {
+    console.error("[Build] Dry run failed:", e)
+    process.exit(1)
+  } finally {
+    fs.rmSync(dryRunCacheDir, { recursive: true, force: true })
   }
 }
 
@@ -68,17 +83,38 @@ function getAllFiles(dir, fileList = [], rootDir = dir) {
   return fileList
 }
 
+// Remap source collection paths: memo/* → post/*
+function remapCollectionPath(filePath) {
+  const normalized = filePath.replace(/\\/g, "/")
+  if (normalized.startsWith("memo/")) {
+    return `post/${normalized.slice("memo/".length)}`
+  }
+  return filePath
+}
+
 // 4. Sync Logic
 function syncContent() {
   // console.log('[Build] Syncing content to src/content...');
 
-  if (!fs.existsSync(TARGET_DIR)) {
-    fs.mkdirSync(TARGET_DIR, { recursive: true })
+  if (!fs.existsSync(targetContentDir)) {
+    fs.mkdirSync(targetContentDir, { recursive: true })
   }
 
-  const cachedFiles = getAllFiles(CACHE_DIR)
-  const targetFiles = getAllFiles(TARGET_DIR)
+  const cachedFiles = getAllFiles(cacheContentExportDir)
+  const targetFiles = getAllFiles(targetContentDir)
   const processedTargetFiles = new Set()
+  /** Top-level segments present in this export and their remapped targets. Used to avoid wiping collections obsidian-export did not emit. */
+  const cacheTopLevelRoots = new Set()
+  for (const file of cachedFiles) {
+    const root = file.split(/[/\\]/)[0]
+    if (root) {
+      cacheTopLevelRoots.add(root)
+      // Also track remapped root so cleanup applies to remapped target dirs
+      const remapped = remapCollectionPath(file)
+      const remappedRoot = remapped.split(/[/\\]/)[0]
+      cacheTopLevelRoots.add(remappedRoot)
+    }
+  }
 
   let changedCount = 0
   let skippedCount = 0
@@ -86,16 +122,17 @@ function syncContent() {
 
   // Update or Create
   for (const file of cachedFiles) {
-    const sourcePath = path.join(CACHE_DIR, file)
+    const sourcePath = path.join(cacheContentExportDir, file)
     const isMd = file.endsWith(".md")
 
-    // Determine target path (.md -> .mdx)
+    // Determine target path (.md -> .mdx), then remap collection dirs (memo/* → post/*)
     let targetRelativePath = file
     if (isMd) {
       targetRelativePath = `${file.substring(0, file.length - 3)}.mdx`
     }
+    targetRelativePath = remapCollectionPath(targetRelativePath)
 
-    const targetPath = path.join(TARGET_DIR, targetRelativePath)
+    const targetPath = path.join(targetContentDir, targetRelativePath)
     processedTargetFiles.add(targetRelativePath)
 
     const sourceContent = fs.readFileSync(sourcePath)
@@ -121,16 +158,20 @@ function syncContent() {
     }
   }
 
-  // Remove deleted files
+  // Remove deleted files (only under top-level dirs that appeared in this export)
   for (const file of targetFiles) {
+    const root = file.split(/[/\\]/)[0]
+    if (root && !cacheTopLevelRoots.has(root)) {
+      continue
+    }
     if (!processedTargetFiles.has(file)) {
-      fs.unlinkSync(path.join(TARGET_DIR, file))
+      fs.unlinkSync(path.join(targetContentDir, file))
       removedCount++
       // console.log(`  Removed: ${file}`);
 
       // Clean up empty directories
       try {
-        const dir = path.dirname(path.join(TARGET_DIR, file))
+        const dir = path.dirname(path.join(targetContentDir, file))
         if (fs.readdirSync(dir).length === 0) {
           fs.rmdirSync(dir)
         }
@@ -143,10 +184,21 @@ function syncContent() {
   )
 }
 
+function ensureContentCollectionDirs() {
+  for (const collection of contentCollectionDirs) {
+    fs.mkdirSync(path.join(targetContentDir, collection), { recursive: true })
+  }
+}
+
 // Run
 try {
-  exportContent()
-  syncContent()
+  if (process.argv.includes("--dry-run")) {
+    dryRunExport()
+  } else {
+    exportContent()
+    syncContent()
+    ensureContentCollectionDirs()
+  }
 } catch (error) {
   console.error("[Build] Error:", error)
   process.exit(1)

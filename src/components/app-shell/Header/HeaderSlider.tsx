@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import type { MemoMetadata, PostMetadata } from "@/types/content"
+import type { PostMetadata } from "@/types/content"
 
 interface ContainerStyles {
   header: string
@@ -7,7 +7,7 @@ interface ContainerStyles {
 }
 
 interface HeaderSliderProps {
-  readonly postMetadata: PostMetadata | MemoMetadata
+  readonly postMetadata: PostMetadata
   readonly isEndofContent: boolean
   readonly isSlideOpen: boolean
   readonly pathname: string
