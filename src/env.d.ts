@@ -2,6 +2,7 @@
 
 interface ImportMetaEnv {
   readonly PUBLIC_API_URL: string
+  readonly PUBLIC_COMMENT_API_URL: string
   readonly PUBLIC_ENV: string
   readonly DEV: boolean
   readonly R2_BUCKET_NAME?: string
