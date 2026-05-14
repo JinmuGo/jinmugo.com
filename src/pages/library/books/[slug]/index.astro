@@ -1,0 +1,29 @@
+---
+import { render } from "astro:content"
+import { components } from "@/components/mdx/components.astro"
+import BookDetail from "@/layouts/library/BookDetail.astro"
+import type { BookWithSlug } from "@/types/library"
+import { getAuthorById } from "@/utils/library/authors"
+import { getBooks, sortBooksByDateRead } from "@/utils/library/books"
+
+export async function getStaticPaths() {
+  const books = sortBooksByDateRead(await getBooks())
+  return books
+    .filter((b) => b.hasEssay)
+    .map((book, idx) => {
+      const num = String(idx + 1).padStart(3, "0")
+      return {
+        params: { slug: book.slug },
+        props: { book, num },
+      }
+    })
+}
+
+const { book, num } = Astro.props as { book: BookWithSlug; num: string }
+const author = await getAuthorById(book.data.authorId)
+const { Content } = await render(book)
+---
+
+<BookDetail book={book} author={author} num={num}>
+  <Content components={components} />
+</BookDetail>
