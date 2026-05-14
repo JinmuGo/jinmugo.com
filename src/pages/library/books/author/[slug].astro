@@ -1,0 +1,33 @@
+---
+import { render } from "astro:content"
+import { components } from "@/components/mdx/components.astro"
+import AuthorDetail from "@/layouts/library/AuthorDetail.astro"
+import type { AuthorWithSlug } from "@/types/library"
+import { booksByAuthor, getAuthors } from "@/utils/library/authors"
+import { getBooks, sortBooksByDateRead } from "@/utils/library/books"
+import { hasEssay } from "@/utils/library/hasEssay"
+
+export async function getStaticPaths() {
+  const authors = await getAuthors()
+  const books = sortBooksByDateRead(await getBooks())
+  return authors.map((author) => ({
+    params: { slug: author.slug },
+    props: {
+      author,
+      works: booksByAuthor(books, author.slug),
+    },
+  }))
+}
+
+const { author, works } = Astro.props as {
+  author: AuthorWithSlug
+  works: Awaited<ReturnType<typeof getBooks>>
+}
+
+const { Content } = await render(author)
+const authorHasEssay = hasEssay(author.body ?? "")
+---
+
+<AuthorDetail author={author} works={works} hasEssay={authorHasEssay}>
+  <Content components={components} />
+</AuthorDetail>
