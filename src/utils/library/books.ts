@@ -1,5 +1,5 @@
 import { getCollection } from "astro:content"
-import type { BookEntry, BookStatus, BookWithSlug } from "@/types/library"
+import type { BookData, BookEntry, BookStatus, BookWithSlug } from "@/types/library"
 import { hasEssay } from "./hasEssay"
 
 /** Derive a clean URL slug from an entry id like "folder/filename" → "filename" */
@@ -28,7 +28,7 @@ export const filterBooksByRating = (books: BookWithSlug[], min: number | null): 
  * Fetch all non-draft books with computed slug, href, hasEssay.
  */
 export async function getBooks(): Promise<BookWithSlug[]> {
-  const entries = await getCollection("book", ({ data }) => !data.draft)
+  const entries = await getCollection("book", ({ data }: { data: BookData }) => !data.draft)
   const enriched = await Promise.all(
     entries.map(async (entry: BookEntry) => {
       const slug = slugFromId(entry.id)
