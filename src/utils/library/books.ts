@@ -2,7 +2,12 @@ import { getCollection } from "astro:content"
 import type { BookEntry, BookStatus, BookWithSlug } from "@/types/library"
 import { hasEssay } from "./hasEssay"
 
-const stripExt = (id: string) => id.replace(/\.mdx?$/, "")
+/** Derive a clean URL slug from an entry id like "folder/filename" → "filename" */
+const slugFromId = (id: string): string =>
+  id
+    .replace(/\.mdx?$/, "")
+    .split("/")
+    .pop() ?? id
 
 export const sortBooksByDateRead = (books: BookWithSlug[]): BookWithSlug[] =>
   [...books].sort((a, b) => {
@@ -26,7 +31,7 @@ export async function getBooks(): Promise<BookWithSlug[]> {
   const entries = await getCollection("book", ({ data }) => !data.draft)
   const enriched = await Promise.all(
     entries.map(async (entry: BookEntry) => {
-      const slug = stripExt(entry.id)
+      const slug = slugFromId(entry.id)
       const body = entry.body ?? ""
       return {
         ...entry,
