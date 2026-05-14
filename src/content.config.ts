@@ -66,6 +66,24 @@ const weeklyCollection = defineCollection({
   }),
 })
 
+const authorCollection = defineCollection({
+  loader: glob({
+    pattern: "**/*.{md,mdx}",
+    base: "./src/content/author",
+    generateId: stripExtension,
+  }),
+  schema: z.object({
+    name: z.string(),
+    originalName: z.string().optional(),
+    birthYear: z.number().int().optional(),
+    country: z.string().optional(),
+    bio: z.string().optional(),
+    photo: z.string().optional(),
+    wiki: z.string().url().optional(),
+    draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
+  }),
+})
+
 // Portfolio 타입 정의
 const ProjectMetricsSchema = z.object({
   users: z.string().optional(),
@@ -183,4 +201,5 @@ export const collections = {
   post: postCollection,
   weekly: weeklyCollection,
   app: appCollection,
+  author: authorCollection,
 }
