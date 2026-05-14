@@ -7,3 +7,14 @@ export interface AuthorWithSlug extends AuthorEntry {
   slug: string
   href: string
 }
+
+export type BookEntry = CollectionEntry<"book">
+export type BookData = BookEntry["data"]
+
+export interface BookWithSlug extends BookEntry {
+  slug: string
+  href: string
+  hasEssay: boolean
+}
+
+export type BookStatus = "read" | "reading" | "want"

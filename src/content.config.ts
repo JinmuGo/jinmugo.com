@@ -84,6 +84,35 @@ const authorCollection = defineCollection({
   }),
 })
 
+const BOOK_STATUS = ["read", "reading", "want"] as const
+const bookStatusSchema = z.enum(BOOK_STATUS)
+
+const bookCollection = defineCollection({
+  loader: glob({
+    pattern: "**/*.{md,mdx}",
+    base: "./src/content/book",
+    generateId: stripExtension,
+  }),
+  schema: z.object({
+    title: z.string(),
+    authorId: z.string(),
+    originalTitle: z.string().optional(),
+    year: z.number().int(),
+    publisher: z.string().optional(),
+    pages: z.number().int().positive().optional(),
+    language: z.enum(["ko", "en", "ja", "zh", "other"]).optional(),
+    cover: z.string().optional(),
+    dateRead: z.coerce.date().optional(),
+    rating: z.number().int().min(1).max(5).optional(),
+    status: bookStatusSchema.default("read"),
+    oneLiner: z.string().optional(),
+    tags: z.preprocess((v: unknown) => v ?? undefined, z.array(z.string()).optional().default([])),
+    quote: z.string().optional(),
+    draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
+    lastmod: z.preprocess((v: unknown) => v ?? undefined, z.coerce.date().optional()),
+  }),
+})
+
 // Portfolio 타입 정의
 const ProjectMetricsSchema = z.object({
   users: z.string().optional(),
@@ -202,4 +231,5 @@ export const collections = {
   weekly: weeklyCollection,
   app: appCollection,
   author: authorCollection,
+  book: bookCollection,
 }
