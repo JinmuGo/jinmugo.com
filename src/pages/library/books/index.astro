@@ -19,7 +19,7 @@ const data = books.map((b) => ({
   id: b.slug,
   href: b.href,
   hasEssay: b.hasEssay,
-  cover: b.data.cover,
+  cover: b.data.cover?.src,
   title: b.data.title,
   authorName: authorName(b.data.authorId),
   year: b.data.year,
@@ -39,7 +39,7 @@ const essayCount = books.filter((b) => b.hasEssay).length
 ---
 
 <Layout title="Books · Library" description="읽은 책들" lang="ko">
-  <div class="mx-auto max-w-3xl px-4 py-12">
+  <div class="py-10">
     <BooksCatalog client:load books={data} essayCount={essayCount} />
   </div>
 </Layout>

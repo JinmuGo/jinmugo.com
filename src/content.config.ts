@@ -72,16 +72,17 @@ const authorCollection = defineCollection({
     base: "./src/content/author",
     generateId: stripExtension,
   }),
-  schema: z.object({
-    name: z.string(),
-    originalName: z.string().optional(),
-    birthYear: z.number().int().optional(),
-    country: z.string().optional(),
-    bio: z.string().optional(),
-    photo: z.string().optional(),
-    wiki: z.string().url().optional(),
-    draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      name: z.string(),
+      originalName: z.string().optional(),
+      birthYear: z.number().int().optional(),
+      country: z.string().optional(),
+      bio: z.string().optional(),
+      photo: image().optional(),
+      wiki: z.string().url().optional(),
+      draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
+    }),
 })
 
 const BOOK_STATUS = ["read", "reading", "want"] as const
@@ -93,24 +94,28 @@ const bookCollection = defineCollection({
     base: "./src/content/book",
     generateId: stripExtension,
   }),
-  schema: z.object({
-    title: z.string(),
-    authorId: z.string(),
-    originalTitle: z.string().optional(),
-    year: z.number().int(),
-    publisher: z.string().optional(),
-    pages: z.number().int().positive().optional(),
-    language: z.enum(["ko", "en", "ja", "zh", "other"]).optional(),
-    cover: z.string().optional(),
-    dateRead: z.coerce.date().optional(),
-    rating: z.number().int().min(1).max(5).optional(),
-    status: bookStatusSchema.default("read"),
-    oneLiner: z.string().optional(),
-    tags: z.preprocess((v: unknown) => v ?? undefined, z.array(z.string()).optional().default([])),
-    quote: z.string().optional(),
-    draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
-    lastmod: z.preprocess((v: unknown) => v ?? undefined, z.coerce.date().optional()),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      authorId: z.string(),
+      originalTitle: z.string().optional(),
+      year: z.number().int(),
+      publisher: z.string().optional(),
+      pages: z.number().int().positive().optional(),
+      language: z.enum(["ko", "en", "ja", "zh", "other"]).optional(),
+      cover: image().optional(),
+      dateRead: z.coerce.date().optional(),
+      rating: z.number().int().min(1).max(5).optional(),
+      status: bookStatusSchema.default("read"),
+      oneLiner: z.string().optional(),
+      tags: z.preprocess(
+        (v: unknown) => v ?? undefined,
+        z.array(z.string()).optional().default([]),
+      ),
+      quote: z.string().optional(),
+      draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
+      lastmod: z.preprocess((v: unknown) => v ?? undefined, z.coerce.date().optional()),
+    }),
 })
 
 // Portfolio 타입 정의

@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets"
 import Prose from "@/components/layout/Prose.astro"
 import MetaStrip from "@/components/library/MetaStrip.astro"
 import Breadcrumb from "@/components/seo/Breadcrumb.astro"
@@ -37,15 +38,17 @@ const breadcrumbItems = [
 ---
 
 <Layout title={`${data.title} · Books`} description={data.oneLiner ?? data.title} lang="ko">
-  <article class="mx-auto max-w-3xl px-4 py-10">
+  <article class="py-10">
     <Breadcrumb items={breadcrumbItems} />
 
     <header class="flex gap-7 pb-7 border-b border-stone-200 dark:border-stone-700 items-start">
       {
         data.cover ? (
-          <img
+          <Image
             src={data.cover}
             alt={`${data.title} cover`}
+            width={280}
+            height={420}
             class="w-[140px] aspect-[2/3] rounded shadow-md object-cover bg-stone-200"
             loading="eager"
           />

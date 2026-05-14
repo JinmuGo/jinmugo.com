@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets"
 import Prose from "@/components/layout/Prose.astro"
 import PersonHeader from "@/components/library/PersonHeader.astro"
 import Breadcrumb from "@/components/seo/Breadcrumb.astro"
@@ -28,7 +29,7 @@ const meta = [data.birthYear, data.country].filter(Boolean).join(" · ")
 ---
 
 <Layout title={`${data.name} · Authors`} description={data.bio ?? data.name} lang="ko">
-  <div class="mx-auto max-w-3xl px-4 py-10">
+  <div class="py-10">
     <Breadcrumb items={breadcrumbItems} />
 
     <PersonHeader
@@ -51,9 +52,11 @@ const meta = [data.birthYear, data.country].filter(Boolean).join(" · ")
                 {String(idx + 1).padStart(3, "0")}
               </span>
               {w.data.cover ? (
-                <img
+                <Image
                   src={w.data.cover}
                   alt={w.data.title}
+                  width={72}
+                  height={108}
                   class="w-9 aspect-[2/3] rounded-sm object-cover bg-stone-200"
                   loading="lazy"
                 />
