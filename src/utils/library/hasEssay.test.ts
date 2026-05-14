@@ -16,7 +16,7 @@ describe("hasEssay", () => {
   })
 
   it("ignores whitespace when counting", () => {
-    const body = "가".repeat(ESSAY_MIN_CHARS) + "\n\n   \n   "
+    const body = `${"가".repeat(ESSAY_MIN_CHARS)}\n\n   \n   `
     expect(hasEssay(body)).toBe(true)
   })
 
