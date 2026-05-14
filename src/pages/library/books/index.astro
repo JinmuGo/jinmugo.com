@@ -1,0 +1,45 @@
+---
+import BooksCatalog from "@/components/library/BooksCatalog"
+import Layout from "@/layouts/Layout.astro"
+import { getAuthors } from "@/utils/library/authors"
+import { getBooks, sortBooksByDateRead } from "@/utils/library/books"
+
+const books = sortBooksByDateRead(await getBooks())
+const authors = await getAuthors()
+const authorName = (id: string) => authors.find((a) => a.slug === id)?.data.name ?? id
+
+const formatDate = (d?: Date) => {
+  if (!d) {
+    return "—"
+  }
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}`
+}
+
+const data = books.map((b) => ({
+  id: b.slug,
+  href: b.href,
+  hasEssay: b.hasEssay,
+  cover: b.data.cover,
+  title: b.data.title,
+  authorName: authorName(b.data.authorId),
+  year: b.data.year,
+  oneLiner: b.data.oneLiner,
+  rating: b.data.rating,
+  dateReadDisplay: formatDate(b.data.dateRead),
+  dateReadYear: b.data.dateRead?.getFullYear(),
+  status: b.data.status,
+  publisher: b.data.publisher,
+  pages: b.data.pages,
+  language: b.data.language,
+  quote: b.data.quote,
+  tags: b.data.tags,
+}))
+
+const essayCount = books.filter((b) => b.hasEssay).length
+---
+
+<Layout title="Books · Library" description="읽은 책들" lang="ko">
+  <div class="mx-auto max-w-3xl px-4 py-12">
+    <BooksCatalog client:load books={data} essayCount={essayCount} />
+  </div>
+</Layout>
