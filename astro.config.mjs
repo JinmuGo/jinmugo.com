@@ -23,14 +23,9 @@ export default defineConfig({
   redirects: {
     "/memos/": "/posts/",
     "/en/memos/": "/en/posts/",
-    "/posts/process-economy": "/library/books/process-economy/",
     "/posts/process-economy/": "/library/books/process-economy/",
-    "/posts/where-are-we-now": "/library/books/where-are-we-now/",
     "/posts/where-are-we-now/": "/library/books/where-are-we-now/",
-    "/posts/if-snow-is-silence-falling-from-the-sky": "/library/books/if-snow-is-silence-falling-from-the-sky/",
     "/posts/if-snow-is-silence-falling-from-the-sky/": "/library/books/if-snow-is-silence-falling-from-the-sky/",
-    "/posts/If-snow-is-silence-falling-from-the-sky": "/library/books/if-snow-is-silence-falling-from-the-sky/",
-    "/posts/If-snow-is-silence-falling-from-the-sky/": "/library/books/if-snow-is-silence-falling-from-the-sky/",
   },
   fonts: [
     {
