@@ -1,3 +1,6 @@
+/**
+ * localStorage-backed like taps for LikeFlower — unused while Flower is unmounted.
+ */
 import { useCallback, useState } from "react"
 
 const STORAGE_KEY = "flower-likes"

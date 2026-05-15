@@ -2,7 +2,6 @@
 import RelatedPosts from "@/components/content/RelatedPosts.astro"
 import type { PostMetadata, WeeklyMetadata } from "@/types/content"
 import { FumaComments } from "./FumaComments"
-import { Flower } from "./LikeFlower"
 
 interface Props {
   slug: string
@@ -14,10 +13,7 @@ const { slug, frontmatter, type } = Astro.props
 const relatedFrontmatter = frontmatter as PostMetadata | undefined
 ---
 
-<section class="flex flex-col gap-2 mt-28 mb-6 text md:text-lg">
-	<div class="flex flex-col gap-2 items-center justify-center">
-		<Flower client:load slug={slug} maxLikesPerIP={5} />
-	</div>
+<section class="flex flex-col gap-8 mt-28 mb-12 text md:text-lg">
 	<FumaComments client:load slug={slug} />
 	{relatedFrontmatter && type !== "weekly" && <RelatedPosts current={{ slug, data: relatedFrontmatter, type }} />}
-</section> 
+</section>

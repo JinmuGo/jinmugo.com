@@ -11,7 +11,7 @@ import { commentAuth, storage } from "./comment.js"
 // a trailing slash, so strict matching produces 404 on every list fetch.
 const app = new Hono({ strict: false })
 
-const allowedOrigins = (process.env.FRONTEND_URL ?? "http://localhost:4321")
+const allowedOrigins = (process.env.FRONTEND_URL ?? "http://localhost:4322")
   .split(",")
   .map((o) => o.trim())
   .filter(Boolean)

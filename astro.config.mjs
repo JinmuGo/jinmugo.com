@@ -17,8 +17,11 @@ import { transformerNotationDiff, transformerNotationHighlight } from "@shikijs/
 
 // https://astro.build/config
 export default defineConfig({
-  site: process.env.NODE_ENV === "development" ? "http://localhost:4321" : pkg.homepage,
+  site: process.env.NODE_ENV === "development" ? "http://localhost:4322" : pkg.homepage,
   output: "static",
+  server: {
+    port: 4322,
+  },
   trailingSlash: "always",
   redirects: {
     "/memos/": "/posts/",

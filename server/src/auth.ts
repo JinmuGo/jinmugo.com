@@ -3,7 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { db } from "./db/index.js"
 import * as schema from "./db/schema.js"
 
-const trustedOrigins = (process.env.FRONTEND_URL ?? "http://localhost:4321")
+const trustedOrigins = (process.env.FRONTEND_URL ?? "http://localhost:4322")
   .split(",")
   .map((o) => o.trim())
   .filter(Boolean)

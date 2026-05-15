@@ -1,3 +1,7 @@
+/**
+ * Like flower UI — not mounted in layouts; kept for possible reuse.
+ * Was previously used in UserSection.astro with `<Flower client:load />`.
+ */
 import type React from "react"
 import { Fragment, useCallback, useState } from "react"
 import { useLike } from "@/lib/likes"
