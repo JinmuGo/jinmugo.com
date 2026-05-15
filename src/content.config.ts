@@ -85,8 +85,60 @@ const authorCollection = defineCollection({
     }),
 })
 
+const directorCollection = defineCollection({
+  loader: glob({
+    pattern: "**/*.{md,mdx}",
+    base: "./src/content/director",
+    generateId: stripExtension,
+  }),
+  schema: ({ image }) =>
+    z.object({
+      name: z.string(),
+      originalName: z.string().optional(),
+      birthYear: z.number().int().optional(),
+      country: z.string().optional(),
+      bio: z.string().optional(),
+      photo: image().optional(),
+      wiki: z.string().url().optional(),
+      draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
+    }),
+})
+
 const BOOK_STATUS = ["read", "reading", "want"] as const
 const bookStatusSchema = z.enum(BOOK_STATUS)
+
+const MOVIE_STATUS = ["watched", "watching", "want"] as const
+const movieStatusSchema = z.enum(MOVIE_STATUS)
+
+const movieCollection = defineCollection({
+  loader: glob({
+    pattern: "**/*.{md,mdx}",
+    base: "./src/content/movie",
+    generateId: stripExtension,
+  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      directorId: z.string(),
+      originalTitle: z.string().optional(),
+      year: z.number().int(),
+      studio: z.string().optional(),
+      runtime: z.number().int().positive().optional(),
+      language: z.enum(["ko", "en", "ja", "zh", "other"]).optional(),
+      cover: image().optional(),
+      dateWatched: z.coerce.date().optional(),
+      rating: z.number().int().min(1).max(5).optional(),
+      status: movieStatusSchema.default("watched"),
+      oneLiner: z.string().optional(),
+      tags: z.preprocess(
+        (v: unknown) => v ?? undefined,
+        z.array(z.string()).optional().default([]),
+      ),
+      quote: z.string().optional(),
+      draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
+      lastmod: z.preprocess((v: unknown) => v ?? undefined, z.coerce.date().optional()),
+    }),
+})
 
 const bookCollection = defineCollection({
   loader: glob({
@@ -237,4 +289,6 @@ export const collections = {
   app: appCollection,
   author: authorCollection,
   book: bookCollection,
+  director: directorCollection,
+  movie: movieCollection,
 }

@@ -48,4 +48,33 @@ export interface BookMedia extends MediaCommon {
   originalTitle?: string
 }
 
-export type MediaItem = BookMedia
+export type MovieEntry = CollectionEntry<"movie">
+export type MovieData = MovieEntry["data"]
+
+export interface MovieWithSlug extends MovieEntry {
+  slug: string
+  href: string
+  hasEssay: boolean
+}
+
+export type MovieStatus = "watched" | "watching" | "want"
+
+export interface MovieMedia extends MediaCommon {
+  kind: "movie"
+  runtime?: number
+  studio?: string
+  originalTitle?: string
+}
+
+export type DirectorEntry = CollectionEntry<"director">
+export type DirectorData = DirectorEntry["data"]
+
+export interface DirectorWithSlug extends DirectorEntry {
+  slug: string
+  href: string
+}
+
+export type PersonWithSlug = AuthorWithSlug | DirectorWithSlug
+export type WorkWithSlug = BookWithSlug | MovieWithSlug
+
+export type MediaItem = BookMedia | MovieMedia

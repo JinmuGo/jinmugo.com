@@ -1,0 +1,27 @@
+---
+import { render } from "astro:content"
+import { components } from "@/components/mdx/components.astro"
+import MediaDetail from "@/layouts/library/MediaDetail.astro"
+import type { MovieMedia } from "@/types/library"
+import { getMovieMedia, getMovies, sortMediaByDate } from "@/utils/library/movies"
+
+export async function getStaticPaths() {
+  const items = sortMediaByDate(await getMovieMedia()).filter((m) => m.cover)
+  return items.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }))
+}
+
+const { item } = Astro.props as { item: MovieMedia }
+const entries = await getMovies()
+const entry = entries.find((e) => e.slug === item.slug)
+if (!entry) {
+  throw new Error(`Movie entry not found for slug: ${item.slug}`)
+}
+const { Content } = await render(entry)
+---
+
+<MediaDetail item={item}>
+  <Content components={components} />
+</MediaDetail>

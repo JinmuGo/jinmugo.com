@@ -32,6 +32,8 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
       library: "Library",
       books: "Books",
       authors: "Authors",
+      movies: "Movies",
+      directors: "Directors",
     },
     en: {
       home: "Home",
@@ -47,6 +49,8 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
       library: "Library",
       books: "Books",
       authors: "Authors",
+      movies: "Movies",
+      directors: "Directors",
     },
   }
 
@@ -153,6 +157,29 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
           items.push({
             name: t.authors,
             item: `${origin}${basePath}/library/books/`,
+          })
+          if (title) {
+            items.push({
+              name: title,
+              item: `${origin}${pathname}`,
+            })
+          }
+        } else if (thirdSegment && title) {
+          items.push({
+            name: title,
+            item: `${origin}${pathname}`,
+          })
+        }
+      } else if (secondSegment === "movies") {
+        items.push({
+          name: t.movies,
+          item: `${origin}${basePath}/library/movies/`,
+        })
+
+        if (thirdSegment === "director" && fourthSegment) {
+          items.push({
+            name: t.directors,
+            item: `${origin}${basePath}/library/movies/`,
           })
           if (title) {
             items.push({

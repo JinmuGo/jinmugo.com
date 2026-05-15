@@ -2,9 +2,10 @@
 import Title from "@/components/layout/Title"
 import Layout from "@/layouts/Layout.astro"
 import { getBooks } from "@/utils/library/books"
+import { getMovies } from "@/utils/library/movies"
 import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
 
-const books = await getBooks()
+const [books, movies] = await Promise.all([getBooks(), getMovies()])
 
 interface Section {
   num: string
@@ -28,9 +29,9 @@ const sections: Section[] = [
     num: "002",
     title: "Movies",
     description: "Films I've watched. Ratings, impressions, occasional thoughts.",
-    href: null,
-    meta: "Soon",
-    status: "soon",
+    href: "/en/library/movies/",
+    meta: `${movies.length} films`,
+    status: "live",
   },
   {
     num: "003",

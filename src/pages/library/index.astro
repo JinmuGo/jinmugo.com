@@ -2,6 +2,7 @@
 import Title from "@/components/layout/Title"
 import Layout from "@/layouts/Layout.astro"
 import { getBookMedia } from "@/utils/library/books"
+import { getMovieMedia } from "@/utils/library/movies"
 import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
 
 interface Section {
@@ -12,7 +13,10 @@ interface Section {
   meta?: string
 }
 
-const bookCount = (await getBookMedia()).filter((b) => b.cover).length
+const [bookCount, movieCount] = await Promise.all([
+  getBookMedia().then((items) => items.filter((b) => b.cover).length),
+  getMovieMedia().then((items) => items.filter((m) => m.cover).length),
+])
 
 const sections: Section[] = [
   {
@@ -24,7 +28,8 @@ const sections: Section[] = [
   {
     num: "002",
     title: "Movies",
-    href: null,
+    href: "/library/movies/",
+    meta: `${movieCount} films`,
   },
   {
     num: "003",
