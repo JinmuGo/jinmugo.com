@@ -74,6 +74,7 @@ jobs:
           GSC_PROPERTY_ID=${{ secrets.GSC_PROPERTY_ID }}
           GSC_SITE_URL=${{ secrets.GSC_SITE_URL }}
           GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          PUBLIC_COMMENT_API_URL=${{ secrets.PUBLIC_COMMENT_API_URL }}
           EOF
 
       - name: Setup Pages
