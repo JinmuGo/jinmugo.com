@@ -27,8 +27,31 @@ const headerNavLinks: HeaderNavLink[] = [
       },
     ],
   },
-  { href: "/posts/", title: "Posts", shortCut: "p" },
-  { href: "/weekly/", title: "Weekly", shortCut: "w" },
+  {
+    href: "/posts/",
+    title: "Writing",
+    shortCut: "w",
+    subLinks: [
+      {
+        href: "/posts/",
+        title: "Posts",
+        description: "Technical, daily life, thoughts",
+        shortCut: "p",
+      },
+      {
+        href: "/weekly/",
+        title: "Weekly",
+        description: "Weekly summary",
+        shortCut: "k",
+      },
+      {
+        href: "/library/",
+        title: "Library",
+        description: "Library",
+        shortCut: "l",
+      },
+    ],
+  },
   { href: "/gallery/", title: "Gallery", shortCut: "g" },
   { href: "/projects/", title: "Projects", shortCut: "pr" },
 ]

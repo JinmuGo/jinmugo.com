@@ -6,10 +6,12 @@ export default defineConfig({
     environment: "node",
     globals: true,
     include: ["src/**/*.{test,spec}.{js,ts,jsx,tsx}"],
+    setupFiles: ["./src/test-setup.ts"],
   },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "astro:content": path.resolve(__dirname, "./src/__mocks__/astro-content.ts"),
     },
   },
 })
