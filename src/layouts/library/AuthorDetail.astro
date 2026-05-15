@@ -10,25 +10,28 @@ interface Props {
   author: AuthorWithSlug
   works: BookWithSlug[]
   hasEssay: boolean
+  lang?: "ko" | "en"
 }
 
-const { author, works, hasEssay } = Astro.props
+const { author, works, hasEssay, lang = "ko" } = Astro.props
 const data = author.data
 
 const formatDate = (d?: Date) =>
   d ? `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}` : "—"
 
+const basePath = lang === "en" ? "/en" : ""
 const breadcrumbItems = [
-  { name: "Library", item: "/library/" },
-  { name: "Books", item: "/library/books/" },
-  { name: "Authors", item: "/library/books/" },
-  { name: data.name, item: author.href },
+  { name: "Library", item: `${basePath}/library/` },
+  { name: "Books", item: `${basePath}/library/books/` },
+  { name: "Authors", item: `${basePath}/library/books/` },
+  { name: data.name, item: `${basePath}${author.href}` },
 ]
 
 const meta = [data.birthYear, data.country].filter(Boolean).join(" · ")
+const aboutHeading = lang === "en" ? "About the author" : "이 저자에 대해"
 ---
 
-<Layout title={`${data.name} · Authors`} description={data.bio ?? data.name} lang="ko">
+<Layout title={`${data.name} · Authors`} description={data.bio ?? data.name} lang={lang}>
   <div class="py-10">
     <Breadcrumb items={breadcrumbItems} />
 
@@ -92,7 +95,7 @@ const meta = [data.birthYear, data.country].filter(Boolean).join(" · ")
     {
       hasEssay && (
         <section class="pt-7 mt-6 border-t border-stone-200 dark:border-stone-700">
-          <h3 class="font-display text-base font-semibold mb-3">이 저자에 대해</h3>
+          <h3 class="font-display text-base font-semibold mb-3">{aboutHeading}</h3>
           <Prose as="div">
             <slot />
           </Prose>

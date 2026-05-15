@@ -1,45 +1,17 @@
 ---
-import BooksCatalog from "@/components/library/BooksCatalog"
+import Title from "@/components/layout/Title"
+import MediaList from "@/components/library/MediaList.astro"
 import Layout from "@/layouts/Layout.astro"
-import { getAuthors } from "@/utils/library/authors"
-import { getBooks, sortBooksByDateRead } from "@/utils/library/books"
+import { getBookMedia, sortMediaByDate } from "@/utils/library/books"
 
-const books = sortBooksByDateRead(await getBooks())
-const authors = await getAuthors()
-const authorName = (id: string) => authors.find((a) => a.slug === id)?.data.name ?? id
-
-const formatDate = (d?: Date) => {
-  if (!d) {
-    return "—"
-  }
-  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}`
-}
-
-const data = books.map((b) => ({
-  id: b.slug,
-  href: b.href,
-  hasEssay: b.hasEssay,
-  cover: b.data.cover?.src,
-  title: b.data.title,
-  authorName: authorName(b.data.authorId),
-  year: b.data.year,
-  oneLiner: b.data.oneLiner,
-  rating: b.data.rating,
-  dateReadDisplay: formatDate(b.data.dateRead),
-  dateReadYear: b.data.dateRead?.getFullYear(),
-  status: b.data.status,
-  publisher: b.data.publisher,
-  pages: b.data.pages,
-  language: b.data.language,
-  quote: b.data.quote,
-  tags: b.data.tags,
-}))
-
-const essayCount = books.filter((b) => b.hasEssay).length
+const items = sortMediaByDate(await getBookMedia()).filter((b) => b.cover)
 ---
 
 <Layout title="Books · Library" description="읽은 책들" lang="ko">
-  <div class="py-10">
-    <BooksCatalog client:load books={data} essayCount={essayCount} />
+  <div class="px-2 sm:px-4">
+    <div class="space-y-2 pt-6 pb-8 md:space-y-5">
+      <Title>Books</Title>
+    </div>
+    <MediaList items={items} />
   </div>
 </Layout>

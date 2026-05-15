@@ -29,6 +29,9 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
       category: "Category",
       tag: "Tag",
       year: "Year",
+      library: "Library",
+      books: "Books",
+      authors: "Authors",
     },
     en: {
       home: "Home",
@@ -41,6 +44,9 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
       category: "Category",
       tag: "Tag",
       year: "Year",
+      library: "Library",
+      books: "Books",
+      authors: "Authors",
     },
   }
 
@@ -129,6 +135,38 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
         name: t.gallery,
         item: `${origin}${pathname}`,
       })
+      break
+
+    case "library":
+      items.push({
+        name: t.library,
+        item: `${origin}${basePath}/library/`,
+      })
+
+      if (secondSegment === "books") {
+        items.push({
+          name: t.books,
+          item: `${origin}${basePath}/library/books/`,
+        })
+
+        if (thirdSegment === "author" && fourthSegment) {
+          items.push({
+            name: t.authors,
+            item: `${origin}${basePath}/library/books/`,
+          })
+          if (title) {
+            items.push({
+              name: title,
+              item: `${origin}${pathname}`,
+            })
+          }
+        } else if (thirdSegment && title) {
+          items.push({
+            name: title,
+            item: `${origin}${pathname}`,
+          })
+        }
+      }
       break
 
     default:

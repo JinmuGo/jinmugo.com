@@ -18,3 +18,34 @@ export interface BookWithSlug extends BookEntry {
 }
 
 export type BookStatus = "read" | "reading" | "want"
+
+export type MediaKind = "book" | "movie" | "music"
+
+export interface MediaCommon {
+  kind: MediaKind
+  slug: string
+  href: string
+  hasEssay: boolean
+  title: string
+  year: number
+  creatorId: string
+  creatorName: string
+  creatorHref?: string
+  oneLiner?: string
+  rating?: number
+  status: string
+  dateConsumed?: Date
+  cover?: ImageMetadata
+  tags: string[]
+  quote?: string
+  language?: string
+}
+
+export interface BookMedia extends MediaCommon {
+  kind: "book"
+  pages?: number
+  publisher?: string
+  originalTitle?: string
+}
+
+export type MediaItem = BookMedia

@@ -1,0 +1,45 @@
+---
+import { Image } from "astro:assets"
+import type { MediaItem } from "@/types/library"
+
+interface Props {
+  items: MediaItem[]
+}
+
+const { items } = Astro.props
+---
+
+<div class="columns-2 sm:columns-3 md:columns-4 3xl:columns-5 gap-4">
+  {
+    items.map((item) =>
+      item.cover ? (
+        <a
+          href={item.href}
+          class="group relative mb-4 block break-inside-avoid overflow-hidden rounded-md bg-stone-100 ring-1 ring-stone-200 dark:bg-stone-800 dark:ring-stone-800/60"
+        >
+          <Image
+            src={item.cover}
+            alt={item.title}
+            width={item.cover.width}
+            height={item.cover.height}
+            class="h-auto w-full object-cover"
+            loading="lazy"
+            decoding="async"
+            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+          />
+          <div
+            class="pointer-events-none absolute inset-0 flex flex-col justify-end gap-1 bg-gradient-to-t from-black/85 via-black/35 to-transparent p-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+          >
+            <p class="font-mono text-[10px] uppercase tracking-[0.12em] text-white/70">
+              {item.creatorName} · {item.year}
+            </p>
+            <h3 class="text-sm font-semibold leading-tight text-white">{item.title}</h3>
+            {item.oneLiner && (
+              <p class="line-clamp-2 text-[12px] leading-snug text-white/85">{item.oneLiner}</p>
+            )}
+          </div>
+        </a>
+      ) : null,
+    )
+  }
+</div>
