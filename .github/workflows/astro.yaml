@@ -91,15 +91,24 @@ jobs:
         run: |
           if [ -d .cache/translations ]; then
             echo "Restoring cached translations..."
+            restored=0
+            skipped_stale=0
             find .cache/translations -name "*.en.md" | while read f; do
               REL="${f#.cache/translations/}"
               TARGET="blog_obsidian/$REL"
+              KOREAN_SOURCE="${TARGET%.en.md}.md"
+              # Skip stale translations whose Korean source was removed (e.g., post migrated to another collection)
+              if [ ! -f "$KOREAN_SOURCE" ]; then
+                skipped_stale=$((skipped_stale + 1))
+                continue
+              fi
               if [ ! -f "$TARGET" ]; then
                 mkdir -p "$(dirname "$TARGET")"
                 cp "$f" "$TARGET"
+                restored=$((restored + 1))
               fi
             done
-            echo "Cached translations restored."
+            echo "Cached translations restored: $restored, skipped stale: $skipped_stale."
           else
             echo "No translation cache found."
           fi
