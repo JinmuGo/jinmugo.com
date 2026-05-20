@@ -1,0 +1,106 @@
+---
+import { Image } from "astro:assets"
+import type { ImageMetadata } from "astro"
+import MdxImage from "./MdxImage.astro"
+
+interface Props {
+  title?: string
+  /** JSON array of image src paths (from remark-image-gallery) */
+  images?: string
+  cols?: "2" | "3"
+  class?: string
+}
+
+const { title, images: imagesJson, cols = "3", class: className } = Astro.props
+
+const contentImages = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/content/**/*.{webp,jpg,jpeg,png}",
+  { eager: true },
+)
+
+function parseImages(imagesJson: string | undefined): string[] {
+  if (!imagesJson) {
+    return []
+  }
+  try {
+    const parsed: unknown = JSON.parse(imagesJson)
+    if (!Array.isArray(parsed)) {
+      return []
+    }
+    return parsed.filter((item): item is string => typeof item === "string" && item.length > 0)
+  } catch {
+    return []
+  }
+}
+
+function resolveContentImage(src: string): ImageMetadata | undefined {
+  const filename = src.replace(/^\.\//, "").split("/").pop() ?? src
+  const match = Object.entries(contentImages).find(([path]) => path.endsWith(`/${filename}`))
+  return match?.[1]?.default
+}
+
+const imageList = parseImages(imagesJson)
+const resolvedImages = imageList
+  .map((src) => ({ src, metadata: resolveContentImage(src) }))
+  .filter((entry) => entry.metadata !== undefined) as Array<{
+  src: string
+  metadata: ImageMetadata
+}>
+
+const gridCols = cols === "2" ? "grid-cols-2" : "grid-cols-2 md:grid-cols-3"
+---
+
+{
+  resolvedImages.length > 0 && (
+    <figure class:list={["not-prose my-8 space-y-3", className]}>
+      {title ? (
+        <figcaption class="text-sm font-semibold tracking-wide text-gray-600 dark:text-gray-400">
+          {title}
+        </figcaption>
+      ) : null}
+      <div
+        class:list={[
+          "grid gap-3",
+          gridCols,
+          "[&>*]:aspect-[3/4] [&>*]:overflow-hidden [&>*]:rounded-lg",
+          "[&>*]:border [&>*]:border-gray-200 [&>*]:bg-gray-100 [&>*]:shadow-sm",
+          "dark:[&>*]:border-gray-800 dark:[&>*]:bg-gray-900",
+        ]}
+      >
+        {
+          resolvedImages.map(({ metadata }) => (
+            <div class="h-full w-full">
+              <a
+                class="photo-swipe block h-full w-full cursor-zoom-in"
+                href={metadata.src}
+                data-pswp-width={metadata.width}
+                data-pswp-height={metadata.height}
+                target="_blank"
+              >
+                <Image
+                  src={metadata}
+                  alt=""
+                  widths={[320, 480, 640]}
+                  sizes="(max-width: 768px) 45vw, 280px"
+                  class="h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+            </div>
+          ))
+        }
+      </div>
+    </figure>
+  )
+}
+
+{
+  imageList.length > 0 && resolvedImages.length === 0 && (
+    <div class="not-prose my-8 grid gap-3 grid-cols-2 md:grid-cols-3">
+      {imageList.map((src) => (
+        <MdxImage src={src} alt="" class="!my-0 h-full w-full object-cover" />
+      ))}
+    </div>
+  )
+}

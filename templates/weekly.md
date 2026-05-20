@@ -3,21 +3,16 @@ title: "Weekly {{weekLabel}}{{titleSuffix}}"
 date: {{date}}
 year: {{year}}
 week: {{week}}
-summary: "이번 주에 본 것, 만든 것, 읽은 것, 생각한 것."
+summary: 
 tags: [weekly]
 draft: true
 ---
 
-커버 사진에 대한 짧은 도입.
+## 운동 기록
 
-## 만든 것
-
-## 읽은 것
-
-## 써본 것
-
-## 본 것
-
-## 생각
-
-## 다음 주에 해볼 것
+```gallery
+title: "운동 기록"
+![[your-screenshot-1.webp]]
+![[your-screenshot-2.webp]]
+![[your-screenshot-3.webp]]
+```
