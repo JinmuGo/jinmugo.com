@@ -41,3 +41,4 @@ src/content/weekly/*
 .omc/
 .gstack/
 .playwright-mcp/
+.superpowers/
