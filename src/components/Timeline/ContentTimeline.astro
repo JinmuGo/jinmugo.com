@@ -1,7 +1,7 @@
 ---
-import DraftLabel from "@/components/content/DraftLabel.astro"
-import type { Post } from "@/types/content"
-import { withTrailingSlash } from "@/utils/language"
+import ContentLabel from "@/components/content/ContentLabel.astro"
+import type { TimelineEntry } from "@/utils/content/timeline"
+import { getEntryYear, shouldShowYearMarker } from "@/utils/content/timeline"
 import Timeline from "./Timeline.astro"
 import TimelineDescription from "./TimelineDescription.astro"
 import TimelineDot from "./TimelineDot.astro"
@@ -9,36 +9,40 @@ import TimelineHeader from "./TimelineHeader.astro"
 import TimelineItem from "./TimelineItem.astro"
 import TimelineTime from "./TimelineTime.astro"
 import TimelineTitle from "./TimelineTitle.astro"
+import TimelineYearMarker from "./TimelineYearMarker.astro"
 
-const { posts } = Astro.props
+interface Props {
+  items: TimelineEntry[]
+}
 
-const isEnglish = Astro.url.pathname.startsWith("/en")
-const basePath = isEnglish ? "/en" : ""
-
-const allContent = [...posts].sort(
-  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
-)
+const { items } = Astro.props
 ---
 
 <Timeline>
   {
-    allContent.map((item: Post, index: number) => {
-      const itemUrl = withTrailingSlash(`${basePath}/posts/${item.slug}`);
+    items.flatMap((item: TimelineEntry, index: number) => {
       const formattedDate = item.data.date.toISOString().split("T")[0];
       const isLatest = index === 0;
       const isDraft = item.data.draft && import.meta.env.DEV;
+      const year = getEntryYear(item);
+      const nodes = [];
 
-      return (
+      if (shouldShowYearMarker(items, index)) {
+        nodes.push(<TimelineYearMarker year={year} />);
+      }
+
+      nodes.push(
         <TimelineItem>
           <TimelineHeader>
             <TimelineTime datetime={item.data.date.toISOString()}>
               {formattedDate}
             </TimelineTime>
             <TimelineDot isLatest={isLatest} />
-            <TimelineTitle href={itemUrl}>
-              <div class="flex items-center space-x-2">
+            <TimelineTitle href={item.href}>
+              <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span>{item.data.title}</span>
-                {isDraft && <DraftLabel />}
+                {item.type === "weekly" && <ContentLabel variant="weekly" />}
+                {isDraft && <ContentLabel variant="draft" />}
               </div>
               {item.data.summary && (
                 <TimelineDescription class="mt-1 text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
@@ -47,8 +51,10 @@ const allContent = [...posts].sort(
               )}
             </TimelineTitle>
           </TimelineHeader>
-        </TimelineItem>
+        </TimelineItem>,
       );
+
+      return nodes;
     })
   }
 </Timeline>

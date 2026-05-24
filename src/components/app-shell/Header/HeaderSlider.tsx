@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from "react"
-import type { PostMetadata } from "@/types/content"
+import type { PostMetadata, WeeklyMetadata } from "@/types/content"
+
+function isWeeklyMetadata(metadata: PostMetadata | WeeklyMetadata): metadata is WeeklyMetadata {
+  return "year" in metadata && "week" in metadata
+}
 
 interface ContainerStyles {
   header: string
@@ -7,7 +11,7 @@ interface ContainerStyles {
 }
 
 interface HeaderSliderProps {
-  readonly postMetadata: PostMetadata
+  readonly postMetadata: PostMetadata | WeeklyMetadata
   readonly isEndofContent: boolean
   readonly isSlideOpen: boolean
   readonly pathname: string
@@ -21,10 +25,18 @@ export default function HeaderSlider({
   pathname,
   containerStyles,
 }: HeaderSliderProps) {
-  const { category, date, title } = postMetadata
-  const href = pathname.startsWith("/en")
-    ? `/en/archives/category/${category ?? ""}`
-    : `/archives/category/${category ?? ""}`
+  const { date, title } = postMetadata
+  const isWeekly = isWeeklyMetadata(postMetadata)
+  const href = isWeekly
+    ? pathname.startsWith("/en")
+      ? "/en/weekly/"
+      : "/weekly/"
+    : pathname.startsWith("/en")
+      ? `/en/archives/category/${postMetadata.category ?? ""}`
+      : `/archives/category/${postMetadata.category ?? ""}`
+  const contextLabel = isWeekly
+    ? `Weekly ${postMetadata.year}-W${String(postMetadata.week).padStart(2, "0")}`
+    : (postMetadata.category ?? "")
   const [isHovered, setIsHovered] = useState<boolean>(false)
 
   const onClick = useCallback(() => {
@@ -60,7 +72,7 @@ export default function HeaderSlider({
     <>
       <section
         onMouseEnter={() => setIsHovered(true)}
-        aria-label="포스트 정보"
+        aria-label={isWeekly ? "Weekly 정보" : "포스트 정보"}
         className={`transition-all
           duration-300 w-full h-full flex justify-center items-center absolute
           ${
@@ -84,7 +96,7 @@ export default function HeaderSlider({
           <p className="min-w-fit">
             <span className="text-sm md:text text-gray-500 dark:text-gray-300">
               <a className="underline" href={href}>
-                {category}
+                {contextLabel}
               </a>{" "}
               /{" "}
               {date.toLocaleDateString("en-us", {

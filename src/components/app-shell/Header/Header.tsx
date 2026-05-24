@@ -2,7 +2,7 @@ import debounce from "lodash.debounce"
 import { Menu } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import CommandPalette from "@/components/search/CommandPalette"
-import type { PostMetadata } from "@/types/content"
+import type { PostMetadata, WeeklyMetadata } from "@/types/content"
 import HeaderSlider from "./HeaderSlider"
 import headerNavLinks from "./headerNavLinks"
 import Logo from "./Logo"
@@ -18,7 +18,7 @@ interface ContainerStyles {
 }
 
 interface HeaderProps {
-  frontmatter?: PostMetadata
+  frontmatter?: PostMetadata | WeeklyMetadata
   pathname: string
   containerStyles: ContainerStyles
 }
@@ -28,7 +28,7 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
   const [open, setOpen] = useState<boolean>(false)
   const [openPopoverTitle, setOpenPopoverTitle] = useState<string | null>(null)
   const handleScroll = useCallback(() => {
-    const target = document.querySelector("#post-title, #memo-title")
+    const target = document.querySelector("#post-title, #memo-title, #weekly-title")
     const rect = target?.getBoundingClientRect()
     if (!rect) {
       return

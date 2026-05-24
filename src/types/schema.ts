@@ -10,7 +10,7 @@ export interface ListItem {
   url: string
   position: number
   item: {
-    "@type": "Article" | "Collection" | "CreativeWork"
+    "@type": "Article" | "BlogPosting" | "Collection" | "CreativeWork"
     name: string
     url: string
     description?: string

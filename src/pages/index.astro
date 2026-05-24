@@ -1,9 +1,11 @@
 ---
 import { Image } from "astro:assets"
 import Bleed from "@/components/layout/Bleed.astro"
-import PostTimeline from "@/components/Timeline/PostTimeline.astro"
+import ContentTimeline from "@/components/Timeline/ContentTimeline.astro"
 import Layout from "@/layouts/Layout.astro"
-import { getKoreanPosts, sortPostsByDate } from "@/utils/content/posts"
+import { getKoreanPosts } from "@/utils/content/posts"
+import { mergeTimelineEntries, timelineEntryToListItem } from "@/utils/content/timeline"
+import { getKoreanWeeklies } from "@/utils/content/weekly"
 import {
   generateOrganizationSchema,
   generatePageSchema,
@@ -14,12 +16,13 @@ import Avatar from "~/public/avatar.webp"
 import HeroImageSrc from "~/public/sea-boat.webp"
 
 const posts = await getKoreanPosts()
-const sortedPosts = sortPostsByDate(posts)
+const weeklies = await getKoreanWeeklies()
+const timelineEntries = mergeTimelineEntries(posts, weeklies)
+const recentEntries = timelineEntries.slice(0, 5)
 
 const title = "Jinmu Go"
 const description = pkg.description
 const url = pkg.homepage
-const recentPosts = sortedPosts.slice(0, 5)
 
 // Website 스키마
 const websiteSchema = generateWebsiteSchema({
@@ -48,21 +51,9 @@ const pageSchema = generatePageSchema({
   title,
   description,
   url,
-  keywords: "blog, posts, timeline",
+  keywords: "blog, posts, weekly, timeline",
   inLanguage: "ko",
-  itemListElements: [
-    ...recentPosts.map((post, index) => ({
-      "@type": "ListItem" as const,
-      url: post.href,
-      position: index + 1,
-      item: {
-        "@type": "BlogPosting" as const,
-        name: post.data.title,
-        url: post.href,
-        description: post.data.summary,
-      },
-    })),
-  ],
+  itemListElements: recentEntries.map((entry, index) => timelineEntryToListItem(entry, index + 1)),
 })
 
 const jsonLd = [websiteSchema, organizationSchema, pageSchema]
@@ -87,5 +78,5 @@ const jsonLd = [websiteSchema, organizationSchema, pageSchema]
     />
   </Bleed>
   <h1 class="sr-only">{title}</h1>
-  <PostTimeline posts={sortedPosts} />
+  <ContentTimeline items={timelineEntries} />
 </Layout>
