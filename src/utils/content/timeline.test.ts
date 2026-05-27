@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest"
 import type { Post, Weekly } from "@/types/content"
-import {
-  getEntryYear,
-  mergeTimelineEntries,
-  shouldShowYearMarker,
-  timelineEntryToListItem,
-} from "@/utils/content/timeline"
+import { mergeTimelineEntries, timelineEntryToListItem } from "@/utils/content/timeline"
 
 function makePost(date: string, slug: string): Post {
   return {
@@ -47,33 +42,6 @@ describe("mergeTimelineEntries", () => {
     const merged = mergeTimelineEntries(posts, weeklies)
 
     expect(merged.map((entry) => entry.slug)).toEqual(["newer-weekly", "older-post"])
-  })
-})
-
-describe("getEntryYear", () => {
-  it("returns the full year from entry date", () => {
-    expect(getEntryYear(makePost("2025-12-31", "end-of-2025"))).toBe(2025)
-  })
-})
-
-describe("shouldShowYearMarker", () => {
-  it("does not show a marker before the first item", () => {
-    const items = [makePost("2026-05-01", "latest")]
-
-    expect(shouldShowYearMarker(items, 0)).toBe(false)
-  })
-
-  it("shows a marker when the year changes descending into an older year", () => {
-    const items = [makePost("2026-05-01", "2026-post"), makePost("2025-12-01", "2025-post")]
-
-    expect(shouldShowYearMarker(items, 0)).toBe(false)
-    expect(shouldShowYearMarker(items, 1)).toBe(true)
-  })
-
-  it("does not show a marker between items in the same year", () => {
-    const items = [makePost("2026-05-01", "newer"), makePost("2026-03-01", "older")]
-
-    expect(shouldShowYearMarker(items, 1)).toBe(false)
   })
 })
 

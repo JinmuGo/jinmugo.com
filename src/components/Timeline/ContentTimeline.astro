@@ -1,7 +1,6 @@
 ---
 import ContentLabel from "@/components/content/ContentLabel.astro"
 import type { TimelineEntry } from "@/utils/content/timeline"
-import { getEntryYear, shouldShowYearMarker } from "@/utils/content/timeline"
 import Timeline from "./Timeline.astro"
 import TimelineDescription from "./TimelineDescription.astro"
 import TimelineDot from "./TimelineDot.astro"
@@ -9,7 +8,6 @@ import TimelineHeader from "./TimelineHeader.astro"
 import TimelineItem from "./TimelineItem.astro"
 import TimelineTime from "./TimelineTime.astro"
 import TimelineTitle from "./TimelineTitle.astro"
-import TimelineYearMarker from "./TimelineYearMarker.astro"
 
 interface Props {
   items: TimelineEntry[]
@@ -20,18 +18,12 @@ const { items } = Astro.props
 
 <Timeline>
   {
-    items.flatMap((item: TimelineEntry, index: number) => {
+    items.map((item: TimelineEntry, index: number) => {
       const formattedDate = item.data.date.toISOString().split("T")[0];
       const isLatest = index === 0;
       const isDraft = item.data.draft && import.meta.env.DEV;
-      const year = getEntryYear(item);
-      const nodes = [];
 
-      if (shouldShowYearMarker(items, index)) {
-        nodes.push(<TimelineYearMarker year={year} />);
-      }
-
-      nodes.push(
+      return (
         <TimelineItem>
           <TimelineHeader>
             <TimelineTime datetime={item.data.date.toISOString()}>
@@ -51,10 +43,8 @@ const { items } = Astro.props
               )}
             </TimelineTitle>
           </TimelineHeader>
-        </TimelineItem>,
+        </TimelineItem>
       );
-
-      return nodes;
     })
   }
 </Timeline>

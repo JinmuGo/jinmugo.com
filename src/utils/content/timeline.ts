@@ -9,18 +9,6 @@ export function mergeTimelineEntries(posts: Post[], weeklies: Weekly[]): Timelin
   )
 }
 
-export function getEntryYear(entry: TimelineEntry): number {
-  return entry.data.date.getFullYear()
-}
-
-/** Show a year marker when descending into an older year (not before the newest year). */
-export function shouldShowYearMarker(items: TimelineEntry[], index: number): boolean {
-  if (index === 0) {
-    return false
-  }
-  return getEntryYear(items[index]) !== getEntryYear(items[index - 1])
-}
-
 export function timelineEntryToListItem(entry: TimelineEntry, position: number): ListItem {
   return {
     "@type": "ListItem",
