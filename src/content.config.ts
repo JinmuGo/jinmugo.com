@@ -57,7 +57,7 @@ const weeklyCollection = defineCollection({
     date: z.coerce.date(),
     year: z.number().int().positive(),
     week: z.number().int().positive(),
-    summary: z.string(),
+    summary: z.preprocess((v: unknown) => v ?? undefined, z.string().optional()),
     tags: z.preprocess((v: unknown) => v ?? undefined, z.array(z.string()).optional().default([])),
     cover: z.preprocess((v: unknown) => v ?? undefined, z.string().optional()),
     coverAlt: z.preprocess((v: unknown) => v ?? undefined, z.string().optional()),
