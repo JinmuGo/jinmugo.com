@@ -95,7 +95,7 @@ function main() {
 
   console.info(`Content source: ${getContentSourceLabel()}`)
   console.info(`Created ${path.relative(vaultRoot, targetPath)}`)
-  console.info("Add cover.jpg next to the markdown file and update coverAlt before publishing.")
+  console.info("Optional: add cover and coverAlt to frontmatter when you want a hero image.")
 }
 
 main()

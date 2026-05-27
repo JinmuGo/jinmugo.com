@@ -63,10 +63,6 @@ function isDraft(frontmatter) {
   return frontmatter.get("draft") === "true"
 }
 
-function hasPlaceholder(value) {
-  return !value || value === "..." || value.toLowerCase().includes("todo")
-}
-
 function parseDate(value) {
   const match = value?.match(/^(\d{4})-(\d{2})-(\d{2})$/)
   if (!match) {
@@ -162,15 +158,6 @@ function validateWeekly(file, frontmatter) {
   }
 
   const cover = frontmatter.get("cover")
-  const coverAlt = frontmatter.get("coverAlt")
-
-  if (!cover) {
-    addError(file, "published weekly issue must include cover")
-  }
-
-  if (hasPlaceholder(coverAlt)) {
-    addError(file, "published weekly issue must include descriptive coverAlt")
-  }
 
   if (cover) {
     const coverPath = path.resolve(vaultRoot, path.dirname(file), cover.replace(/^\.\//, ""))

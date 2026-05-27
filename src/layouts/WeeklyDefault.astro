@@ -57,9 +57,13 @@ const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentS
             ) : null
           }
         </div>
-        <p class="max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-300">
-          {summary}
-        </p>
+        {
+          summary ? (
+            <p class="max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-300">
+              {summary}
+            </p>
+          ) : null
+        }
       </div>
 
       {
