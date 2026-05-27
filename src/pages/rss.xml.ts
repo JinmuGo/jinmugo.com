@@ -23,7 +23,7 @@ export const GET: APIRoute = async (context) => {
     link: `/weekly/${weekly.slug}`,
     title: sanitizeForRss(weekly.data.title),
     pubDate: weekly.data.date,
-    description: sanitizeForRss(weekly.data.summary),
+    description: weekly.data.summary ? sanitizeForRss(weekly.data.summary) : undefined,
     content: renderRssContent(weekly.body, parser),
     categories: weekly.data.tags,
     author: pkg.author,

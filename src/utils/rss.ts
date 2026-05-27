@@ -10,7 +10,10 @@ function isInvalidXmlChar(code: number): boolean {
   )
 }
 
-export function sanitizeForRss(text: string): string {
+export function sanitizeForRss(text: string | undefined | null): string {
+  if (!text) {
+    return ""
+  }
   return Array.from(text)
     .filter((char) => !isInvalidXmlChar(char.charCodeAt(0)))
     .join("")
