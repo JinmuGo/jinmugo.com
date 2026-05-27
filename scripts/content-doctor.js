@@ -120,7 +120,7 @@ function validateBasicFrontmatter(file, frontmatter) {
 }
 
 function validateWeekly(file, frontmatter) {
-  for (const key of ["title", "date", "year", "week", "summary", "draft"]) {
+  for (const key of ["title", "date", "year", "week", "draft"]) {
     if (!frontmatter.get(key)) {
       addError(file, `missing required weekly field: ${key}`)
     }
