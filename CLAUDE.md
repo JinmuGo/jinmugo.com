@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 jinmu.me — Obsidian에서 콘텐츠를 가져오는 Astro 기반 이중언어(한국어/영어) 개인 블로그.
 
-콘텐츠 워크플로우: Obsidian 마크다운 (`blog_obsidian/` 서브모듈) → `scripts/build-content.js`가 `src/content/`로 동기화 (.md→.mdx 변환) → Astro 정적 사이트 빌드.
+콘텐츠 워크플로우: Obsidian 마크다운 (`obsidian/`) → `scripts/build-content.js`가 `src/content/`로 동기화 (.md→.mdx 변환) → Astro 정적 사이트 빌드.
 
 ## 주요 개발 명령어
 
@@ -64,7 +64,7 @@ make fclean        # 모든 node_modules 삭제
 ### 이중언어 라우팅
 - 한국어 (기본): `/posts/[slug]`, `/memos/[slug]`
 - 영어: `/en/posts/[slug]`, `/en/memos/[slug]`
-- 영어 게시물은 `blog_obsidian/`에서 `*.en.md` 파일로 관리
+- 영어 게시물은 `obsidian/`에서 `*.en.md` 파일로 관리
 
 ### 레이아웃 시스템 (`src/layouts/`)
 - `Layout.astro` → `Container.astro`: 기본 레이아웃
@@ -88,7 +88,7 @@ make fclean        # 모든 node_modules 삭제
 
 ### 스크립트 (`scripts/`)
 - `build-content.js`: Obsidian → src/content/ 동기화 (OS별 `obsidian-export` 바이너리 실행, diff 기반 sync, .md→.mdx 변환)
-- `watch-obsidian.js`: 개발 시 blog_obsidian 변경 감시 → 자동 rebuild
+- `watch-obsidian.js`: 개발 시 obsidian 변경 감시 → 자동 rebuild
 - `translate.js`: DeepL API로 한국어→영어 자동 번역
 - `submit-to-gsc.js`, `submit-urls-to-gsc.js`: Google Search Console 사이트맵/URL 제출
 
@@ -107,7 +107,7 @@ DEEPL_API_KEY=...                     # 번역 스크립트용
 ## 중요 사항
 
 - **Prebuild 필수**: `pnpm dev`가 자동으로 처리하지만, 빌드 전에는 `pnpm prebuild`로 Obsidian 콘텐츠 동기화 필요
-- **blog_obsidian은 git 서브모듈**: 별도 저장소로 관리됨
+- **obsidian은 이 repo에 통합된 로컬 콘텐츠 디렉터리**: 별도 checkout이 필요하지 않음
 - **pre-commit 훅**: Lefthook이 Biome check, type-check, 한국어 게시물 자동 번역을 커밋 시 실행
 - **CDN**: 정적 자산 URL은 `package.json`의 `cdnUrl` 필드 참조 (`https://cdn.jinmu.me`)
 - **`@r4ai/remark-callout` 패치**: `patches/@r4ai__remark-callout.patch`로 패치된 버전 사용

@@ -13,12 +13,12 @@ src/
 ├── styles/           # 글로벌 CSS, prose 스타일
 └── utils/            # 유틸리티 함수
 scripts/              # 콘텐츠 빌드, 번역, GSC 제출 스크립트
-blog_obsidian/        # Obsidian 마크다운 (git 서브모듈)
+obsidian/             # Obsidian 마크다운 (repo에 통합된 로컬 콘텐츠)
 ```
 
 ## 콘텐츠 워크플로우
 
-Obsidian 마크다운 (`blog_obsidian/`) → `scripts/build-content.js`가 `src/content/`로 동기화 (.md→.mdx 변환) → Astro 정적 사이트 빌드.
+Obsidian 마크다운 (`obsidian/`) → `scripts/build-content.js`가 `src/content/`로 동기화 (.md→.mdx 변환) → Astro 정적 사이트 빌드.
 
 영어 번역은 DeepL API를 통해 자동으로 생성됩니다 (`*.en.md`).
 

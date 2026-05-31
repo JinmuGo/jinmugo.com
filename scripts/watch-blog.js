@@ -29,13 +29,13 @@ const runPrebuild = debounce(() => {
 }, DEBOUNCE_DELAY)
 
 // 파일 변경 감지
-const watcher = chokidar.watch("blog_obsidian/**/*", {
+const watcher = chokidar.watch("obsidian/**/*", {
   ignored: /(^|[/\\])\../, // 숨김 파일 무시
   persistent: true,
   ignoreInitial: true,
 })
 
-console.log("👀 Watching blog_obsidian directory for changes...")
+console.log("👀 Watching obsidian directory for changes...")
 console.log(`⏱️  Debounce delay: ${DEBOUNCE_DELAY}ms`)
 
 watcher

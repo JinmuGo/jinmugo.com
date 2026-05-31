@@ -22,7 +22,7 @@ if (!GOOGLE_APPLICATION_CREDENTIALS || !GSC_SITE_URL || !GSC_PROPERTY_ID) {
 // 포스트 파일에서 카테고리 정보를 추출하는 함수
 function extractCategoryFromPostFile(slug) {
   try {
-    const postDir = join(process.cwd(), "blog_obsidian", "post", slug)
+    const postDir = join(process.cwd(), "obsidian", "post", slug)
     const mdFile = join(postDir, `${slug}.md`)
     const enMdFile = join(postDir, `${slug}.en.md`)
 
@@ -58,7 +58,7 @@ function extractCategoryFromPostFile(slug) {
 async function getPostSlugs() {
   try {
     const { readdirSync } = await import("node:fs")
-    const postDir = join(process.cwd(), "blog_obsidian", "post")
+    const postDir = join(process.cwd(), "obsidian", "post")
 
     if (!existsSync(postDir)) {
       console.error("❌ Post directory not found")
@@ -94,7 +94,7 @@ async function generateAccurateUrlMappings() {
       })
 
       // 영어 포스트 (영어 버전이 있는지 확인)
-      const enMdFile = join(process.cwd(), "blog_obsidian", "post", slug, `${slug}.en.md`)
+      const enMdFile = join(process.cwd(), "obsidian", "post", slug, `${slug}.en.md`)
       if (existsSync(enMdFile)) {
         urlMappings.push({
           oldUrl: `${GSC_SITE_URL}/en/posts/${category}/${slug}`,

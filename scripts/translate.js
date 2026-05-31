@@ -6,7 +6,7 @@ import path from "node:path"
 
 // Default to en-US for better consistency
 const TARGET_LANG = "en-US"
-const CONTENT_DIR_PATH = path.resolve("blog_obsidian")
+const CONTENT_DIR_PATH = path.resolve("obsidian")
 
 /* global URLSearchParams */
 
@@ -73,13 +73,12 @@ const validateTranslateNecessity = async ({ lang, stagedOnly = false }) => {
     // staged된 파일들 중에서 한국어 마크다운 파일만 필터링
     const stagedFiles = getStagedFiles()
     const koreanMdFiles = stagedFiles.filter(
-      (file) =>
-        file.includes("blog_obsidian") && file.endsWith(".md") && !file.endsWith(`.${lang}.md`), // lang이 en-US일 경우 .en-US.md 체크
+      (file) => file.includes("obsidian") && file.endsWith(".md") && !file.endsWith(`.${lang}.md`), // lang이 en-US일 경우 .en-US.md 체크
     )
-    // blog/blog_obsidian/ 경로에서 blog_obsidian/ 부분만 추출
+    // obsidian/ 경로에서 콘텐츠 상대 경로만 추출
     targetFiles = koreanMdFiles
       .map((file) => {
-        const match = file.match(/blog_obsidian\/(.+)/)
+        const match = file.match(/obsidian\/(.+)/)
         return match ? match[1] : null
       })
       .filter(Boolean)

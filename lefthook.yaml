@@ -10,81 +10,12 @@ pre-commit:
       run: pnpm check
 
     translate-korean-posts:
-      glob: "blog_obsidian/**/*.md"
+      glob: "obsidian/**/*.md"
       run: |
-        # 서브모듈 커밋 변경 감지
-        submodule_changed_via_diff=$(git diff --cached --name-only | grep -E '^blog_obsidian$' || true)
-        submodule_status=$(git status --short blog_obsidian 2>/dev/null | grep -E '^[^?]' || true)
-
-        if [ -n "$submodule_changed_via_diff" ] || [ -n "$submodule_status" ]; then
-          echo "📦 서브모듈 커밋 변경 감지: blog_obsidian"
-
-          cd blog_obsidian
-          current_hash=$(git rev-parse HEAD)
-          cd ..
-          stored_hash=$(git ls-tree HEAD blog_obsidian 2>/dev/null | awk '{print $3}' || echo "")
-
-          cd blog_obsidian
-          if [ -n "$stored_hash" ] && [ "$stored_hash" != "$current_hash" ]; then
-            changed_files=$(git diff --name-only "$stored_hash" "$current_hash" 2>/dev/null | grep -E '\.md$' | grep -v '\.en\.md$' || true)
-          else
-            changed_files=$(git diff --name-only HEAD~1 HEAD 2>/dev/null | grep -E '\.md$' | grep -v '\.en\.md$' || true)
-          fi
-          cd ..
-
-          if [ -n "$changed_files" ]; then
-            echo "📝 서브모듈 내부 변경된 한국어 파일:"
-            echo "$changed_files" | sed 's/^/  - /'
-            echo ""
-
-            temp_staged_files=""
-            while IFS= read -r file; do
-              if [ -n "$file" ]; then
-                main_repo_path="blog_obsidian/$file"
-                temp_staged_files="$temp_staged_files$main_repo_path"$'\n'
-              fi
-            done <<< "$changed_files"
-
-            echo "$temp_staged_files" | while IFS= read -r file; do
-              if [ -n "$file" ] && [ -f "$file" ]; then
-                git add "$file" 2>/dev/null || true
-              fi
-            done
-
-            echo "🔄 번역 스크립트 실행..."
-            pnpm translate:staged
-
-            echo "➕ 번역된 파일 스테이징 (서브모듈 내부)..."
-            cd blog_obsidian
-            en_files_added=0
-            while IFS= read -r file; do
-              if [ -n "$file" ]; then
-                en_file="${file%.md}.en.md"
-                if [ -f "$en_file" ]; then
-                  git add "$en_file" 2>/dev/null && {
-                    echo "  ✓ $en_file"
-                    en_files_added=$((en_files_added + 1))
-                  } || true
-                fi
-              fi
-            done <<< "$changed_files"
-            cd ..
-
-            if [ "$en_files_added" -gt 0 ]; then
-              echo "➕ 서브모듈 변경사항 메인 저장소에 스테이징..."
-              git add blog_obsidian
-            else
-              echo "ℹ️  번역된 파일이 없거나 이미 스테이징되어 있습니다."
-            fi
-          else
-            echo "ℹ️  서브모듈 커밋은 변경되었지만 번역할 한국어 .md 파일이 없습니다."
-          fi
-        fi
-
-        korean_files=$(echo "{staged_files}" | grep -E 'blog_obsidian.*\.md$' | grep -v '\.en\.md$' || true)
+        korean_files=$(echo "{staged_files}" | grep -E 'obsidian.*\.md$' | grep -v '\.en\.md$' || true)
         if [ -n "$korean_files" ]; then
           echo "📝 한국어 파일 직접 변경 감지: 번역 스크립트 실행..."
           pnpm translate:staged
           echo "➕ 번역된 파일 스테이징..."
-          git add blog_obsidian/**/*.en.md
+          find obsidian -name '*.en.md' -print0 | xargs -0 git add --
         fi

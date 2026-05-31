@@ -29,22 +29,20 @@ function expandHome(inputPath) {
 
 export function getContentSourceRoot() {
   const configuredPath = process.env.OBSIDIAN_VAULT_PATH?.trim()
-  const sourcePath = configuredPath
-    ? expandHome(configuredPath)
-    : path.join(repoRoot, "blog_obsidian")
+  const sourcePath = configuredPath ? expandHome(configuredPath) : path.join(repoRoot, "obsidian")
 
   return path.isAbsolute(sourcePath) ? path.resolve(sourcePath) : path.resolve(repoRoot, sourcePath)
 }
 
 export function getContentSourceMode() {
-  return process.env.OBSIDIAN_VAULT_PATH?.trim() ? "external" : "submodule"
+  return process.env.OBSIDIAN_VAULT_PATH?.trim() ? "external" : "local"
 }
 
 export function getContentSourceLabel() {
   const mode = getContentSourceMode()
   const sourceRoot = getContentSourceRoot()
 
-  return `${mode === "external" ? "external Obsidian vault" : "blog_obsidian submodule"} (${sourceRoot})`
+  return `${mode === "external" ? "external Obsidian vault" : "local obsidian"} (${sourceRoot})`
 }
 
 export function ensureContentSourceRoot() {
