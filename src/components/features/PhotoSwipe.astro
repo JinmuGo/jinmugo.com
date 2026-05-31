@@ -11,57 +11,125 @@
     const photoScale = 2;
     const gallerySelector = "#prose";
     const childrenSelector = "a.photo-swipe";
-    const options: PhotoSwipeOptions = {
-      arrowNext: false,
-      arrowPrev: false,
-      children: childrenSelector,
-      counter: false,
-      gallery: gallerySelector,
-      pswpModule: () => import("photoswipe"),
-      showHideAnimationType: "fade",
-      zoom: false,
-      pinchToClose: true,
-      escKey: true,
-    };
+
     const galleryEl = document.querySelector(gallerySelector);
     if (!galleryEl) {
-      return;
+      // #prose가 없더라도 a.photo-swipe가 있을 수 있으므로 body를 대상으로 시도
+      const hasPhotoSwipe = document.querySelector(childrenSelector);
+      if (!hasPhotoSwipe) return;
     }
-    const imgEls: HTMLImageElement[] = [];
-    const els = galleryEl.querySelectorAll<HTMLImageElement>(
-      "img:not(.emoji):not(#embed-card-image)",
-    );
 
-    els.forEach((el) => {
-      if (el.src.trim() == "") {
-        return;
-      }
-      // 이미 MdxImage 등으로 래핑된 경우 건너뛰기
-      if (el.closest("a.photo-swipe")) {
-        return;
-      }
-      if (!imgEls.includes(el)) {
-        imgEls.push(el);
-      }
-    });
-    if (imgEls.length === 0 && !galleryEl.querySelector(childrenSelector)) {
-      return;
+    // 1. #prose 내부의 래핑되지 않은 이미지들을 찾아서 래핑
+    if (galleryEl) {
+      const els = galleryEl.querySelectorAll<HTMLImageElement>(
+        "img:not(.emoji):not(#embed-card-image)",
+      );
+
+      els.forEach((imgEl) => {
+        if (imgEl.src.trim() === "") return;
+        // 이미 래핑된 경우 건너뛰기
+        if (imgEl.closest(childrenSelector)) return;
+        // 부모가 a 태그인 경우 건너뛰기 (다른 링크인 경우)
+        if (imgEl.parentElement?.tagName === "A") return;
+
+        // 래핑 수행
+        const wrapper = document.createElement("a");
+        wrapper.className = "photo-swipe cursor-zoom-in";
+        wrapper.href = imgEl.src;
+        wrapper.target = "_blank";
+
+        // 캡션 설정
+        const caption = imgEl.getAttribute("caption") || imgEl.alt || "";
+        if (caption) wrapper.setAttribute("data-pswp-caption", caption);
+
+        // 크기 설정 (이미지가 로드되지 않았을 경우를 대비)
+        const updateSize = () => {
+          const width = Math.max(imgEl.naturalWidth, imgEl.width || 0) * photoScale;
+          const height = Math.max(imgEl.naturalHeight, imgEl.height || 0) * photoScale;
+          if (width > 0 && height > 0) {
+            wrapper.setAttribute("data-pswp-width", width.toString());
+            wrapper.setAttribute("data-pswp-height", height.toString());
+          }
+        };
+
+        if (imgEl.complete) {
+          updateSize();
+        } else {
+          imgEl.addEventListener("load", updateSize);
+        }
+
+        // DOM 교체
+        imgEl.parentNode?.insertBefore(wrapper, imgEl);
+        wrapper.appendChild(imgEl);
+      });
     }
-    imgEls.forEach((imgEl) => {
-      imgEl.outerHTML = `
-  <a class="photo-swipe cursor-zoom-in"
-    href="${imgEl.src}"
-    data-pswp-width="${(Math.max(imgEl.naturalWidth, imgEl.width) * photoScale).toString()}"
-    data-pswp-height="${(Math.max(imgEl.naturalHeight, imgEl.height) * photoScale).toString()}"
-    data-pswp-caption="${imgEl.getAttribute("caption") ?? imgEl.alt}"
-    target="_blank">
-    ${imgEl.outerHTML}
-  </a>`;
-    });
-    // Initialize PhotoSwipe 5
+
+    // 2. Weekly/Post Cover 이미지도 래핑 (만약 래핑되어 있지 않다면)
+    const coverImg = document.querySelector<HTMLImageElement>("header figure img");
+    if (coverImg && !coverImg.closest(childrenSelector)) {
+      const wrapper = document.createElement("a");
+      wrapper.className = "photo-swipe cursor-zoom-in block";
+      wrapper.href = coverImg.src;
+      wrapper.target = "_blank";
+      
+      const updateSize = () => {
+        wrapper.setAttribute("data-pswp-width", (coverImg.naturalWidth || coverImg.width).toString());
+        wrapper.setAttribute("data-pswp-height", (coverImg.naturalHeight || coverImg.height).toString());
+      };
+      
+      if (coverImg.complete) updateSize();
+      else coverImg.addEventListener("load", updateSize);
+
+      coverImg.parentNode?.insertBefore(wrapper, coverImg);
+      wrapper.appendChild(coverImg);
+    }
+
+    // 3. PhotoSwipe Lightbox 초기화
+    // 전체 페이지에서 a.photo-swipe를 찾도록 설정 (더 유연하게)
+    const options: PhotoSwipeOptions = {
+      gallery: "body", // body를 gallery로 설정하고 children으로 필터링
+      children: childrenSelector,
+      pswpModule: () => import("photoswipe"),
+      showHideAnimationType: "fade",
+      arrowNext: true,
+      arrowPrev: true,
+      counter: true,
+      zoom: true,
+      pinchToClose: true,
+      escKey: true,
+      bgOpacity: 0.9,
+    };
+
     const lightbox = new PhotoSwipeLightbox(options);
+    
+    // 캡션 처리 (data-pswp-caption 속성이 있는 경우)
+    lightbox.on('uiRegister', () => {
+      lightbox.pswp?.ui?.registerElement({
+        name: 'custom-caption',
+        order: 9,
+        isButton: false,
+        appendTo: 'root',
+        html: '<div class="pswp__caption-content" style="text-align: center; width: 100%; color: white; padding: 10px; background: rgba(0,0,0,0.5); position: absolute; bottom: 0;"></div>',
+        onInit: (el, pswp) => {
+          pswp.on('change', () => {
+            const currSlideElement = pswp.currSlide?.data.element;
+            if (currSlideElement) {
+              const caption = currSlideElement.getAttribute('data-pswp-caption') || 
+                              currSlideElement.querySelector('img')?.getAttribute('alt') || '';
+              el.innerHTML = caption;
+              el.style.display = caption ? 'block' : 'none';
+            }
+          });
+        }
+      });
+    });
+
     lightbox.init();
   };
 
+  // 초기 로드 시 실행
   initPhotoSwipe();
+
+  // View Transitions 대응 (필요한 경우)
+  document.addEventListener("astro:page-load", initPhotoSwipe);
 </script>
