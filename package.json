@@ -14,8 +14,8 @@
 	},
 	"packageManager": "pnpm@10.13.1",
 	"scripts": {
-		"dev": "pnpm prebuild && concurrently --kill-others \"node scripts/watch-obsidian.js --skip-initial-build\" \"astro dev --host\"",
-		"dev:no-watch": "pnpm prebuild && astro dev --host",
+		"dev": "OBSIDIAN_VAULT_PATH= pnpm prebuild && OBSIDIAN_VAULT_PATH= concurrently --kill-others \"node scripts/watch-obsidian.js --skip-initial-build\" \"astro dev --host\"",
+		"dev:no-watch": "OBSIDIAN_VAULT_PATH= pnpm prebuild && astro dev --host",
 		"prebuild": "node scripts/build-content.js",
 		"build": "pnpm prebuild && astro build",
 		"preview": "astro preview",

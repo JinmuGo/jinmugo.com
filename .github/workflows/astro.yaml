@@ -34,13 +34,6 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-          submodules: recursive
-
-      - name: Update blog_obsidian submodule to latest
-        if: github.event_name == 'repository_dispatch'
-        run: |
-          git submodule update --remote blog_obsidian
-          echo "Updated blog_obsidian to $(git -C blog_obsidian rev-parse --short HEAD)"
 
       - uses: ./.github/actions/common-steps
 
@@ -85,7 +78,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .cache/translations
-          key: translations-${{ hashFiles('blog_obsidian') }}
+          key: translations-${{ hashFiles('obsidian') }}
           restore-keys: translations-
 
       - name: Restore cached translations into Obsidian vault
@@ -96,7 +89,7 @@ jobs:
             skipped_stale=0
             find .cache/translations -name "*.en.md" | while read f; do
               REL="${f#.cache/translations/}"
-              TARGET="blog_obsidian/$REL"
+              TARGET="obsidian/$REL"
               KOREAN_SOURCE="${TARGET%.en.md}.md"
               # Skip stale translations whose Korean source was removed (e.g., post migrated to another collection)
               if [ ! -f "$KOREAN_SOURCE" ]; then
@@ -127,7 +120,7 @@ jobs:
       - name: Save translations to cache
         run: |
           mkdir -p .cache/translations
-          cd blog_obsidian
+          cd obsidian
           find . -name "*.en.md" -type f | while read f; do
             mkdir -p "../.cache/translations/$(dirname "$f")"
             cp "$f" "../.cache/translations/$f"
