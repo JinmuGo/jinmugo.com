@@ -2,7 +2,8 @@
 import Title from "@/components/layout/Title"
 import MediaList from "@/components/library/MediaList.astro"
 import Layout from "@/layouts/Layout.astro"
-import { getMovieMedia, sortMediaByDate } from "@/utils/library/movies"
+import { sortMediaByDate } from "@/utils/library/common"
+import { getMovieMedia } from "@/utils/library/movies"
 
 const items = sortMediaByDate(await getMovieMedia("en")).filter((m) => m.cover)
 ---

@@ -1,4 +1,5 @@
 import type { ImageMetadata } from "astro"
+import { pickAssetBySlug } from "@/utils/assetLookup"
 
 export function getCover(kind: "book" | "movie", slug: string): ImageMetadata | undefined {
   const images = import.meta.glob<{ default: ImageMetadata }>(
@@ -6,13 +7,5 @@ export function getCover(kind: "book" | "movie", slug: string): ImageMetadata | 
     { eager: true },
   )
 
-  for (const ext of ["webp", "png", "jpg", "jpeg"] as const) {
-    const key = `../../content/${kind}/${slug}/${slug}.${ext}`
-    const image = images[key]
-    if (image) {
-      return image.default
-    }
-  }
-
-  return undefined
+  return pickAssetBySlug(images, `../../content/${kind}`, slug)
 }

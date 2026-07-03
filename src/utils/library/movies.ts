@@ -1,37 +1,15 @@
 import { getCollection } from "astro:content"
-import type {
-  MediaItem,
-  MovieData,
-  MovieEntry,
-  MovieMedia,
-  MovieStatus,
-  MovieWithSlug,
-} from "@/types/library"
+import type { MovieData, MovieEntry, MovieMedia, MovieStatus, MovieWithSlug } from "@/types/library"
+import { isEnglishEntry, type LibraryLang, slugFromId } from "./common"
 import { getCover } from "./cover"
 import { hasEssay } from "./hasEssay"
 
-export type LibraryLang = "ko" | "en"
-
-const slugFromId = (id: string): string =>
-  id
-    .replace(/\.mdx?$/, "")
-    .replace(/\.en$/, "")
-    .split("/")
-    .pop() ?? id
-
-const isEnglishEntry = (id: string): boolean => id.replace(/\.mdx?$/, "").endsWith(".en")
+export type { LibraryLang }
 
 export const sortMoviesByDateWatched = (movies: MovieWithSlug[]): MovieWithSlug[] =>
   [...movies].sort((a, b) => {
     const aTime = a.data.dateWatched?.getTime() ?? -Infinity
     const bTime = b.data.dateWatched?.getTime() ?? -Infinity
-    return bTime - aTime
-  })
-
-export const sortMediaByDate = <T extends MediaItem>(items: T[]): T[] =>
-  [...items].sort((a, b) => {
-    const aTime = a.dateConsumed?.getTime() ?? -Infinity
-    const bTime = b.dateConsumed?.getTime() ?? -Infinity
     return bTime - aTime
   })
 

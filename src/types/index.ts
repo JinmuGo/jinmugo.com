@@ -3,11 +3,11 @@
  * Import all types from this file for consistency
  */
 
-// API types
-export type { ApiResponse, LikeData, TotalLikesData, ViewData } from "./api"
-
 // Content types
 export type { Post, PostMetadata, Series } from "./content"
+
+// Library types
+export type { BookMedia, BookWithSlug, MediaItem, MovieMedia, MovieWithSlug } from "./library"
 
 // Schema types
 export type {

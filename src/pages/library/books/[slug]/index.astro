@@ -7,7 +7,8 @@ import PostBannerY from "@/layouts/PostBannerY.astro"
 import PostDefault from "@/layouts/PostDefault.astro"
 import type { BookMedia } from "@/types/library"
 import { selectPostLayout } from "@/utils/layoutSelector"
-import { getBookMedia, getBooks, sortMediaByDate } from "@/utils/library/books"
+import { getBookMedia, getBooks } from "@/utils/library/books"
+import { sortMediaByDate } from "@/utils/library/common"
 import { getCover } from "@/utils/library/cover"
 
 export async function getStaticPaths() {

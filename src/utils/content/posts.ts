@@ -38,26 +38,3 @@ export async function getEnglishPosts() {
 export function sortPostsByDate(posts: Post[]): Post[] {
   return posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
 }
-
-/**
- * 포스트들을 최신 N개로 제한하는 함수
- */
-export function limitPosts(posts: Post[], limit: number): Post[] {
-  return posts.slice(0, limit)
-}
-
-/**
- * 한국어 최신 포스트 N개를 가져오는 함수
- */
-export async function getLatestKoreanPosts(limit: number = 3) {
-  const posts = await getKoreanPosts()
-  return limitPosts(sortPostsByDate(posts), limit)
-}
-
-/**
- * 영어 최신 포스트 N개를 가져오는 함수
- */
-export async function getLatestEnglishPosts(limit: number = 3) {
-  const posts = await getEnglishPosts()
-  return limitPosts(sortPostsByDate(posts), limit)
-}

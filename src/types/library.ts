@@ -14,7 +14,7 @@ export type BookStatus = "read" | "reading" | "want"
 
 export type MediaKind = "book" | "movie" | "music"
 
-export interface MediaCommon {
+export interface MediaCommon<Status = string> {
   kind: MediaKind
   slug: string
   href: string
@@ -24,7 +24,7 @@ export interface MediaCommon {
   creatorName: string
   oneLiner?: string
   rating?: number
-  status: string
+  status: Status
   dateConsumed?: Date
   cover?: ImageMetadata
   tags: string[]
@@ -32,7 +32,7 @@ export interface MediaCommon {
   language?: string
 }
 
-export interface BookMedia extends MediaCommon {
+export interface BookMedia extends MediaCommon<BookStatus> {
   kind: "book"
   originalTitle?: string
 }
@@ -48,7 +48,7 @@ export interface MovieWithSlug extends MovieEntry {
 
 export type MovieStatus = "watched" | "watching" | "want"
 
-export interface MovieMedia extends MediaCommon {
+export interface MovieMedia extends MediaCommon<MovieStatus> {
   kind: "movie"
   originalTitle?: string
 }

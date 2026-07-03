@@ -7,8 +7,9 @@ import PostBannerY from "@/layouts/PostBannerY.astro"
 import PostDefault from "@/layouts/PostDefault.astro"
 import type { MovieMedia } from "@/types/library"
 import { selectPostLayout } from "@/utils/layoutSelector"
+import { sortMediaByDate } from "@/utils/library/common"
 import { getCover } from "@/utils/library/cover"
-import { getMovieMedia, getMovies, sortMediaByDate } from "@/utils/library/movies"
+import { getMovieMedia, getMovies } from "@/utils/library/movies"
 
 export async function getStaticPaths() {
   const items = sortMediaByDate(await getMovieMedia("en")).filter((m) => m.cover)
