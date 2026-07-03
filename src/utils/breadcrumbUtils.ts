@@ -6,7 +6,7 @@ export interface BreadcrumbConfig {
   lang?: "ko" | "en"
   title?: string
   category?: string
-  postType?: "post" | "weekly"
+  postType?: "post" | "weekly" | "book" | "movie"
 }
 
 /**
@@ -219,7 +219,7 @@ export function generateContentBreadcrumbs(config: {
   lang?: "ko" | "en"
   title: string
   category?: string
-  contentType: "post" | "weekly"
+  contentType: "post" | "weekly" | "book" | "movie"
 }): BreadcrumbItem[] {
   const { pathname, origin, lang = "ko", title, category, contentType } = config
 

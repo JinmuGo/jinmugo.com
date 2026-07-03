@@ -7,14 +7,19 @@ import type {
   MovieStatus,
   MovieWithSlug,
 } from "@/types/library"
-import { getDirectors } from "./directors"
+import { getCover } from "./cover"
 import { hasEssay } from "./hasEssay"
+
+export type LibraryLang = "ko" | "en"
 
 const slugFromId = (id: string): string =>
   id
     .replace(/\.mdx?$/, "")
+    .replace(/\.en$/, "")
     .split("/")
     .pop() ?? id
+
+const isEnglishEntry = (id: string): boolean => id.replace(/\.mdx?$/, "").endsWith(".en")
 
 export const sortMoviesByDateWatched = (movies: MovieWithSlug[]): MovieWithSlug[] =>
   [...movies].sort((a, b) => {
@@ -35,27 +40,27 @@ export const filterMoviesByStatus = (
   status: MovieStatus | null,
 ): MovieWithSlug[] => (status === null ? movies : movies.filter((m) => m.data.status === status))
 
-export async function getMovies(): Promise<MovieWithSlug[]> {
+export async function getMovies(lang: LibraryLang = "ko"): Promise<MovieWithSlug[]> {
   const entries = await getCollection("movie", ({ data }: { data: MovieData }) => !data.draft)
-  return entries.map((entry: MovieEntry) => {
-    const slug = slugFromId(entry.id)
-    const body = entry.body ?? ""
-    return {
-      ...entry,
-      slug,
-      href: `/library/movies/${slug}/`,
-      hasEssay: hasEssay(body),
-    } as MovieWithSlug
-  })
+  return entries
+    .filter((entry: MovieEntry) => (lang === "en") === isEnglishEntry(entry.id))
+    .map((entry: MovieEntry) => {
+      const slug = slugFromId(entry.id)
+      const body = entry.body ?? ""
+      return {
+        ...entry,
+        slug,
+        href: lang === "en" ? `/en/library/movies/${slug}/` : `/library/movies/${slug}/`,
+        hasEssay: hasEssay(body),
+      } as MovieWithSlug
+    })
 }
 
-export async function getMovieMedia(): Promise<MovieMedia[]> {
-  const [movies, directors] = await Promise.all([getMovies(), getDirectors()])
-  const directorById = new Map(directors.map((d) => [d.slug, d]))
+export async function getMovieMedia(lang: LibraryLang = "ko"): Promise<MovieMedia[]> {
+  const movies = await getMovies(lang)
 
   return movies.map((movie): MovieMedia => {
     const d = movie.data
-    const director = directorById.get(d.directorId)
     return {
       kind: "movie",
       slug: movie.slug,
@@ -63,19 +68,15 @@ export async function getMovieMedia(): Promise<MovieMedia[]> {
       hasEssay: movie.hasEssay,
       title: d.title,
       year: d.year,
-      creatorId: d.directorId,
-      creatorName: director?.data.name ?? d.directorId,
-      creatorHref: director?.href,
+      creatorName: d.director,
       oneLiner: d.oneLiner,
       rating: d.rating,
       status: d.status,
       dateConsumed: d.dateWatched,
-      cover: d.cover,
+      cover: getCover("movie", movie.slug),
       tags: d.tags,
       quote: d.quote,
       language: d.language,
-      runtime: d.runtime,
-      studio: d.studio,
       originalTitle: d.originalTitle,
     }
   })

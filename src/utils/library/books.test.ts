@@ -10,7 +10,7 @@ const fakeBook = (overrides: Partial<BookWithSlug["data"]> = {}): BookWithSlug =
     hasEssay: false,
     data: {
       title: "X",
-      authorId: "a",
+      author: "a",
       year: 2020,
       status: "read",
       tags: [],

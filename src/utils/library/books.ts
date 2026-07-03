@@ -7,15 +7,20 @@ import type {
   BookWithSlug,
   MediaItem,
 } from "@/types/library"
-import { getAuthors } from "./authors"
+import { getCover } from "./cover"
 import { hasEssay } from "./hasEssay"
 
-/** Derive a clean URL slug from an entry id like "folder/filename" → "filename" */
+export type LibraryLang = "ko" | "en"
+
+/** Derive a clean URL slug from an entry id like "folder/filename.en" → "filename". */
 const slugFromId = (id: string): string =>
   id
     .replace(/\.mdx?$/, "")
+    .replace(/\.en$/, "")
     .split("/")
     .pop() ?? id
+
+const isEnglishEntry = (id: string): boolean => id.replace(/\.mdx?$/, "").endsWith(".en")
 
 export const sortBooksByDateRead = (books: BookWithSlug[]): BookWithSlug[] =>
   [...books].sort((a, b) => {
@@ -40,22 +45,23 @@ export const filterBooksByRating = (books: BookWithSlug[], min: number | null): 
   min === null ? books : books.filter((b) => (b.data.rating ?? 0) >= min)
 
 /**
- * Fetch all non-draft books with computed slug, href, hasEssay.
+ * Fetch all non-draft books for the given language with computed slug, href,
+ * and hasEssay.
  */
-export async function getBooks(): Promise<BookWithSlug[]> {
+export async function getBooks(lang: LibraryLang = "ko"): Promise<BookWithSlug[]> {
   const entries = await getCollection("book", ({ data }: { data: BookData }) => !data.draft)
-  const enriched = await Promise.all(
-    entries.map(async (entry: BookEntry) => {
+  const enriched = entries
+    .filter((entry: BookEntry) => (lang === "en") === isEnglishEntry(entry.id))
+    .map((entry: BookEntry) => {
       const slug = slugFromId(entry.id)
       const body = entry.body ?? ""
       return {
         ...entry,
         slug,
-        href: `/library/books/${slug}/`,
+        href: lang === "en" ? `/en/library/books/${slug}/` : `/library/books/${slug}/`,
         hasEssay: hasEssay(body),
       } as BookWithSlug
-    }),
-  )
+    })
   return enriched
 }
 
@@ -63,13 +69,11 @@ export async function getBooks(): Promise<BookWithSlug[]> {
  * Fetch all books as normalized MediaItem records ready for the unified
  * library list/detail components.
  */
-export async function getBookMedia(): Promise<BookMedia[]> {
-  const [books, authors] = await Promise.all([getBooks(), getAuthors()])
-  const authorById = new Map(authors.map((a) => [a.slug, a]))
+export async function getBookMedia(lang: LibraryLang = "ko"): Promise<BookMedia[]> {
+  const books = await getBooks(lang)
 
   return books.map((book): BookMedia => {
     const d = book.data
-    const author = authorById.get(d.authorId)
     return {
       kind: "book",
       slug: book.slug,
@@ -77,19 +81,15 @@ export async function getBookMedia(): Promise<BookMedia[]> {
       hasEssay: book.hasEssay,
       title: d.title,
       year: d.year,
-      creatorId: d.authorId,
-      creatorName: author?.data.name ?? d.authorId,
-      creatorHref: author?.href,
+      creatorName: d.author,
       oneLiner: d.oneLiner,
       rating: d.rating,
       status: d.status,
       dateConsumed: d.dateRead,
-      cover: d.cover,
+      cover: getCover("book", book.slug),
       tags: d.tags,
       quote: d.quote,
       language: d.language,
-      pages: d.pages,
-      publisher: d.publisher,
       originalTitle: d.originalTitle,
     }
   })

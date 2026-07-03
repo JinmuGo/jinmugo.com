@@ -76,7 +76,7 @@ export function generateContentSchemas(options: GenerateContentSchemasOptions): 
   const pageSchema =
     contentType === "post"
       ? generateBlogPostingSchema(commonOptions)
-      : generateArticleSchema(commonOptions)
+      : generateArticleSchema({ ...commonOptions, extra: { articleSection: contentType } })
 
   // Generate breadcrumb items
   const breadcrumbItems = generateContentBreadcrumbs({

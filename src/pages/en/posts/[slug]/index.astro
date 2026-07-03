@@ -36,23 +36,15 @@ const { layout, bannerImage } = selectPostLayout(bannerImageBySlug)
 ---
 
 {
-  layout === "PostDefault" && (
+  layout === "PostDefault" ? (
     <PostDefault frontmatter={frontmatterWithSlug}>
       <Content components={components} />
     </PostDefault>
-  )
-}
-
-{
-  layout === "PostBannerX" && (
+  ) : layout === "PostBannerX" ? (
     <PostBannerX frontmatter={frontmatterWithSlug} bannerImage={bannerImage!}>
       <Content components={components} />
     </PostBannerX>
-  )
-}
-
-{
-  layout === "PostBannerY" && (
+  ) : (
     <PostBannerY frontmatter={frontmatterWithSlug} bannerImage={bannerImage!}>
       <Content components={components} />
     </PostBannerY>

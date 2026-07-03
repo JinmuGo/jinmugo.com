@@ -14,8 +14,8 @@ interface Section {
 }
 
 const [bookCount, movieCount] = await Promise.all([
-  getBookMedia().then((items) => items.filter((b) => b.cover).length),
-  getMovieMedia().then((items) => items.filter((m) => m.cover).length),
+  getBookMedia("ko").then((items) => items.filter((b) => b.cover).length),
+  getMovieMedia("ko").then((items) => items.filter((m) => m.cover).length),
 ])
 
 const sections: Section[] = [

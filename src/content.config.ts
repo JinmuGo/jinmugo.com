@@ -6,13 +6,12 @@ const CATEGORIES = [
   "develop",
   "experience",
   "cloud",
-  "movie",
-  "book",
   "thinking",
   "health",
   "tech",
   "network",
   "linux",
+  "algorithm",
 ] as const
 
 const categorySchema = z.enum(CATEGORIES)
@@ -75,44 +74,6 @@ const weeklyCollection = defineCollection({
   }),
 })
 
-const authorCollection = defineCollection({
-  loader: glob({
-    pattern: "**/*.{md,mdx}",
-    base: "./src/content/author",
-    generateId: stripExtension,
-  }),
-  schema: ({ image }) =>
-    z.object({
-      name: z.string(),
-      originalName: z.string().optional(),
-      birthYear: z.number().int().optional(),
-      country: z.string().optional(),
-      bio: z.string().optional(),
-      photo: image().optional(),
-      wiki: z.string().url().optional(),
-      draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
-    }),
-})
-
-const directorCollection = defineCollection({
-  loader: glob({
-    pattern: "**/*.{md,mdx}",
-    base: "./src/content/director",
-    generateId: stripExtension,
-  }),
-  schema: ({ image }) =>
-    z.object({
-      name: z.string(),
-      originalName: z.string().optional(),
-      birthYear: z.number().int().optional(),
-      country: z.string().optional(),
-      bio: z.string().optional(),
-      photo: image().optional(),
-      wiki: z.string().url().optional(),
-      draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
-    }),
-})
-
 const BOOK_STATUS = ["read", "reading", "want"] as const
 const bookStatusSchema = z.enum(BOOK_STATUS)
 
@@ -125,28 +86,21 @@ const movieCollection = defineCollection({
     base: "./src/content/movie",
     generateId: stripExtension,
   }),
-  schema: ({ image }) =>
-    z.object({
-      title: z.string(),
-      directorId: z.string(),
-      originalTitle: z.string().optional(),
-      year: z.number().int(),
-      studio: z.string().optional(),
-      runtime: z.number().int().positive().optional(),
-      language: z.enum(["ko", "en", "ja", "zh", "other"]).optional(),
-      cover: image().optional(),
-      dateWatched: z.coerce.date().optional(),
-      rating: z.number().int().min(1).max(5).optional(),
-      status: movieStatusSchema.default("watched"),
-      oneLiner: z.string().optional(),
-      tags: z.preprocess(
-        (v: unknown) => v ?? undefined,
-        z.array(z.string()).optional().default([]),
-      ),
-      quote: z.string().optional(),
-      draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
-      lastmod: z.preprocess((v: unknown) => v ?? undefined, z.coerce.date().optional()),
-    }),
+  schema: z.object({
+    title: z.string(),
+    director: z.string(),
+    originalTitle: z.string().optional(),
+    year: z.number().int(),
+    language: z.enum(["ko", "en", "ja", "zh", "other"]).optional(),
+    dateWatched: z.coerce.date().optional(),
+    rating: z.number().int().min(1).max(5).optional(),
+    status: movieStatusSchema.default("watched"),
+    oneLiner: z.string().optional(),
+    tags: z.preprocess((v: unknown) => v ?? undefined, z.array(z.string()).optional().default([])),
+    quote: z.string().optional(),
+    draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
+    lastmod: z.preprocess((v: unknown) => v ?? undefined, z.coerce.date().optional()),
+  }),
 })
 
 const bookCollection = defineCollection({
@@ -155,28 +109,21 @@ const bookCollection = defineCollection({
     base: "./src/content/book",
     generateId: stripExtension,
   }),
-  schema: ({ image }) =>
-    z.object({
-      title: z.string(),
-      authorId: z.string(),
-      originalTitle: z.string().optional(),
-      year: z.number().int(),
-      publisher: z.string().optional(),
-      pages: z.number().int().positive().optional(),
-      language: z.enum(["ko", "en", "ja", "zh", "other"]).optional(),
-      cover: image().optional(),
-      dateRead: z.coerce.date().optional(),
-      rating: z.number().int().min(1).max(5).optional(),
-      status: bookStatusSchema.default("read"),
-      oneLiner: z.string().optional(),
-      tags: z.preprocess(
-        (v: unknown) => v ?? undefined,
-        z.array(z.string()).optional().default([]),
-      ),
-      quote: z.string().optional(),
-      draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
-      lastmod: z.preprocess((v: unknown) => v ?? undefined, z.coerce.date().optional()),
-    }),
+  schema: z.object({
+    title: z.string(),
+    author: z.string(),
+    originalTitle: z.string().optional(),
+    year: z.number().int(),
+    language: z.enum(["ko", "en", "ja", "zh", "other"]).optional(),
+    dateRead: z.coerce.date().optional(),
+    rating: z.number().int().min(1).max(5).optional(),
+    status: bookStatusSchema.default("read"),
+    oneLiner: z.string().optional(),
+    tags: z.preprocess((v: unknown) => v ?? undefined, z.array(z.string()).optional().default([])),
+    quote: z.string().optional(),
+    draft: z.preprocess((v: unknown) => v ?? undefined, z.boolean().default(false)),
+    lastmod: z.preprocess((v: unknown) => v ?? undefined, z.coerce.date().optional()),
+  }),
 })
 
 // Portfolio 타입 정의
@@ -296,8 +243,6 @@ export const collections = {
   post: postCollection,
   weekly: weeklyCollection,
   app: appCollection,
-  author: authorCollection,
   book: bookCollection,
-  director: directorCollection,
   movie: movieCollection,
 }

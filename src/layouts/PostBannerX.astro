@@ -1,20 +1,21 @@
 ---
-import { Image } from "astro:assets"
 import UserSection from "@/components/app-shell/Comment/UserSection.astro"
 import FormattedDate from "@/components/content/FormattedDate.astro"
 import Prose from "@/components/layout/Prose.astro"
 import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Layout from "@/layouts/Layout.astro"
 import type { PostMetadata } from "@/types/content"
+import type { ContentType } from "@/types/utils"
 import { generateContentSchemas } from "@/utils/contentSchemas"
 import { buildContentOgImagePath } from "@/utils/openGraphMeta"
 
 interface Props {
   frontmatter: PostMetadata
   bannerImage: ImageMetadata
+  contentType?: ContentType
 }
 
-const { frontmatter, bannerImage } = Astro.props
+const { frontmatter, bannerImage, contentType = "post" } = Astro.props
 const { title, date, lastmod, summary, category, slug, tags } = frontmatter
 
 // Generate all schemas using consolidated utility
@@ -22,8 +23,8 @@ const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentS
   frontmatter,
   pathname: Astro.url.pathname,
   origin: Astro.url.origin,
-  contentType: "post",
-  imageUrl: bannerImage ? `${Astro.url.origin}/posts/${slug}/banner.webp` : undefined,
+  contentType,
+  imageUrl: bannerImage ? `${Astro.url.origin}${bannerImage.src}` : undefined,
 })
 ---
 
@@ -33,7 +34,7 @@ const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentS
   description={summary || title}
   lang={lang}
   jsonLd={[pageSchema, breadcrumbSchema]}
-  ogImage={buildContentOgImagePath({ contentType: "post", slug, pathname: Astro.url.pathname })}
+  ogImage={buildContentOgImagePath({ contentType, slug, pathname: Astro.url.pathname })}
   type="article"
   tags={tags}
   publishedTime={date}
@@ -42,20 +43,26 @@ const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentS
   <Breadcrumb items={breadcrumbItems}/>
     <header class="space-y-1 pb-5 text-center">
       <div class="w-11/12 mx-auto">
-        <Image
-          width={1200}
-          src={bannerImage}
+        <img
+          src={bannerImage.src}
           alt={`${title} 배너`}
+          width={1200}
           class="w-full h-auto object-contain"
-          sizes="(max-width: 768px) 92vw, 1024px"
+          loading="eager"
+          decoding="async"
         />
       </div>
       <div id="post-title" class="pt-5">
         <h1 class="text-xl md:text-2xl font-bold">{title}</h1>
         <p>{summary}</p>
         <div class="text-sm text-gray-500 dark:text-gray-300">
-          <a href={`/archives/category/${category}`} class="underline">{category}</a>
-          / <FormattedDate date={date} />
+          {category && (
+            <>
+              <a href={`/archives/category/${category}`} class="underline">{category}</a>
+              <span> / </span>
+            </>
+          )}
+          <FormattedDate date={date} />
         </div>
       </div>
     </header>

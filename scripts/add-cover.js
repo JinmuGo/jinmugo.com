@@ -2,14 +2,14 @@
 // scripts/add-cover.js
 //
 // Fetch (or copy) a cover image, resize it to a consistent width, convert it
-// to WebP, and save it into the matching content folder so it can be wired
-// into frontmatter as `cover: ./cover.webp`.
+// to WebP, and save it into the matching Obsidian content folder so it is
+// auto-detected at build time as `<slug>/<slug>.webp`.
 //
 // Usage:
 //   pnpm cover <kind> <slug> <url-or-path>
 //
 //   kind:        book | movie | music
-//   slug:        folder name under src/content/<kind>/<slug>/
+//   slug:        folder name under obsidian/library/<kind>/<slug>/
 //   url-or-path: full https:// URL or a local file path
 //
 // Examples:
@@ -27,17 +27,16 @@ import sharp from "sharp"
 const KINDS = new Set(["book", "movie", "music"])
 const TARGET_WIDTH = 600 // produces ~600×900 for 2:3 covers, 600×600 for 1:1 albums
 const WEBP_QUALITY = 88
-const OUTPUT_NAME = "cover.webp"
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = resolve(SCRIPT_DIR, "..")
-const CONTENT_ROOT = join(REPO_ROOT, "src/content")
+const CONTENT_ROOT = join(REPO_ROOT, "obsidian/library")
 
 function usage() {
   console.error(`Usage: pnpm cover <kind> <slug> <url-or-path>
 
   kind:        book | movie | music
-  slug:        folder under src/content/<kind>/<slug>/
+  slug:        folder under obsidian/library/<kind>/<slug>/
   url-or-path: https:// URL or local file path
 
 Examples:
@@ -102,14 +101,15 @@ async function main() {
     await access(targetDir)
   } catch {
     console.error(`Content folder not found: ${targetDir}`)
-    console.error(`Create the entry first (e.g., ${targetDir}/${slug}.mdx), then re-run.`)
+    console.error(`Create the entry first (e.g., ${targetDir}/${slug}.md), then re-run.`)
     process.exit(1)
   }
 
   console.log(`→ fetching: ${source}`)
   const buf = await loadBuffer(source)
 
-  const targetPath = join(targetDir, OUTPUT_NAME)
+  const outputName = `${slug}.webp`
+  const targetPath = join(targetDir, outputName)
   await ensureDir(targetDir)
   await sharp(buf)
     .resize({ width: TARGET_WIDTH, withoutEnlargement: true })
@@ -121,7 +121,6 @@ async function main() {
   console.log(
     `✓ saved ${rel} (${meta.width}×${meta.height}, ${kind === "music" ? "1:1" : "2:3"} expected)`,
   )
-  console.log(`\nUpdate the entry's frontmatter:\n  cover: ./${OUTPUT_NAME}`)
 }
 
 main().catch((err) => {

@@ -5,7 +5,7 @@ import { getBooks } from "@/utils/library/books"
 import { getMovies } from "@/utils/library/movies"
 import { buildPageUrl, generatePageSchema } from "@/utils/structuredData"
 
-const [books, movies] = await Promise.all([getBooks(), getMovies()])
+const [books, movies] = await Promise.all([getBooks("en"), getMovies("en")])
 
 interface Section {
   num: string

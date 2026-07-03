@@ -1,6 +1,6 @@
 import { detectLanguage } from "@/utils/language"
 
-type ContentType = "post" | "weekly"
+type ContentType = "post" | "weekly" | "book" | "movie"
 
 interface BuildContentOgImagePathOptions {
   contentType: ContentType
@@ -23,6 +23,8 @@ export function buildContentOgImagePath({
   const collectionPathByType: Record<ContentType, string> = {
     post: "posts",
     weekly: "weekly",
+    book: "library/books",
+    movie: "library/movies",
   }
   const collectionPath = collectionPathByType[contentType]
 

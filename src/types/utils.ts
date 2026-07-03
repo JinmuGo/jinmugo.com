@@ -10,7 +10,7 @@ export type Lang = "ko" | "en"
 /**
  * Types of content collections
  */
-export type ContentType = "post" | "weekly"
+export type ContentType = "post" | "weekly" | "book" | "movie"
 
 /**
  * Available post layout variants based on banner image orientation

@@ -4,7 +4,7 @@ import MediaList from "@/components/library/MediaList.astro"
 import Layout from "@/layouts/Layout.astro"
 import { getMovieMedia, sortMediaByDate } from "@/utils/library/movies"
 
-const items = sortMediaByDate(await getMovieMedia()).filter((m) => m.cover)
+const items = sortMediaByDate(await getMovieMedia("ko")).filter((m) => m.cover)
 ---
 
 <Layout title="Movies · Library" description="본 영화들" lang="ko">

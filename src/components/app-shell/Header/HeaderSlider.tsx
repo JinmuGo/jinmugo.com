@@ -27,16 +27,19 @@ export default function HeaderSlider({
 }: HeaderSliderProps) {
   const { date, title } = postMetadata
   const isWeekly = isWeeklyMetadata(postMetadata)
+  const category = !isWeekly ? postMetadata.category : undefined
   const href = isWeekly
     ? pathname.startsWith("/en")
       ? "/en/weekly/"
       : "/weekly/"
-    : pathname.startsWith("/en")
-      ? `/en/archives/category/${postMetadata.category ?? ""}`
-      : `/archives/category/${postMetadata.category ?? ""}`
+    : category
+      ? pathname.startsWith("/en")
+        ? `/en/archives/category/${category}`
+        : `/archives/category/${category}`
+      : undefined
   const contextLabel = isWeekly
     ? `Weekly ${postMetadata.year}-W${String(postMetadata.week).padStart(2, "0")}`
-    : (postMetadata.category ?? "")
+    : category
   const [isHovered, setIsHovered] = useState<boolean>(false)
 
   const onClick = useCallback(() => {
@@ -95,10 +98,14 @@ export default function HeaderSlider({
           </p>
           <p className="min-w-fit">
             <span className="text-sm md:text text-gray-500 dark:text-gray-300">
-              <a className="underline" href={href}>
-                {contextLabel}
-              </a>{" "}
-              /{" "}
+              {href && contextLabel && (
+                <>
+                  <a className="underline" href={href}>
+                    {contextLabel}
+                  </a>{" "}
+                  /{" "}
+                </>
+              )}
               {date.toLocaleDateString("en-us", {
                 year: "numeric",
                 month: "short",

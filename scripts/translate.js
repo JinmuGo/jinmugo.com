@@ -206,6 +206,7 @@ async function main() {
         { key: "title", value: "" },
         { key: "summary", value: "" },
         { key: "coverAlt", value: "" },
+        { key: "oneLiner", value: "" },
       ]
 
       if (hasFrontmatter) {

@@ -54,17 +54,17 @@ make fclean        # 모든 node_modules 삭제
 - `~/*` → `./*`
 
 ### 콘텐츠 시스템 (`src/content.config.ts`)
-3개 컬렉션:
 - **post**: 블로그 게시물 — `title`, `date`, `category`, `tags`, `draft`, `series`, `seriesOrder`, `banner`, `summary`, `lastmod`
-- **memo**: 짧은 형식 콘텐츠 — post와 유사하지만 간소화
 - **app**: 포트폴리오/이력서 데이터 — projects, skills, certifications, opensource 섹션
+- **book**: 도서 — `title`, `author`, `originalTitle`, `year`, `language`, `dateRead`, `rating`, `status`, `oneLiner`, `tags`, `quote`, `draft`, `lastmod`
+- **movie**: 영화 — `title`, `director`, `originalTitle`, `year`, `language`, `dateWatched`, `rating`, `status`, `oneLiner`, `tags`, `quote`, `draft`, `lastmod`
 
-카테고리: `develop`, `experience`, `cloud`, `movie`, `book`, `thinking`, `health`, `tech`, `network`, `linux`
+카테고리: `develop`, `experience`, `cloud`, `thinking`, `health`, `tech`, `network`, `linux`
 
 ### 이중언어 라우팅
-- 한국어 (기본): `/posts/[slug]`, `/memos/[slug]`
-- 영어: `/en/posts/[slug]`, `/en/memos/[slug]`
-- 영어 게시물은 `obsidian/`에서 `*.en.md` 파일로 관리
+- 한국어 (기본): `/posts/[slug]`, `/memos/[slug]`, `/library/books/[slug]`, `/library/movies/[slug]`
+- 영어: `/en/posts/[slug]`, `/en/memos/[slug]`, `/en/library/books/[slug]`, `/en/library/movies/[slug]`
+- 영어 콘텐츠는 `obsidian/`에서 `*.en.md` 파일로 관리
 
 ### 레이아웃 시스템 (`src/layouts/`)
 - `Layout.astro` → `Container.astro`: 기본 레이아웃
@@ -87,10 +87,15 @@ make fclean        # 모든 node_modules 삭제
 - `src/components/portfolio/`: 포트폴리오 페이지 컴포넌트
 
 ### 스크립트 (`scripts/`)
-- `build-content.js`: Obsidian → src/content/ 동기화 (OS별 `obsidian-export` 바이너리 실행, diff 기반 sync, .md→.mdx 변환)
+- `build-content.js`: Obsidian → src/content/ 동기화 (OS별 `obsidian-export` 바이너리 실행, diff 기반 sync, .md→.mdx 변환). `obsidian/library/book/*` → `src/content/book/*`, `obsidian/library/movie/*` → `src/content/movie/*`로 리매핑됨
 - `watch-obsidian.js`: 개발 시 obsidian 변경 감시 → 자동 rebuild
-- `translate.js`: DeepL API로 한국어→영어 자동 번역
+- `translate.js`: DeepL API로 한국어→영어 자동 번역 (`*.en.md` 생성)
+- `add-cover.js`: 표지/포스터 이미지를 `obsidian/library/<kind>/<slug>/<slug>.webp`로 저장해 빌드 시 자동 감지
 - `submit-to-gsc.js`, `submit-urls-to-gsc.js`: Google Search Console 사이트맵/URL 제출
+
+### Library 커버 규칙
+- 표지는 frontmatter `cover` 필드 없이 `obsidian/library/book/<slug>/<slug>.{webp,png,jpg,jpeg}` 또는 `obsidian/library/movie/<slug>/<slug>.{webp,png,jpg,jpeg}` 경로로 자동 감지
+- `pnpm cover <kind> <slug> <url-or-path>`로 표지 추가
 
 ### 디자인 토큰
 - `design-tokens/tokens.json`: 중앙화된 디자인 토큰

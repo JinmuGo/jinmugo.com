@@ -89,6 +89,12 @@ function remapCollectionPath(filePath) {
   if (normalized.startsWith("memo/")) {
     return `post/${normalized.slice("memo/".length)}`
   }
+  if (normalized.startsWith("library/book/")) {
+    return `book/${normalized.slice("library/book/".length)}`
+  }
+  if (normalized.startsWith("library/movie/")) {
+    return `movie/${normalized.slice("library/movie/".length)}`
+  }
   return filePath
 }
 
