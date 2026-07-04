@@ -164,6 +164,39 @@ function syncContent() {
     }
   }
 
+  // Sync non-markdown assets referenced by content (covers, images, etc.)
+  for (const file of cachedFiles) {
+    if (file.endsWith(".md")) {
+      continue
+    }
+
+    const sourcePath = path.join(cacheContentExportDir, file)
+    const targetRelativePath = remapCollectionPath(file)
+    const targetPath = path.join(targetContentDir, targetRelativePath)
+    processedTargetFiles.add(targetRelativePath)
+
+    const sourceContent = fs.readFileSync(sourcePath)
+
+    let shouldWrite = false
+
+    if (!fs.existsSync(targetPath)) {
+      shouldWrite = true
+    } else {
+      const targetContent = fs.readFileSync(targetPath)
+      if (!sourceContent.equals(targetContent)) {
+        shouldWrite = true
+      }
+    }
+
+    if (shouldWrite) {
+      fs.mkdirSync(path.dirname(targetPath), { recursive: true })
+      fs.writeFileSync(targetPath, sourceContent)
+      changedCount++
+    } else {
+      skippedCount++
+    }
+  }
+
   // Remove deleted files (only under top-level dirs that appeared in this export)
   for (const file of targetFiles) {
     const root = file.split(/[/\\]/)[0]
