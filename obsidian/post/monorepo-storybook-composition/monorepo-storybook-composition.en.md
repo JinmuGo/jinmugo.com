@@ -149,7 +149,7 @@ apps/storybook (ref viewer)
 ├── refs/
     ├── ui (http://localhost:6006)
     └── web (http://localhost:6007)
-```text
+````
 
 This structure is characterized by the fact that Storybook is not fetching the actual component code, but rather "proxying" that story in an **iframe**:
 
