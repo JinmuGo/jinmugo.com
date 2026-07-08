@@ -13,6 +13,7 @@ import removeConsole from 'vite-plugin-remove-console';
 import remarkCallout from "@r4ai/remark-callout";
 import remarkEmbedCard from "./src/utils/remark-embed-card";
 import remarkImageGallery from "./src/utils/remark-image-gallery";
+import remarkGfm from "remark-gfm";
 
 import { transformerNotationDiff, transformerNotationHighlight } from "@shikijs/transformers";
 
@@ -69,6 +70,7 @@ export default defineConfig({
       rehypeSlug,
     ],
     remarkPlugins: [
+      remarkGfm,
       [
         remarkCallout,
         {
