@@ -140,6 +140,9 @@ jobs:
             --site "${{ steps.pages.outputs.origin }}" \
             --base "${{ steps.pages.outputs.base_path }}"
 
+      - name: Verify Markdown tables rendered as HTML
+        run: pnpm verify:tables
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:

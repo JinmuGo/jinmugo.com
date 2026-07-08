@@ -29,6 +29,7 @@
 		"content:preview": "pnpm prebuild && pnpm astro build",
 		"content:publish": "node scripts/content-publish.js",
 		"cover": "node scripts/add-cover.js",
+		"verify:tables": "node scripts/verify-tables.js",
 		"format": "biome format --write .",
 		"lint": "biome lint .",
 		"lint:fix": "biome lint --apply .",
