@@ -3,6 +3,8 @@ FROM node:22-alpine AS base
 RUN apk add --no-cache python3 make g++ sqlite
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
+# pnpm 10+: package.json의 pnpm 필드 미지원, 빌드 스크립트 기본 차단 → .npmrc로 허용
+RUN printf 'only-built-dependencies[]=better-sqlite3\nonly-built-dependencies[]=esbuild\n' > .npmrc
 
 # Install dependencies (compiles better-sqlite3 native binding)
 FROM base AS deps
