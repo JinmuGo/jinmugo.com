@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
+import { fileURLToPath } from "node:url"
 import {
   cacheContentExportDir,
   contentCollectionDirs,
@@ -99,15 +100,15 @@ function remapCollectionPath(filePath) {
 }
 
 // 4. Sync Logic
-function syncContent() {
+export function syncContent(cacheDir = cacheContentExportDir, contentDir = targetContentDir) {
   // console.log('[Build] Syncing content to src/content...');
 
-  if (!fs.existsSync(targetContentDir)) {
-    fs.mkdirSync(targetContentDir, { recursive: true })
+  if (!fs.existsSync(contentDir)) {
+    fs.mkdirSync(contentDir, { recursive: true })
   }
 
-  const cachedFiles = getAllFiles(cacheContentExportDir)
-  const targetFiles = getAllFiles(targetContentDir)
+  const cachedFiles = getAllFiles(cacheDir)
+  const targetFiles = getAllFiles(contentDir)
   const processedTargetFiles = new Set()
   /** Top-level segments present in this export and their remapped targets. Used to avoid wiping collections obsidian-export did not emit. */
   const cacheTopLevelRoots = new Set()
@@ -128,7 +129,7 @@ function syncContent() {
 
   // Update or Create
   for (const file of cachedFiles) {
-    const sourcePath = path.join(cacheContentExportDir, file)
+    const sourcePath = path.join(cacheDir, file)
     const isMd = file.endsWith(".md")
 
     // Determine target path (.md -> .mdx), then remap collection dirs (memo/* → post/*)
@@ -138,7 +139,7 @@ function syncContent() {
     }
     targetRelativePath = remapCollectionPath(targetRelativePath)
 
-    const targetPath = path.join(targetContentDir, targetRelativePath)
+    const targetPath = path.join(contentDir, targetRelativePath)
     processedTargetFiles.add(targetRelativePath)
 
     let sourceContent = fs.readFileSync(sourcePath)
@@ -169,39 +170,6 @@ function syncContent() {
     }
   }
 
-  // Sync non-markdown assets referenced by content (covers, images, etc.)
-  for (const file of cachedFiles) {
-    if (file.endsWith(".md")) {
-      continue
-    }
-
-    const sourcePath = path.join(cacheContentExportDir, file)
-    const targetRelativePath = remapCollectionPath(file)
-    const targetPath = path.join(targetContentDir, targetRelativePath)
-    processedTargetFiles.add(targetRelativePath)
-
-    const sourceContent = fs.readFileSync(sourcePath)
-
-    let shouldWrite = false
-
-    if (!fs.existsSync(targetPath)) {
-      shouldWrite = true
-    } else {
-      const targetContent = fs.readFileSync(targetPath)
-      if (!sourceContent.equals(targetContent)) {
-        shouldWrite = true
-      }
-    }
-
-    if (shouldWrite) {
-      fs.mkdirSync(path.dirname(targetPath), { recursive: true })
-      fs.writeFileSync(targetPath, sourceContent)
-      changedCount++
-    } else {
-      skippedCount++
-    }
-  }
-
   // Remove deleted files (only under top-level dirs that appeared in this export)
   for (const file of targetFiles) {
     const root = file.split(/[/\\]/)[0]
@@ -209,13 +177,13 @@ function syncContent() {
       continue
     }
     if (!processedTargetFiles.has(file)) {
-      fs.unlinkSync(path.join(targetContentDir, file))
+      fs.unlinkSync(path.join(contentDir, file))
       removedCount++
       // console.log(`  Removed: ${file}`);
 
       // Clean up empty directories
       try {
-        const dir = path.dirname(path.join(targetContentDir, file))
+        const dir = path.dirname(path.join(contentDir, file))
         if (fs.readdirSync(dir).length === 0) {
           fs.rmdirSync(dir)
         }
@@ -235,15 +203,17 @@ function ensureContentCollectionDirs() {
 }
 
 // Run
-try {
-  if (process.argv.includes("--dry-run")) {
-    dryRunExport()
-  } else {
-    exportContent()
-    syncContent()
-    ensureContentCollectionDirs()
+if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {
+  try {
+    if (process.argv.includes("--dry-run")) {
+      dryRunExport()
+    } else {
+      exportContent()
+      syncContent()
+      ensureContentCollectionDirs()
+    }
+  } catch (error) {
+    console.error("[Build] Error:", error)
+    process.exit(1)
   }
-} catch (error) {
-  console.error("[Build] Error:", error)
-  process.exit(1)
 }
