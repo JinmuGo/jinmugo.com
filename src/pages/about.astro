@@ -11,6 +11,7 @@ import {
   generatePersonSchema,
 } from "@/utils/structuredData"
 import pkg from "~/package.json"
+import Avatar from "~/public/avatar.webp"
 import Layout from "../layouts/Layout.astro"
 
 // Breadcrumb 항목 생성
@@ -41,7 +42,7 @@ const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
 const jsonLd = [pageSchema, personSchema, breadcrumbSchema]
 
 const app = await getKoreanApp()
-const { name, bio, avatar } = app[0].data
+const { name, bio } = app[0].data
 const { Content } = await render(app[0])
 const title = "About"
 const description = "About Jinmu"
@@ -50,13 +51,20 @@ const description = "About Jinmu"
 <Layout
   title={title}
   description={description}
-  image={avatar}
+  image={Avatar}
   lang="ko"
   jsonLd={jsonLd}
   type="website"
 >
   <section class="relative w-full mx-auto aspect-square sm:aspect-video">
-    <Image src={avatar} alt={name} width={1200} height={300} loading="eager" />
+    <Image
+      src={Avatar}
+      alt={name}
+      widths={[640, 960, 1200]}
+      sizes="(max-width: 1024px) 100vw, 1024px"
+      class="h-full w-full object-cover"
+      loading="eager"
+    />
     <div class="absolute bottom-6 left-6 text-white drop-shadow-lg">
       <h1
         class="text-3xl leading-9 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10 sm:text-gray-50 md:text-6xl md:leading-14 dark:text-gray-50 sm:dark:text-gray-200"

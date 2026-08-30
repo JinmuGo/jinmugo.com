@@ -13,6 +13,7 @@ import {
   generatePersonSchema,
 } from "@/utils/structuredData"
 import pkg from "~/package.json"
+import Avatar from "~/public/avatar.webp"
 
 // Breadcrumb 항목 생성
 const breadcrumbItems = generateBreadcrumbItems({
@@ -45,10 +46,9 @@ const app = await getEnglishApp()
 const fallback = {
   name: pkg.author,
   bio: pkg.description,
-  avatar: "/avatar.webp",
 }
 const hasContent = app.length > 0
-const { name, bio, avatar } = hasContent ? app[0].data : fallback
+const { name, bio } = hasContent ? app[0].data : fallback
 const Content = hasContent ? (await render(app[0])).Content : undefined
 const title = "About"
 const description = "About Jinmu"
@@ -57,14 +57,21 @@ const description = "About Jinmu"
 <Layout
   title={title}
   description={description}
-  image={avatar}
+  image={Avatar}
   lang="en"
   jsonLd={jsonLd}
   type="website"
 >
   <Breadcrumb items={breadcrumbItems} />
   <div class="relative w-full mx-auto aspect-square sm:aspect-[16/9]">
-    <Image src={avatar} alt={name} width={1200} height={300} />
+    <Image
+      src={Avatar}
+      alt={name}
+      widths={[640, 960, 1200]}
+      sizes="(max-width: 1024px) 100vw, 1024px"
+      class="h-full w-full object-cover"
+      loading="eager"
+    />
     <div class="absolute bottom-6 left-6 text-white drop-shadow-lg">
       <h1
         class="text-3xl leading-9 font-extrabold tracking-tight text-gray-50 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-200"

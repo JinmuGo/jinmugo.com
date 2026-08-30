@@ -1,15 +1,11 @@
 ---
-import { Image } from "astro:assets"
-import FormattedDate from "@/components/content/FormattedDate.astro"
 import Title from "@/components/layout/Title"
 import Layout from "@/layouts/Layout.astro"
 import ListLayouts from "@/layouts/ListLayouts"
-import { formatWeeklyLabel, getKoreanWeeklies, sortWeekliesByDate } from "@/utils/content/weekly"
+import { getKoreanWeeklies, sortWeekliesByDate } from "@/utils/content/weekly"
 import { buildItemUrl, buildPageUrl, generatePostsPageSchema } from "@/utils/structuredData"
-import { getWeeklyCoverImage } from "@/utils/weeklyCover"
 
 const weeklies = sortWeekliesByDate(await getKoreanWeeklies())
-const latestWeekly = weeklies[0]
 
 const title = "Weekly"
 const description = "Weekly Jinmu"
@@ -46,7 +42,6 @@ const jsonLd = generatePostsPageSchema({
         postType="weekly"
         lang="ko"
         showSearch={false}
-        client:load
       />
     </div>
   </section>
