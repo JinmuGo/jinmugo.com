@@ -43,7 +43,7 @@ make fclean        # 모든 node_modules 삭제
 ## 아키텍처
 
 ### 프로젝트 구조
-- **Astro 6** 정적 사이트 (`output: "static"`)
+- **Astro 7** 정적 사이트 (`output: "static"`)
 - **React islands**: 인터랙티브 위젯 (Header, Comments, Search 등)
 - **Tailwind CSS v4** + **shadcn/ui** (New York 스타일, `components.json` 설정)
 - **Biome**: 린팅 및 포맷팅 (ESLint/Prettier 대체)
@@ -81,7 +81,8 @@ make fclean        # 모든 node_modules 삭제
 ### 주요 컴포넌트 디렉토리
 - `src/components/ui/`: shadcn/ui 컴포넌트
 - `src/components/content/`: 게시물/메모 렌더링
-- `src/components/features/`: 댓글(Giscus), 좋아요, 조회수
+- `src/components/features/`: 갤러리, 포트폴리오, 다운로드 수 위젯
+- `src/components/app-shell/Comment/`: Fuma 댓글 및 인증 UI
 - `src/components/search/`: 검색 기능 (`/search-index.json` 인덱스)
 - `src/components/og/`: OG 이미지 동적 생성 (Satori + Sharp)
 - `src/components/portfolio/`: 포트폴리오 페이지 컴포넌트
