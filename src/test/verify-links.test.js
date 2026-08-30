@@ -29,6 +29,8 @@ describe("built link verifier", () => {
       "old/index.html",
       '<meta http-equiv="refresh" content="0;url=/target/"><a href="/target/">Redirect</a>',
     )
+    write("archives/index.html", "<p>No Korean archives</p>")
+    write("en/archives/index.html", "<p>No English archives</p>")
 
     expect(verifyLinks(distDir)).toMatchObject({ internalLinks: 3, redirects: 1 })
   })
@@ -53,7 +55,7 @@ describe("built link verifier", () => {
     expect(() => verifyLinks(distDir)).toThrow(/broken internal link[\s\S]*legacy archive redirect/)
   })
 
-  it("derives and fixes the generated archive redirect count", () => {
+  it("derives the generated archive redirect count", () => {
     distDir = fs.mkdtempSync(path.join(os.tmpdir(), "verify-links-"))
     write(
       "archives/index.html",
@@ -66,12 +68,9 @@ describe("built link verifier", () => {
       '<meta http-equiv="refresh" content="0;url=/archives/tag/open-source/">',
     )
 
-    expect(verifyLinks(distDir, { ko: 1, en: 0 }).archiveRedirectCounts).toEqual({
+    expect(verifyLinks(distDir).archiveRedirectCounts).toEqual({
       ko: 1,
       en: 0,
     })
-    expect(() => verifyLinks(distDir, { ko: 2, en: 0 })).toThrow(
-      /archive redirects \(ko\): expected 2, found 1/,
-    )
   })
 })

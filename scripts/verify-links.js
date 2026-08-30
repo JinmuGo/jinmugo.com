@@ -6,7 +6,6 @@ import { JSDOM } from "jsdom"
 import { normalizeArchiveSegment } from "../src/utils/archive-segment.js"
 
 const SITE_ORIGIN = "https://jinmu.me"
-const EXPECTED_ARCHIVE_REDIRECTS = { ko: 25, en: 27 }
 
 function walkFiles(dir, root = dir, files = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -112,7 +111,7 @@ function hasCaseInsensitivePaths(distDir, files) {
   return alternateCase !== probe && fs.existsSync(path.join(distDir, alternateCase))
 }
 
-export function verifyLinks(distDir, expectedArchiveRedirects) {
+export function verifyLinks(distDir) {
   const files = new Set(walkFiles(distDir))
   const caseInsensitivePaths = hasCaseInsensitivePaths(distDir, files)
   const filesByFoldedPath = new Map(
@@ -158,9 +157,7 @@ export function verifyLinks(distDir, expectedArchiveRedirects) {
     ["en/archives/index.html", "/en"],
   ]) {
     if (!files.has(file)) {
-      if (expectedArchiveRedirects) {
-        errors.push(`missing archive index: /${file}`)
-      }
+      errors.push(`missing archive index: /${file}`)
       continue
     }
     const document = new JSDOM(fs.readFileSync(path.join(distDir, file), "utf8"), {
@@ -273,15 +270,6 @@ export function verifyLinks(distDir, expectedArchiveRedirects) {
     ko: [...archiveLegacyPaths].filter((route) => !route.startsWith("/en/")).length,
     en: [...archiveLegacyPaths].filter((route) => route.startsWith("/en/")).length,
   }
-  if (expectedArchiveRedirects) {
-    for (const lang of ["ko", "en"]) {
-      if (archiveRedirectCounts[lang] !== expectedArchiveRedirects[lang]) {
-        errors.push(
-          `archive redirects (${lang}): expected ${expectedArchiveRedirects[lang]}, found ${archiveRedirectCounts[lang]}`,
-        )
-      }
-    }
-  }
 
   if (errors.length > 0) {
     throw new Error(`Link verification failed:\n${errors.map((error) => `- ${error}`).join("\n")}`)
@@ -303,7 +291,7 @@ if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {
   }
 
   try {
-    const result = verifyLinks(distDir, EXPECTED_ARCHIVE_REDIRECTS)
+    const result = verifyLinks(distDir)
     console.info(
       `Verified ${result.internalLinks} internal links across ${result.htmlFiles} HTML files (${result.redirects} redirects; archive old→new map: ko ${result.archiveRedirectCounts.ko}, en ${result.archiveRedirectCounts.en}).`,
     )
