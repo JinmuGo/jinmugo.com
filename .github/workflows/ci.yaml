@@ -71,7 +71,7 @@ jobs:
         run: pnpm verify:links
 
   server:
-    name: Server Build & Audit
+    name: Server Tests & Audit
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -91,10 +91,15 @@ jobs:
           cache-dependency-path: server/pnpm-lock.yaml
 
       - name: Install Server Dependencies
-        run: pnpm --dir server --ignore-workspace install --frozen-lockfile
+        run: pnpm --dir server install --frozen-lockfile
 
-      - name: Build Server
-        run: pnpm --dir server --ignore-workspace build
+      - name: Install SQLite CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes sqlite3
+
+      - name: Test Server
+        run: pnpm --dir server test
 
       - name: Audit Server Dependencies
-        run: pnpm --dir server --ignore-workspace audit
+        run: pnpm --dir server audit
