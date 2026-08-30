@@ -1,10 +1,7 @@
 import type {
   ArticleSchemaOptions,
   BreadcrumbItem,
-  FAQSchemaOptions,
-  HowToSchemaOptions,
   ListItem,
-  OrganizationSchemaOptions,
   PageSchemaOptions,
   PersonSchemaOptions,
   WebsiteSchemaOptions,
@@ -16,14 +13,32 @@ import pkg from "~/package.json"
 export type {
   ArticleSchemaOptions,
   BreadcrumbItem,
-  FAQSchemaOptions,
-  HowToSchemaOptions,
   ListItem,
-  OrganizationSchemaOptions,
   PageSchemaOptions,
   PersonSchemaOptions,
   WebsiteSchemaOptions,
 }
+
+export const buildUrl = (basePath: string, path?: string) => {
+  const url = new URL(`${basePath}${path ?? ""}`, pkg.homepage)
+  url.pathname = withTrailingSlash(url.pathname)
+  return url.href
+}
+
+export const buildPageUrl = (basePath: string, path: string) => buildUrl(basePath, path)
+export const buildItemUrl = (url: string) => buildUrl(url)
+
+export const AUTHOR_URL = new URL("/about/", pkg.homepage).href
+export const PERSON_ID = new URL("/#person", pkg.homepage).href
+export const WEBSITE_ID = new URL("/#website", pkg.homepage).href
+
+const entityId = (url: string, fragment: string) => new URL(`#${fragment}`, buildItemUrl(url)).href
+const authorEntity = (name: string, url?: string) => ({
+  "@type": "Person",
+  ...(name === pkg.author && { "@id": PERSON_ID, sameAs: Object.values(pkg.social) }),
+  name,
+  ...(url && { url: buildItemUrl(url) }),
+})
 
 export const generateStructuredData = <T extends Record<string, unknown>>(data: T) => ({
   "@context": "https://schema.org",
@@ -60,14 +75,17 @@ export const generatePageSchema = (options: PageSchemaOptions) => {
     extra = {},
   } = options
 
-  // 기본 WebPage 객체
+  const canonicalUrl = buildItemUrl(url)
   const pageSchema: Record<string, unknown> = {
     "@type": type,
+    "@id": entityId(canonicalUrl, "webpage"),
     name: title,
     description,
-    url,
+    url: canonicalUrl,
     inLanguage,
     keywords,
+    isPartOf: { "@id": WEBSITE_ID },
+    ...(type === "ProfilePage" && { mainEntity: { "@id": PERSON_ID } }),
     ...extra,
   }
 
@@ -76,12 +94,6 @@ export const generatePageSchema = (options: PageSchemaOptions) => {
       "@type": "ImageObject",
       url: imageUrl,
     }
-  }
-
-  // 공통 publisher 정보 추가
-  pageSchema.publisher = {
-    "@type": "Organization",
-    name: pkg.title,
   }
 
   // 목록 페이지라면, itemListElements 옵션이 있을 경우 ItemList 스키마를 mainEntity에 포함
@@ -126,21 +138,22 @@ export const generateArticleSchema = (options: ArticleSchemaOptions) => {
     extra = {},
   } = options
 
+  const canonicalUrl = buildItemUrl(url)
+  const author = authorEntity(authorName, authorUrl)
   const articleSchema: Record<string, unknown> = {
     "@type": "Article",
+    "@id": entityId(canonicalUrl, "article"),
     headline: title,
     description,
-    url,
+    url: canonicalUrl,
     datePublished,
     inLanguage,
-    author: {
-      "@type": "Person",
-      name: authorName,
-      ...(authorUrl && { url: authorUrl }),
-    },
-    publisher: {
-      "@type": "Organization",
-      name: pkg.title,
+    author,
+    publisher: author,
+    isPartOf: { "@id": WEBSITE_ID },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": entityId(canonicalUrl, "webpage"),
     },
     ...extra,
   }
@@ -181,63 +194,18 @@ export const generateBlogPostingSchema = (options: ArticleSchemaOptions) => {
   }
 }
 
-// URL 빌더 함수 (통합)
-export const buildUrl = (basePath: string, path?: string) => {
-  const url = new URL(`${basePath}${path ?? ""}`, pkg.homepage)
-  url.pathname = withTrailingSlash(url.pathname)
-  return url.href
-}
-
-// 편의 함수들 (하위 호환성을 위해 유지)
-export const buildPageUrl = (basePath: string, path: string) => buildUrl(basePath, path)
-export const buildItemUrl = (url: string) => buildUrl(url)
-
-// Organization 스키마 생성 함수
-export const generateOrganizationSchema = (options: OrganizationSchemaOptions) => {
-  const { name, url, logo, description, sameAs, contactPoint } = options
-
-  const organizationSchema: Record<string, unknown> = {
-    "@type": "Organization",
-    name,
-    url,
-  }
-
-  if (logo) {
-    organizationSchema.logo = {
-      "@type": "ImageObject",
-      url: logo,
-    }
-  }
-
-  if (description) {
-    organizationSchema.description = description
-  }
-
-  if (sameAs && sameAs.length > 0) {
-    organizationSchema.sameAs = sameAs
-  }
-
-  if (contactPoint) {
-    organizationSchema.contactPoint = {
-      "@type": "ContactPoint",
-      ...contactPoint,
-    }
-  }
-
-  return generateStructuredData(organizationSchema)
-}
-
 // Person 스키마 생성 함수
 export const generatePersonSchema = (options: PersonSchemaOptions) => {
-  const { name, url, image, description, jobTitle, worksFor, sameAs } = options
+  const { name, url, image, description, sameAs } = options
 
   const personSchema: Record<string, unknown> = {
     "@type": "Person",
+    ...(name === pkg.author && { "@id": PERSON_ID }),
     name,
   }
 
   if (url) {
-    personSchema.url = url
+    personSchema.url = buildItemUrl(url)
   }
 
   if (image) {
@@ -249,17 +217,6 @@ export const generatePersonSchema = (options: PersonSchemaOptions) => {
 
   if (description) {
     personSchema.description = description
-  }
-
-  if (jobTitle) {
-    personSchema.jobTitle = jobTitle
-  }
-
-  if (worksFor) {
-    personSchema.worksFor = {
-      "@type": "Organization",
-      name: worksFor,
-    }
   }
 
   if (sameAs && sameAs.length > 0) {
@@ -275,10 +232,12 @@ export const generateWebsiteSchema = (options: WebsiteSchemaOptions) => {
 
   const websiteSchema: Record<string, unknown> = {
     "@type": "WebSite",
+    "@id": WEBSITE_ID,
     name,
-    url,
+    url: buildItemUrl(url),
     description,
     inLanguage,
+    publisher: { "@id": PERSON_ID },
   }
 
   if (potentialAction) {
@@ -286,72 +245,4 @@ export const generateWebsiteSchema = (options: WebsiteSchemaOptions) => {
   }
 
   return generateStructuredData(websiteSchema)
-}
-
-// FAQ 스키마 생성 함수
-export const generateFAQSchema = (options: FAQSchemaOptions) => {
-  const { questions } = options
-
-  return generateStructuredData({
-    "@type": "FAQPage",
-    mainEntity: questions.map((q) => ({
-      "@type": "Question",
-      name: q.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: q.answer,
-      },
-    })),
-  })
-}
-
-// HowTo 스키마 생성 함수
-export const generateHowToSchema = (options: HowToSchemaOptions) => {
-  const { name, description, totalTime, estimatedCost, supply, tool, steps, image } = options
-
-  const howToSchema: Record<string, unknown> = {
-    "@type": "HowTo",
-    name,
-    description,
-    step: steps.map((step, index) => ({
-      "@type": "HowToStep",
-      position: index + 1,
-      name: step.name,
-      text: step.text,
-      ...(step.image && { image: step.image }),
-      ...(step.url && { url: step.url }),
-    })),
-  }
-
-  if (totalTime) {
-    howToSchema.totalTime = totalTime
-  }
-
-  if (image) {
-    howToSchema.image = image
-  }
-
-  if (estimatedCost) {
-    howToSchema.estimatedCost = {
-      "@type": "MonetaryAmount",
-      currency: estimatedCost.currency,
-      value: estimatedCost.value,
-    }
-  }
-
-  if (supply && supply.length > 0) {
-    howToSchema.supply = supply.map((s) => ({
-      "@type": "HowToSupply",
-      name: s,
-    }))
-  }
-
-  if (tool && tool.length > 0) {
-    howToSchema.tool = tool.map((t) => ({
-      "@type": "HowToTool",
-      name: t,
-    }))
-  }
-
-  return generateStructuredData(howToSchema)
 }

@@ -75,22 +75,6 @@ export interface ArticleSchemaOptions {
 }
 
 /**
- * Organization schema options
- */
-export interface OrganizationSchemaOptions {
-  name: string
-  url: string
-  logo?: string
-  description?: string
-  sameAs?: string[]
-  contactPoint?: {
-    telephone?: string
-    email?: string
-    contactType?: string
-  }
-}
-
-/**
  * Person schema options
  */
 export interface PersonSchemaOptions {
@@ -98,8 +82,6 @@ export interface PersonSchemaOptions {
   url?: string
   image?: string
   description?: string
-  jobTitle?: string
-  worksFor?: string
   sameAs?: string[]
 }
 
@@ -116,40 +98,4 @@ export interface WebsiteSchemaOptions {
     target: string
     "query-input": string
   }
-}
-
-/**
- * FAQ schema types
- */
-export interface FAQQuestion {
-  question: string
-  answer: string
-}
-
-export interface FAQSchemaOptions {
-  questions: FAQQuestion[]
-}
-
-/**
- * HowTo schema types
- */
-export interface HowToStep {
-  name: string
-  text: string
-  image?: string
-  url?: string
-}
-
-export interface HowToSchemaOptions {
-  name: string
-  description: string
-  totalTime?: string // ISO 8601 duration format (e.g., "PT30M" for 30 minutes)
-  estimatedCost?: {
-    currency: string
-    value: string
-  }
-  supply?: string[]
-  tool?: string[]
-  steps: HowToStep[]
-  image?: string
 }

@@ -3,11 +3,13 @@ import type { ContentType, Lang } from "@/types/utils"
 import { generateContentBreadcrumbs } from "@/utils/breadcrumbUtils"
 import { detectLanguage } from "@/utils/language"
 import {
+  AUTHOR_URL,
   type BreadcrumbItem,
   generateArticleSchema,
   generateBlogPostingSchema,
   generateBreadcrumbSchema,
 } from "@/utils/structuredData"
+import pkg from "~/package.json"
 
 /**
  * Options for generating content schemas
@@ -65,8 +67,8 @@ export function generateContentSchemas(options: GenerateContentSchemasOptions): 
     inLanguage: lang,
     datePublished: date.toISOString(),
     dateModified: (lastmod ?? date).toISOString(),
-    authorName: "Jinmu",
-    authorUrl: "https://jinmu.me/about",
+    authorName: pkg.author,
+    authorUrl: AUTHOR_URL,
     wordCount: frontmatter.wordCount,
     readingTime: frontmatter.readingTime,
     imageUrl: imageUrl || (frontmatter.image ? new URL(frontmatter.image, origin).href : undefined),

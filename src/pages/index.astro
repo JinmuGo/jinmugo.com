@@ -7,6 +7,7 @@ import { getKoreanPosts } from "@/utils/content/posts"
 import { mergeTimelineEntries, timelineEntryToListItem } from "@/utils/content/timeline"
 import { getKoreanWeeklies } from "@/utils/content/weekly"
 import {
+  AUTHOR_URL,
   generatePageSchema,
   generatePersonSchema,
   generateWebsiteSchema,
@@ -34,7 +35,7 @@ const websiteSchema = generateWebsiteSchema({
 
 const personSchema = generatePersonSchema({
   name: pkg.author,
-  url,
+  url: AUTHOR_URL,
   description,
   image: `${url}/avatar.webp`,
   sameAs: Object.values(pkg.social),

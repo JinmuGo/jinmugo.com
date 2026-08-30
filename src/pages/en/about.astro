@@ -5,7 +5,13 @@ import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Layout from "@/layouts/Layout.astro"
 import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
 import { getEnglishApp } from "@/utils/content/apps"
-import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
+import {
+  AUTHOR_URL,
+  buildPageUrl,
+  generateBreadcrumbSchema,
+  generatePageSchema,
+  generatePersonSchema,
+} from "@/utils/structuredData"
 import pkg from "~/package.json"
 
 // Breadcrumb 항목 생성
@@ -17,6 +23,7 @@ const breadcrumbItems = generateBreadcrumbItems({
 })
 
 const pageSchema = generatePageSchema({
+  type: "ProfilePage",
   title: "About",
   description: "About Jinmu",
   url: buildPageUrl(pkg.homepage, "/en/about"),
@@ -24,8 +31,15 @@ const pageSchema = generatePageSchema({
   inLanguage: "en",
 })
 
+const personSchema = generatePersonSchema({
+  name: pkg.author,
+  url: AUTHOR_URL,
+  description: pkg.description,
+  image: new URL("/avatar.webp", pkg.homepage).href,
+  sameAs: Object.values(pkg.social),
+})
 const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
-const jsonLd = [pageSchema, breadcrumbSchema]
+const jsonLd = [pageSchema, personSchema, breadcrumbSchema]
 
 const app = await getEnglishApp()
 const fallback = {
