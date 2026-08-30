@@ -41,7 +41,7 @@ export default defineConfig({
       provider: fontProviders.google(),
       name: "Geist",
       cssVariable: "--font-geist",
-      fallbacks: ["Pretendard"],
+      fallbacks: ["Pretendard Variable", "Pretendard"],
       weights: [300, 400, 600]
     },
   ],
