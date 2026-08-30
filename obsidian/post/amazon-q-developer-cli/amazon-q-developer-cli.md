@@ -2,10 +2,11 @@
 title: Amazon Q Developer CLI 간단 체험기
 date: 2025-06-04T13:25:20.437Z
 draft: false
+summary: Amazon Q Developer CLI를 설치하고 기획 문서를 컨텍스트로 제공해 Pygame 게임을 만든 과정과 사용해 본 소감을 정리했습니다.
 tags:
   - AmazonQCLI
   - AWS
-lastmod: 2025-06-05T13:34:57+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: cloud
 ---
 

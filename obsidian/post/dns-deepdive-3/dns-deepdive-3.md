@@ -2,9 +2,10 @@
 title: DNS (Domain Name System) DeepDive - Name Resolution
 date: 2025-07-06T02:48:10.982Z
 draft: false
+summary: DNS 질의가 계층형 네임서버를 따라 이름을 해석하는 과정과 재귀·반복 질의, 캐시로 부하와 응답 시간을 줄이는 원리를 설명합니다.
 tags:
   - DNS
-lastmod: 2025-07-06T23:29:49+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: develop
 series: DNS-DeepDive
 seriesOrder: 3

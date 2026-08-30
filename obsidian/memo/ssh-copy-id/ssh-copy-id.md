@@ -2,12 +2,13 @@
 title: ssh-copy-id를 이용해서 원격지 접속쉽게 설정하기
 date: 2025-09-02T08:17:04.305Z
 draft: false
+summary: SSH 공개키 인증의 동작 원리와 ssh-copy-id로 공개키를 원격 서버에 등록하는 방법, 필요한 sshd 설정을 설명합니다.
 tags:
   - Linux
   - ssh
   - ssh-copy-id
 category: linux
-lastmod: 2025-09-03T21:08:43+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 ---
 
 원격 서버에 SSH로 접속할 때마다 비밀번호 입력하는게 너무 귀찮다. ssh는 GSSAPI, host-based등등 다양한 인증방식을 지원하지만 나는 주로 **비밀번호(대칭키 암호화)** 또는 **공개키 방식 인증**을 사용한다.

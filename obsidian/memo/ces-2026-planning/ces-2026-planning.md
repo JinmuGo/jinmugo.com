@@ -5,7 +5,8 @@ tags:
   - CES
 category: experience
 draft: false
-lastmod: 2025-12-13T12:10:42+09:00
+summary: CES 2026에서 살펴볼 AI·스마트홈·디지털 헬스 기업과 혁신상 제품을 분류하고 현장 참관 동선을 계획한 메모.
+lastmod: 2026-08-30T20:15:00+09:00
 layout:
 series: 2026 America Study Travel
 seriesOrder: 1

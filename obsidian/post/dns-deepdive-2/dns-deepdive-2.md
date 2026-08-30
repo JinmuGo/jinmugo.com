@@ -2,11 +2,12 @@
 title: DNS (Domain Name System) DeepDive - 레지스트리, 레지스트라
 date: 2025-06-28T11:46:25.268Z
 draft: false
+summary: 도메인 이름을 등록하고 운영하는 레지스트리와 레지스트라의 역할, 관리 모델, 네임서버 위임 과정을 설명합니다.
 tags:
   - DNS
   - Registry
   - Registrar
-lastmod: 2025-07-01T21:41:45+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: develop
 series: DNS-DeepDive
 seriesOrder: 2

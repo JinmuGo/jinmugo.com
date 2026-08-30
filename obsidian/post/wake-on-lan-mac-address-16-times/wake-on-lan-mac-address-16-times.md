@@ -2,6 +2,7 @@
 title: 매직 패킷은 왜 MAC주소를 16번 반복할까?
 date: 2025-08-17T12:25:50.063Z
 draft: false
+summary: Wake-on-LAN 매직 패킷이 FF 6바이트와 대상 MAC 주소 16회 반복으로 구성되는 이유를 프레임 구조와 탐지 방식에서 살펴봅니다.
 tags:
   - WOL
   - WakeOnLan
@@ -10,7 +11,7 @@ tags:
   - Ethernet
   - Hardware
 category: network
-lastmod: 2025-08-20T09:40:21+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 layout: 
 banner: 
 ---
