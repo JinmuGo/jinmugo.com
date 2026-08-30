@@ -62,7 +62,7 @@ jobs:
         run: pnpm typecheck
 
       - name: Build
-        run: pnpm build
+        run: pnpm astro build
 
       - name: Verify Markdown Tables
         run: pnpm verify:tables
