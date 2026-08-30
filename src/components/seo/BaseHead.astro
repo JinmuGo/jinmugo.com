@@ -35,7 +35,7 @@ const ogLocale = isEnglish ? "en_US" : "ko_KR"
 // hreflang: build alternate URL for the other language
 const pathWithoutLang = isEnglish ? pathname.replace(/^\/en/, "") || "/" : pathname
 const koUrl = new URL(pathWithoutLang, Astro.site).href
-const enUrl = new URL(`/en${pathWithoutLang === "/" ? "" : pathWithoutLang}`, Astro.site).href
+const enUrl = new URL(`/en${pathWithoutLang}`, Astro.site).href
 const contentMatch = pathWithoutLang.match(
   /^\/(posts|weekly|library\/books|library\/movies)\/([^/]+)\/?$/,
 )

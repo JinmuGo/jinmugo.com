@@ -12,6 +12,7 @@ import { getEnglishPosts, getKoreanPosts } from "@/utils/content/posts"
 import { getEnglishWeeklies, getKoreanWeeklies } from "@/utils/content/weekly"
 import { getBookMedia } from "@/utils/library/books"
 import { getMovieMedia } from "@/utils/library/movies"
+import { groupContentBySeries } from "@/utils/series"
 
 export async function GET() {
   const siteUrl = import.meta.env.SITE
@@ -26,6 +27,8 @@ export async function GET() {
       getMovieMedia("ko"),
       getMovieMedia("en"),
     ])
+  const koSeries = groupContentBySeries(koPosts)
+  const enSeries = groupContentBySeries(enPosts)
 
   const renderUrl = (
     slug: string,
@@ -88,8 +91,16 @@ export async function GET() {
     ${renderUrl("/posts")}
     ${renderUrl("/weekly")}
     ${renderUrl("/series")}
+    ${koSeries
+      .map((series) =>
+        renderUrl(`/series/${encodeURIComponent(series.name)}`, {
+          hasEn: enSeries.some((item) => item.name === series.name),
+        }),
+      )
+      .join("\n")}
     ${renderUrl("/gallery")}
     ${renderUrl("/projects")}
+    ${renderUrl("/portfolio", { hasEn: false })}
     ${renderUrl("/resume")}
     ${renderUrl("/library")}
     ${renderUrl("/library/books")}
