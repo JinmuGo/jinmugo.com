@@ -11,6 +11,7 @@ tags:
   - HOL
 category: network
 draft: false
+summary: How HTTP/1.1 pipelining reduced RTT but suffered head-of-line blocking from ordered responses, and how HTTP/2 and HTTP/3 improved on it.
 lastmod: 2025-10-17T23:20:48+09:00
 layout:
 series:

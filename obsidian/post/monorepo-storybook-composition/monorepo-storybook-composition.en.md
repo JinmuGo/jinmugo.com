@@ -3,6 +3,7 @@ translationSourceHash: 4e267080d6b8435d30cc480e5f19e643de94c332a8d378ca8759c6c16
 title: Setting up Storybook Composition for Monorepo-based Next.js and UI packages
 date: 2025-05-13T13:02:43.826Z
 draft: false
+summary: How to run Next.js app and UI package Storybooks independently, then combine them in one Composition hub with refs, wait-on, and Chromatic permalinks.
 tags:
   - storybook-composition
   - monorepo

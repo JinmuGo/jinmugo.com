@@ -3,6 +3,7 @@ translationSourceHash: d84a271607520997bf1937637b247ce81bcedd5ac0c775637965678e4
 title: Git Squash vs Fixup
 date: 2025-07-11T01:13:41.081Z
 draft: false
+summary: Squash combines commit messages for editing, while fixup discards the follow-up message. This guide also covers a safe workflow with --fixup and --autosquash.
 tags:
   - git
 lastmod: 2025-07-11T23:55:21+09:00
