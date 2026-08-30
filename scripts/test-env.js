@@ -36,7 +36,6 @@ if (allSet) {
   console.log("   npm run postbuild")
   console.log("   또는")
   console.log("   node scripts/submit-to-gsc.js")
-  console.log("   node scripts/submit-urls-to-gsc.js")
 } else {
   console.log("❌ 일부 환경변수가 설정되지 않았습니다.")
   console.log("\n💡 설정 방법:")

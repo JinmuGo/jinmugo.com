@@ -56,11 +56,12 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
 
   const t = texts[lang]
   const basePath = lang === "en" ? "/en" : ""
+  const itemUrl = (pathname: string) => new URL(pathname, origin).href
 
   // 홈 항상 추가
   items.push({
     name: t.home,
-    item: `${origin}${basePath}/`,
+    item: itemUrl(`${basePath}/`),
   })
 
   // 경로 분석
@@ -82,14 +83,14 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
     case "posts":
       items.push({
         name: t.posts,
-        item: `${origin}${basePath}/posts/`,
+        item: itemUrl(`${basePath}/posts/`),
       })
 
       if (secondSegment && title) {
         // 개별 포스트 페이지
         items.push({
           name: title,
-          item: `${origin}${pathname}`,
+          item: itemUrl(pathname),
         })
       }
       break
@@ -97,13 +98,13 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
     case "weekly":
       items.push({
         name: t.weekly,
-        item: `${origin}${basePath}/weekly/`,
+        item: itemUrl(`${basePath}/weekly/`),
       })
 
       if (secondSegment && title) {
         items.push({
           name: title,
-          item: `${origin}${pathname}`,
+          item: itemUrl(pathname),
         })
       }
       break
@@ -111,7 +112,7 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
     case "archives":
       items.push({
         name: t.archives,
-        item: `${origin}${basePath}/archives/`,
+        item: itemUrl(`${basePath}/archives/`),
       })
 
       if (secondSegment && thirdSegment) {
@@ -122,7 +123,7 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
 
         items.push({
           name: `${classifyName}: ${targetName.charAt(0).toUpperCase() + targetName.slice(1)}`,
-          item: `${origin}${pathname}`,
+          item: itemUrl(pathname),
         })
       }
       break
@@ -130,67 +131,67 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
     case "about":
       items.push({
         name: t.about,
-        item: `${origin}${pathname}`,
+        item: itemUrl(pathname),
       })
       break
 
     case "gallery":
       items.push({
         name: t.gallery,
-        item: `${origin}${pathname}`,
+        item: itemUrl(pathname),
       })
       break
 
     case "library":
       items.push({
         name: t.library,
-        item: `${origin}${basePath}/library/`,
+        item: itemUrl(`${basePath}/library/`),
       })
 
       if (secondSegment === "books") {
         items.push({
           name: t.books,
-          item: `${origin}${basePath}/library/books/`,
+          item: itemUrl(`${basePath}/library/books/`),
         })
 
         if (thirdSegment === "author" && fourthSegment) {
           items.push({
             name: t.authors,
-            item: `${origin}${basePath}/library/books/`,
+            item: itemUrl(`${basePath}/library/books/`),
           })
           if (title) {
             items.push({
               name: title,
-              item: `${origin}${pathname}`,
+              item: itemUrl(pathname),
             })
           }
         } else if (thirdSegment && title) {
           items.push({
             name: title,
-            item: `${origin}${pathname}`,
+            item: itemUrl(pathname),
           })
         }
       } else if (secondSegment === "movies") {
         items.push({
           name: t.movies,
-          item: `${origin}${basePath}/library/movies/`,
+          item: itemUrl(`${basePath}/library/movies/`),
         })
 
         if (thirdSegment === "director" && fourthSegment) {
           items.push({
             name: t.directors,
-            item: `${origin}${basePath}/library/movies/`,
+            item: itemUrl(`${basePath}/library/movies/`),
           })
           if (title) {
             items.push({
               name: title,
-              item: `${origin}${pathname}`,
+              item: itemUrl(pathname),
             })
           }
         } else if (thirdSegment && title) {
           items.push({
             name: title,
-            item: `${origin}${pathname}`,
+            item: itemUrl(pathname),
           })
         }
       }
@@ -201,7 +202,7 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
       if (title) {
         items.push({
           name: title,
-          item: `${origin}${pathname}`,
+          item: itemUrl(pathname),
         })
       }
       break

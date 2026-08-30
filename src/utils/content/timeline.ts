@@ -1,5 +1,6 @@
 import type { Post, Weekly } from "@/types/content"
 import type { ListItem } from "@/types/schema"
+import { buildItemUrl } from "@/utils/structuredData"
 
 export type TimelineEntry = Post | Weekly
 
@@ -12,12 +13,12 @@ export function mergeTimelineEntries(posts: Post[], weeklies: Weekly[]): Timelin
 export function timelineEntryToListItem(entry: TimelineEntry, position: number): ListItem {
   return {
     "@type": "ListItem",
-    url: entry.href,
+    url: buildItemUrl(entry.href),
     position,
     item: {
       "@type": entry.type === "weekly" ? "Article" : "BlogPosting",
       name: entry.data.title,
-      url: entry.href,
+      url: buildItemUrl(entry.href),
       description: entry.data.summary,
     },
   }

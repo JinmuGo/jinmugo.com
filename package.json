@@ -20,7 +20,7 @@
 		"build": "pnpm prebuild && astro build",
 		"preview": "astro preview",
 		"astro": "astro",
-		"deploy:gsc": "node scripts/submit-to-gsc.js && node scripts/submit-urls-to-gsc.js",
+		"deploy:gsc": "node scripts/submit-to-gsc.js",
 		"translate": "node --env-file=.env scripts/translate.js",
 		"translate:staged": "node --env-file=.env scripts/translate.js --staged-only",
 		"gallery:manifest": "node --env-file=.env scripts/build-gallery-manifest.js",

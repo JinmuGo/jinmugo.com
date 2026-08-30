@@ -40,6 +40,7 @@ const jsonLd = generatePageSchema({
   jsonLd={jsonLd}
   type="website"
 >
+  <h1 class="sr-only">{title}</h1>
   {
     Object.entries(projects).map(([section, projects]: [string, Project[]]) => (
       <section class="my-2">

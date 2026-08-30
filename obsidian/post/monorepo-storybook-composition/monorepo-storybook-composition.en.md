@@ -63,7 +63,7 @@ monorepo/
         └── .storybook/ # UI-specific Storybook configuration
 ```
 
-- packages/ui`keeps the tsup-based Storybook as before, but runs independently on port`http://localhost:6007`.
+- `packages/ui` keeps the tsup-based Storybook as before, but runs independently on port `http://localhost:6007`.
 - Configure `apps/web` to have a separate Storybook for the Next.js environment, and create stories that reflect the actual page, layout, and context environment (`http://localhost:6008`)
 - Refactored `apps/storybook` to only act as a hub for **Storybook Composition** linking these two Storybooks to external Storybooks using the `refs` option (`http://localhost:6006`)
 

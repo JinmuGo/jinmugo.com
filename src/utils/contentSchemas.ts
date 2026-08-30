@@ -50,7 +50,7 @@ export interface ContentSchemas {
  */
 export function generateContentSchemas(options: GenerateContentSchemasOptions): ContentSchemas {
   const { frontmatter, pathname, origin, contentType, imageUrl } = options
-  const { title, date, summary, tags, href } = frontmatter
+  const { title, date, lastmod, summary, tags } = frontmatter
   const category = "category" in frontmatter ? frontmatter.category : undefined
 
   // Detect language from pathname
@@ -60,16 +60,16 @@ export function generateContentSchemas(options: GenerateContentSchemasOptions): 
   const commonOptions = {
     title: title,
     description: summary || title,
-    url: href,
+    url: new URL(pathname, origin).href,
     keywords: tags?.join(", ") || "",
     inLanguage: lang,
     datePublished: date.toISOString(),
-    dateModified: date.toISOString(),
+    dateModified: (lastmod ?? date).toISOString(),
     authorName: "Jinmu",
     authorUrl: "https://jinmu.me/about",
     wordCount: frontmatter.wordCount,
     readingTime: frontmatter.readingTime,
-    imageUrl: imageUrl || (frontmatter.image ? `${origin}${frontmatter.image}` : undefined),
+    imageUrl: imageUrl || (frontmatter.image ? new URL(frontmatter.image, origin).href : undefined),
   }
 
   // Generate appropriate schema based on content type

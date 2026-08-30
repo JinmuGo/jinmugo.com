@@ -1,6 +1,5 @@
 ---
 import { ObsidianDownloadCount } from "@/components/features/ObsidianDownloadCount"
-import Title from "@/components/layout/Title"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import Layout from "@/layouts/Layout.astro"
 import { type Project, type ProjectSection, projectsData } from "@/utils/projectsData"
@@ -41,10 +40,13 @@ const jsonLd = generatePageSchema({
   jsonLd={jsonLd}
   type="website"
 >
+  <h1 class="sr-only">{title}</h1>
   {
     Object.entries(projects).map(([section, projects]: [string, Project[]]) => (
       <section class="my-2">
-        <Title className="capitalize">{section}</Title>
+        <h2 class="mb-6 pb-1 text-xl border-b border-gray-200 dark:border-gray-500 lg:text-2xl xl:text-3xl font-semibold capitalize">
+          {section}
+        </h2>
         <ul class="pl-4 my-4 list-disc">
           {projects.map((project: Project) => (
             <li class="mb-3">

@@ -141,7 +141,12 @@ function syncContent() {
     const targetPath = path.join(targetContentDir, targetRelativePath)
     processedTargetFiles.add(targetRelativePath)
 
-    const sourceContent = fs.readFileSync(sourcePath)
+    let sourceContent = fs.readFileSync(sourcePath)
+    if (isMd) {
+      sourceContent = Buffer.from(
+        sourceContent.toString().replaceAll(`](${path.basename(file)}#`, "](#"),
+      )
+    }
 
     let shouldWrite = false
 

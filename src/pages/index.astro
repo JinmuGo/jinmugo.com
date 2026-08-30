@@ -7,8 +7,8 @@ import { getKoreanPosts } from "@/utils/content/posts"
 import { mergeTimelineEntries, timelineEntryToListItem } from "@/utils/content/timeline"
 import { getKoreanWeeklies } from "@/utils/content/weekly"
 import {
-  generateOrganizationSchema,
   generatePageSchema,
+  generatePersonSchema,
   generateWebsiteSchema,
 } from "@/utils/structuredData"
 import pkg from "~/package.json"
@@ -30,20 +30,14 @@ const websiteSchema = generateWebsiteSchema({
   url,
   description,
   inLanguage: "ko",
-  potentialAction: {
-    "@type": "SearchAction",
-    target: `${url}/search?q={search_term_string}`,
-    "query-input": "required name=search_term_string",
-  },
 })
 
-// Organization 스키마
-const organizationSchema = generateOrganizationSchema({
-  name: title,
+const personSchema = generatePersonSchema({
+  name: pkg.author,
   url,
   description,
-  logo: `${url}/avatar.webp`,
-  sameAs: ["https://github.com/jinmugo", "https://twitter.com/jinmugo"],
+  image: `${url}/avatar.webp`,
+  sameAs: Object.values(pkg.social),
 })
 
 // 페이지 스키마
@@ -56,7 +50,7 @@ const pageSchema = generatePageSchema({
   itemListElements: recentEntries.map((entry, index) => timelineEntryToListItem(entry, index + 1)),
 })
 
-const jsonLd = [websiteSchema, organizationSchema, pageSchema]
+const jsonLd = [websiteSchema, personSchema, pageSchema]
 ---
 
 <Layout

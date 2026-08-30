@@ -9,6 +9,7 @@ import type {
   PersonSchemaOptions,
   WebsiteSchemaOptions,
 } from "@/types/schema"
+import { withTrailingSlash } from "@/utils/language"
 import pkg from "~/package.json"
 
 // Re-export types for backward compatibility
@@ -90,6 +91,11 @@ export const generatePageSchema = (options: PageSchemaOptions) => {
       itemListElement: itemListElements.map((item) => ({
         ...item,
         "@type": "ListItem",
+        url: buildItemUrl(item.url),
+        item: {
+          ...item.item,
+          url: buildItemUrl(item.item.url),
+        },
       })),
     }
   }
@@ -177,10 +183,9 @@ export const generateBlogPostingSchema = (options: ArticleSchemaOptions) => {
 
 // URL 빌더 함수 (통합)
 export const buildUrl = (basePath: string, path?: string) => {
-  if (path) {
-    return `${basePath}${path}`.toLowerCase()
-  }
-  return basePath.toLowerCase()
+  const url = new URL(`${basePath}${path ?? ""}`, pkg.homepage)
+  url.pathname = withTrailingSlash(url.pathname)
+  return url.href
 }
 
 // 편의 함수들 (하위 호환성을 위해 유지)

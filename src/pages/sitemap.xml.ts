@@ -2,13 +2,22 @@ import { format } from "date-fns"
 import type { Post, Weekly } from "@/types/content"
 import { getEnglishPosts, getKoreanPosts } from "@/utils/content/posts"
 import { getEnglishWeeklies, getKoreanWeeklies } from "@/utils/content/weekly"
+import { getBookMedia } from "@/utils/library/books"
+import { getMovieMedia } from "@/utils/library/movies"
 
 export async function GET() {
   const siteUrl = import.meta.env.SITE
-  const koPosts = await getKoreanPosts()
-  const enPosts = await getEnglishPosts()
-  const koWeeklies = await getKoreanWeeklies()
-  const enWeeklies = await getEnglishWeeklies()
+  const [koPosts, enPosts, koWeeklies, enWeeklies, koBooks, enBooks, koMovies, enMovies] =
+    await Promise.all([
+      getKoreanPosts(),
+      getEnglishPosts(),
+      getKoreanWeeklies(),
+      getEnglishWeeklies(),
+      getBookMedia("ko"),
+      getBookMedia("en"),
+      getMovieMedia("ko"),
+      getMovieMedia("en"),
+    ])
 
   const renderUrl = (
     slug: string,
@@ -45,6 +54,7 @@ export async function GET() {
       }
       result += `<xhtml:link rel="alternate" hreflang="en" href="${siteUrl}${enSlug}"/>`
       result += `<xhtml:link rel="alternate" hreflang="ko" href="${siteUrl}${normalizedSlug}"/>`
+      result += `<xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}${normalizedSlug}"/>`
       result += "</url>"
     }
 
@@ -61,6 +71,10 @@ export async function GET() {
     ${renderUrl("/series")}
     ${renderUrl("/gallery")}
     ${renderUrl("/projects")}
+    ${renderUrl("/resume")}
+    ${renderUrl("/library")}
+    ${renderUrl("/library/books")}
+    ${renderUrl("/library/movies")}
     ${koPosts
       .map((post: Post) => {
         const lastMod = format(post.data.lastmod ?? post.data.date, "yyyy-MM-dd")
@@ -76,6 +90,18 @@ export async function GET() {
 
         return renderUrl(weekly.href, { hasEn, lastMod })
       })
+      .join("\n")}
+    ${koBooks
+      .filter((book) => book.cover)
+      .map((book) =>
+        renderUrl(book.href, { hasEn: enBooks.some((item) => item.slug === book.slug) }),
+      )
+      .join("\n")}
+    ${koMovies
+      .filter((movie) => movie.cover)
+      .map((movie) =>
+        renderUrl(movie.href, { hasEn: enMovies.some((item) => item.slug === movie.slug) }),
+      )
       .join("\n")}
   </urlset>
   `.trim()
