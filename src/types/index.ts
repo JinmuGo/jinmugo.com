@@ -14,7 +14,6 @@ export type {
   ArticleSchemaOptions,
   BreadcrumbItem,
   ListItem,
-  OrganizationSchemaOptions,
   PageSchemaOptions,
   PersonSchemaOptions,
   WebsiteSchemaOptions,

@@ -2,10 +2,11 @@
 title: "[CLF-C02] AWS Cloud Practitioner 자격증 취득 후기"
 date: 2025-05-22T00:03:25.401Z
 draft: false
+summary: AWS Cloud Practitioner CLF-C02를 준비한 순서, 공식 학습 자료와 모의고사 활용법, 온라인 감독 시험 당일 경험을 공유합니다.
 tags:
   - AWS
   - CLF-C02
-lastmod: 2025-05-22T14:18:22+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: cloud
 ---
 

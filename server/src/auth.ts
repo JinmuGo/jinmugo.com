@@ -2,17 +2,13 @@ import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { db } from "./db/index.js"
 import * as schema from "./db/schema.js"
-
-const trustedOrigins = (process.env.FRONTEND_URL ?? "http://localhost:4322")
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean)
+import { config } from "./runtime-config.js"
 
 export const auth = betterAuth({
   // Explicit baseURL so OAuth callback URLs always use https. Coolify
   // terminates TLS at the proxy, so requests reach the container as plain
   // http and BetterAuth would otherwise infer the wrong scheme.
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: config.betterAuthUrl,
   database: drizzleAdapter(db, {
     provider: "sqlite",
     schema: {
@@ -24,16 +20,12 @@ export const auth = betterAuth({
   }),
   socialProviders: {
     github: {
-      clientId: process.env.GITHUB_CLIENT_ID ?? "",
-      clientSecret: process.env.GITHUB_CLIENT_SECRET ?? "",
-    },
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      clientId: config.githubClientId,
+      clientSecret: config.githubClientSecret,
     },
   },
-  trustedOrigins,
-  secret: process.env.BETTER_AUTH_SECRET,
+  trustedOrigins: config.frontendOrigins,
+  secret: config.betterAuthSecret,
   advanced: {
     // Cross-origin cookie attributes so browsers accept the session cookie
     // when the frontend runs on a different origin (e.g. localhost during

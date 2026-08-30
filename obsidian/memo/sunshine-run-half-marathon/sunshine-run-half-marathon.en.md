@@ -1,14 +1,16 @@
 ---
+translationSourceHash: 44b961a49366006a9e995552c75ba4ef83f70fc707436c417b24a6a56c14a064
 title: 4th Sunshine Run Half Marathon Recap
 date: 2025-09-05T02:06:49.176Z
 draft: false
+summary: Lessons about pacing and ambition from finishing my first official half marathon through changing weather and late-race shin pain.
 tags:
   - marathon
   - running
   - sunshine-run
   - half-marathon
 category: health
-lastmod: 2025-09-15T20:47:21+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 ---
 ![[first-half-marathon-1757565989065.webp]]
 

@@ -1,11 +1,13 @@
 ---
+translationSourceHash: 5819941000bc8b30f290539bfc7821ddbb8ea4e728396b80fdba3d52d0fc2fe7
 title: An Introduction to Split Keyboards
 date: 2025-07-27T11:13:28.940Z
 draft: false
+summary: A two-week review of the Corne v4.1 split keyboard, covering shoulder strain, portability, layer adaptation, wireless connectivity trade-offs, and my keymap.
 tags:
   - keyboard
   - splitKeyboard
-lastmod: 2025-07-27T22:24:57+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: tech
 ---
 

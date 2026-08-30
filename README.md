@@ -24,7 +24,7 @@ Obsidian 마크다운 (`obsidian/`) → `scripts/build-content.js`가 `src/conte
 
 ## 기술 스택
 
-- **Astro 6** (정적 사이트 생성)
+- **Astro 7** (정적 사이트 생성)
 - **React** (인터랙티브 islands)
 - **Tailwind CSS v4** + **shadcn/ui**
 - **Biome** (린팅/포맷팅)

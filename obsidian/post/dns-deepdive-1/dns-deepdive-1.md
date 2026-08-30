@@ -2,10 +2,11 @@
 title: DNS (Domain Name System) DeepDive - 배경과 시스템
 date: 2025-06-08T12:58:28.806Z
 draft: false
+summary: HOSTS.TXT의 중앙 관리 한계에서 계층화·위임 기반의 DNS가 등장하기까지, 도메인 이름과 분산 관리 구조의 배경을 살펴봅니다.
 tags:
   - DNS
   - NameServer
-lastmod: 2025-07-01T21:41:36+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: develop
 series: DNS-DeepDive
 seriesOrder: 1

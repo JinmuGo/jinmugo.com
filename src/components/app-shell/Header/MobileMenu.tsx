@@ -105,6 +105,8 @@ const MobileMenu = ({ pathname }: MobileMenuProps) => {
       <button
         type="button"
         tabIndex={-1}
+        disabled={!isOpen}
+        aria-hidden={!isOpen}
         className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[var(--z-mobile-backdrop)] sm:hidden transition-all duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         onClick={closeMenu}
         onKeyDown={(e) => e.key === "Escape" && closeMenu()}
@@ -116,6 +118,8 @@ const MobileMenu = ({ pathname }: MobileMenuProps) => {
         ref={menuPanelRef}
         role="dialog"
         aria-modal="true"
+        aria-hidden={!isOpen}
+        inert={!isOpen}
         aria-label="Navigation menu"
         className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-950
           border-l border-gray-200 dark:border-gray-800

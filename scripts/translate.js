@@ -1,327 +1,321 @@
 // REF: https://github.com/MaxKim-J/maxkim-j.github.io
 
 import { execSync } from "node:child_process"
+import { createHash } from "node:crypto"
 import fs from "node:fs/promises"
 import path from "node:path"
+import { pathToFileURL } from "node:url"
 
-// Default to en-US for better consistency
 const TARGET_LANG = "en-US"
 const CONTENT_DIR_PATH = path.resolve("obsidian")
+const TRANSLATION_HASH_FIELD = "translationSourceHash"
 
-/* global URLSearchParams */
-
-// Get staged files from git
-const getStagedFiles = () => {
+function getStagedFiles() {
   try {
-    const output = execSync("git diff --cached --name-only", { encoding: "utf8" })
-    return output.trim().split("\n").filter(Boolean)
+    return execSync("git diff --cached --name-only", { encoding: "utf8" })
+      .trim()
+      .split("\n")
+      .filter(Boolean)
   } catch (error) {
     console.warn("Git staged files를 가져오는데 실패했습니다:", error.message)
     return []
   }
 }
 
-// Recursive function to find all .md files in a directory
-const findMdFilesRecursively = async (dirPath) => {
+async function findMdFiles(dirPath) {
   const files = []
 
   try {
     const items = await fs.readdir(dirPath, { withFileTypes: true })
-
     for (const item of items) {
       const fullPath = path.join(dirPath, item.name)
-
-      if (item.isDirectory()) {
-        // Skip .git and other hidden directories
-        if (!item.name.startsWith(".")) {
-          const subFiles = await findMdFilesRecursively(fullPath)
-          files.push(...subFiles)
-        }
-      } else if (item.isFile() && path.extname(item.name) === ".md") {
+      if (item.isDirectory() && !item.name.startsWith(".")) {
+        const nestedFiles = await findMdFiles(fullPath)
+        files.push(...nestedFiles)
+      } else if (item.isFile() && item.name.endsWith(".md")) {
         files.push(fullPath)
       }
     }
   } catch (error) {
-    console.warn(`Warning: Could not read directory ${dirPath}:`, error.message)
+    if (error.code !== "ENOENT") {
+      throw error
+    }
   }
 
   return files
 }
 
-const isDraft = async (filePath) => {
-  try {
-    const absolutePath = path.resolve(CONTENT_DIR_PATH, filePath)
-    const fileContent = await fs.readFile(absolutePath, "utf8")
-    // More robust regex for frontmatter
-    const frontmatterMatch = fileContent.match(/^---\r?\n([\s\S]*?)\r?\n---/)
-    if (frontmatterMatch?.[1]) {
-      const frontmatter = frontmatterMatch[1]
-      // draft: true 또는 draft:true 패턴을 정확히 매칭
-      const draftMatch = frontmatter.match(/^draft:\s*true$/m)
-      return !!draftMatch
-    }
-  } catch (error) {
-    console.warn(`Warning: Could not read file ${filePath} to check draft status:`, error.message)
-  }
-  return false
+function isTranslation(relativePath) {
+  return relativePath.endsWith(".en.md") || relativePath.endsWith(".en-US.md")
 }
 
-const validateTranslateNecessity = async ({ lang, stagedOnly = false }) => {
-  let targetFiles = []
+function isAutomaticTranslationPath(relativePath) {
+  return !/^app[\\/]/.test(relativePath)
+}
+
+function translationPathFor(relativePath) {
+  return relativePath.replace(/\.md$/, ".en.md")
+}
+
+function sourcePathFor(relativePath) {
+  return relativePath.replace(/\.en(?:-US)?\.md$/, ".md")
+}
+
+async function readIfExists(filePath) {
+  try {
+    return await fs.readFile(filePath, "utf8")
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      return null
+    }
+    throw error
+  }
+}
+
+export function hashTranslationSource(content) {
+  return createHash("sha256").update(content).digest("hex")
+}
+
+export function getTranslationSourceHash(content) {
+  const frontmatter = content.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1]
+  return frontmatter?.match(
+    new RegExp(`^${TRANSLATION_HASH_FIELD}:\\s*([a-f0-9]{64})\\s*$`, "m"),
+  )?.[1]
+}
+
+function setFrontmatterField(frontmatter, key, value) {
+  const line = `${key}: ${value}`
+  const fieldPattern = new RegExp(`^${key}:.*$`, "m")
+  return fieldPattern.test(frontmatter)
+    ? frontmatter.replace(fieldPattern, line)
+    : `${frontmatter}\n${line}`
+}
+
+function isDraft(content) {
+  const frontmatter = content.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1]
+  return /^draft:\s*true\s*$/m.test(frontmatter ?? "")
+}
+
+export async function findTranslationTargets({
+  contentDir = CONTENT_DIR_PATH,
+  stagedOnly = false,
+  stagedFiles,
+} = {}) {
+  let originalRelativePaths
 
   if (stagedOnly) {
-    // staged된 파일들 중에서 한국어 마크다운 파일만 필터링
-    const stagedFiles = getStagedFiles()
-    const koreanMdFiles = stagedFiles.filter(
-      (file) => file.includes("obsidian") && file.endsWith(".md") && !file.endsWith(`.${lang}.md`), // lang이 en-US일 경우 .en-US.md 체크
-    )
-    // obsidian/ 경로에서 콘텐츠 상대 경로만 추출
-    targetFiles = koreanMdFiles
-      .map((file) => {
-        const match = file.match(/obsidian\/(.+)/)
-        return match ? match[1] : null
-      })
-      .filter(Boolean)
+    originalRelativePaths = (stagedFiles ?? getStagedFiles())
+      .filter(
+        (file) => file.startsWith("obsidian/") && file.endsWith(".md") && !isTranslation(file),
+      )
+      .map((file) => file.slice("obsidian/".length))
+      .filter(isAutomaticTranslationPath)
   } else {
-    // 기존 로직: 모든 파일 검사
-    const allMdFiles = await findMdFilesRecursively(CONTENT_DIR_PATH)
-    const allMdFilesRelative = allMdFiles.map((file) => path.relative(CONTENT_DIR_PATH, file))
-
-    // lang extension check (.en.md vs .en-US.md handling)
-    // We strictly look for exactly `.${lang}.md`
-    const allOriginalBlogContents = allMdFilesRelative.filter(
-      (file) => !file.includes(`.en.`) && !file.includes(`.en-US.`),
-    )
-    const allTranslatedBlogContents = allMdFilesRelative
-      .filter((file) => file.endsWith(`.${lang}.md`))
-      .map((file) => file.replace(`.${lang}.md`, ".md"))
-
-    targetFiles = allOriginalBlogContents.filter(
-      (file) => !allTranslatedBlogContents.includes(file),
-    )
+    const allFiles = await findMdFiles(contentDir)
+    originalRelativePaths = allFiles
+      .map((file) => path.relative(contentDir, file))
+      .filter((file) => !isTranslation(file) && isAutomaticTranslationPath(file))
   }
 
-  // Draft 파일 제외
-  const finalTargetFiles = []
-  for (const file of targetFiles) {
-    if (!(await isDraft(file))) {
-      finalTargetFiles.push(file)
-    } else {
-      console.info(`번역 스킵(draft: true): ${file}`)
-    }
-  }
+  const originals = []
+  const targets = []
 
-  return { allOriginalBlogContents: targetFiles, allNotYetTranslatedBlogContents: finalTargetFiles }
-}
-
-const parseMdxFileContent = async (contentName) => {
-  const contentPath = path.resolve(CONTENT_DIR_PATH, contentName)
-  const fileString = await fs.readFile(contentPath, "utf8")
-  return { content: fileString, path: contentPath }
-}
-
-function cleanupMarkdown(text) {
-  return (
-    text
-      // Fix escaped headers
-      .replace(/^\\#+/gm, (match) => match.replace(/\\/g, ""))
-      // Fix escaped bold/italic
-      .replace(/\\\*/g, "*")
-      .replace(/\\_/g, "_")
-      // Fix escaped links
-      .replace(/\\\[/g, "[")
-      .replace(/\\\]/g, "]")
-      // Fix escaped images
-      .replace(/\\!/g, "!")
-      // Fix code blocks
-      .replace(/\\`/g, "`")
-      // Restore frontmatter separators if they were mangled (though we handle FM separately now)
-      .replace(/\\---/g, "---")
-  )
-}
-
-async function main() {
-  console.info("DeepL API로 블로그 글 번역을 합니다.")
-
-  // .env 파일 로드를 위해 dotenv 확인 (node --env-file을 쓰더라도 여기서 확인 가능)
-  const DEEPL_API_KEY = process.env.DEEPL_API_KEY
-
-  // API 키 검증
-  if (!DEEPL_API_KEY) {
-    console.error("Error: DEEPL_API_KEY 환경 변수가 설정되지 않았습니다.")
-    process.exit(1)
-  }
-
-  // 커맨드 라인 인자로 stagedOnly 옵션 확인
-  const stagedOnly = process.argv.includes("--staged-only")
-
-  const { allOriginalBlogContents, allNotYetTranslatedBlogContents } =
-    await validateTranslateNecessity({
-      lang: "en", // Check against 'en' since we might be migrating or sticking to 'en' file extension but 'en-US' content
-      stagedOnly,
-    })
-
-  // We want to use 'en' as the file extension to match existing convention if possible,
-  // OR switch to 'en-US'. The existing files are .en.md. Let's stick to .en.md for filename, but requested en-US from DeepL.
-  // Actually, let's stick to 'en' extension to avoid breaking links/logic elsewhere.
-  const FILE_LANG_EXT = "en"
-
-  console.info(`전체 한국어 컨텐츠 ${allOriginalBlogContents.length}개`)
-  console.info(
-    `${TARGET_LANG}로 번역이 안 된 블로그 컨텐츠 ${allNotYetTranslatedBlogContents.length}개를 번역합니다.`,
-  )
-  console.info()
-
-  const translateTargetContents = await Promise.all(
-    allNotYetTranslatedBlogContents.map((content) => parseMdxFileContent(content)),
-  )
-
-  const count = allNotYetTranslatedBlogContents.length
-  let idx = 0
-
-  for (const targetContents of translateTargetContents) {
-    const { content, path } = targetContents
-    const start = performance.now()
-    console.info()
-    console.info(`-----------------------`)
-    console.info(`(${idx + 1}/${count}) ${path} 번역 시작`)
-
-    try {
-      // Robust frontmatter extraction
-      const frontmatterRegex = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/
-      const match = content.match(frontmatterRegex)
-
-      let frontmatter = ""
-      let body = content
-      let hasFrontmatter = false
-
-      if (match) {
-        frontmatter = match[1]
-        body = match[2]
-        hasFrontmatter = true
-      }
-
-      // Fields to translate from frontmatter
-      const frontmatterFields = [
-        { key: "title", value: "" },
-        { key: "summary", value: "" },
-        { key: "coverAlt", value: "" },
-        { key: "oneLiner", value: "" },
-      ]
-
-      if (hasFrontmatter) {
-        // Simple extraction for short text fields
-        for (const field of frontmatterFields) {
-          const fieldMatch = frontmatter.match(new RegExp(`^${field.key}:\\s*(.+)$`, "m"))
-          if (fieldMatch) {
-            field.value = fieldMatch[1].trim()
-          }
-        }
-      }
-
-      // Prepare translation requests
-      // We will send multiple 'text' parameters: selected frontmatter fields and body
-      const textsToTranslate = []
-      for (const field of frontmatterFields) {
-        if (field.value) {
-          textsToTranslate.push(field.value)
-        }
-      }
-      textsToTranslate.push(body)
-
-      const url = "https://api-free.deepl.com/v2/translate"
-
-      const params = new URLSearchParams()
-      textsToTranslate.forEach((t) => {
-        params.append("text", t)
-      })
-      params.append("target_lang", TARGET_LANG)
-      // Enforce source language as Korean to prevent auto-detection failure on mixed content
-      params.append("source_lang", "KO")
-
-      const options = {
-        method: "POST",
-        headers: {
-          Authorization: `DeepL-Auth-Key ${DEEPL_API_KEY}`,
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: params,
-      }
-
-      const response = await fetch(url, options)
-
-      // HTTP 응답 상태 확인
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: "Unknown error" }))
-        console.error(
-          `번역 실패: HTTP ${response.status} ${response.statusText}`,
-          errorData.message || errorData,
-        )
-        continue
-      }
-
-      const data = await response.json()
-
-      // 응답 데이터 검증
-      if (
-        !data.translations ||
-        !Array.isArray(data.translations) ||
-        data.translations.length !== textsToTranslate.length
-      ) {
-        console.error(`번역 실패: 응답 개수 불일치 또는 잘못된 형식`, data)
-        continue
-      }
-
-      // Reconstruct content
-      let transIdx = 0
-      const translatedFrontmatterFields = frontmatterFields.map((field) => {
-        if (!field.value) {
-          return field
-        }
-
-        const translatedField = {
-          ...field,
-          value: data.translations[transIdx].text,
-        }
-        transIdx++
-        return translatedField
-      })
-
-      let translatedBody = data.translations[transIdx].text
-
-      // Cleanup markdown in body
-      translatedBody = cleanupMarkdown(translatedBody)
-
-      // Reconstruct frontmatter
-      let newFrontmatter = frontmatter
-      for (const field of translatedFrontmatterFields) {
-        if (field.value) {
-          newFrontmatter = newFrontmatter.replace(
-            new RegExp(`^${field.key}:.+$`, "m"),
-            `${field.key}: ${field.value}`,
-          )
-        }
-      }
-
-      const translatedContent = hasFrontmatter
-        ? `---\n${newFrontmatter}\n---\n${translatedBody}`
-        : translatedBody
-
-      const translatedMdxPath = path.replace(/\.md$/, `.${FILE_LANG_EXT}.md`)
-      console.info(`${translatedMdxPath}에 번역 파일을 작성합니다.`)
-
-      await fs.writeFile(translatedMdxPath, translatedContent)
-    } catch (error) {
-      console.error(`번역 중 오류 발생 (${path}):`, error.message || error)
+  for (const relativePath of [...new Set(originalRelativePaths)].sort()) {
+    const sourcePath = path.join(contentDir, relativePath)
+    const content = await readIfExists(sourcePath)
+    if (content === null) {
       continue
     }
 
-    const end = performance.now()
-    console.info(`(${idx + 1}/${count}) ${path} 번역 완료, duration: ${end - start}ms`)
-    idx += 1
-    console.info(`-----------------------`)
-    console.info()
+    originals.push(relativePath)
+    if (isDraft(content)) {
+      continue
+    }
+
+    const sourceHash = hashTranslationSource(content)
+    const translatedRelativePath = translationPathFor(relativePath)
+    const translatedContent = await readIfExists(path.join(contentDir, translatedRelativePath))
+
+    if (translatedContent === null || getTranslationSourceHash(translatedContent) !== sourceHash) {
+      targets.push({
+        relativePath,
+        sourcePath,
+        translatedRelativePath,
+        content,
+        sourceHash,
+      })
+    }
+  }
+
+  return { originals, targets }
+}
+
+export async function syncTranslationCache({ mode, cacheDir, contentDir = CONTENT_DIR_PATH }) {
+  if (mode !== "restore" && mode !== "save") {
+    throw new Error(`Unsupported translation cache mode: ${mode}`)
+  }
+
+  const sourceRoot = mode === "restore" ? cacheDir : contentDir
+  const targetRoot = mode === "restore" ? contentDir : cacheDir
+  const translatedFiles = (await findMdFiles(sourceRoot))
+    .map((file) => path.relative(sourceRoot, file))
+    .filter((file) => file.endsWith(".en.md") && isAutomaticTranslationPath(file))
+    .sort()
+
+  let copied = 0
+  let skipped = 0
+
+  for (const relativePath of translatedFiles) {
+    const sourceContent = await readIfExists(path.join(contentDir, sourcePathFor(relativePath)))
+    const translatedContent = await readIfExists(path.join(sourceRoot, relativePath))
+    const sourceHash = sourceContent === null ? undefined : hashTranslationSource(sourceContent)
+
+    if (
+      sourceContent === null ||
+      translatedContent === null ||
+      getTranslationSourceHash(translatedContent) !== sourceHash
+    ) {
+      skipped++
+      continue
+    }
+
+    const targetPath = path.join(targetRoot, relativePath)
+    if (mode === "restore") {
+      const targetContent = await readIfExists(targetPath)
+      const targetHash =
+        targetContent === null ? undefined : getTranslationSourceHash(targetContent)
+      if (targetContent !== null && (!targetHash || targetHash === sourceHash)) {
+        skipped++
+        continue
+      }
+    }
+    await fs.mkdir(path.dirname(targetPath), { recursive: true })
+    await fs.copyFile(path.join(sourceRoot, relativePath), targetPath)
+    copied++
+  }
+
+  return { copied, skipped }
+}
+
+function cleanupMarkdown(text) {
+  return text
+    .replace(/^\\#+/gm, (match) => match.replace(/\\/g, ""))
+    .replace(/\\\*/g, "*")
+    .replace(/\\_/g, "_")
+    .replace(/\\\[/g, "[")
+    .replace(/\\\]/g, "]")
+    .replace(/\\!/g, "!")
+    .replace(/\\`/g, "`")
+    .replace(/\\---/g, "---")
+}
+
+async function translateContent({ content, sourceHash, apiKey }) {
+  const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/)
+  let frontmatter = frontmatterMatch?.[1] ?? ""
+  const body = frontmatterMatch?.[2] ?? content
+  const frontmatterFields = ["title", "summary", "coverAlt", "oneLiner"].map((key) => ({
+    key,
+    value: frontmatter.match(new RegExp(`^${key}:\\s*(.+)$`, "m"))?.[1]?.trim() ?? "",
+  }))
+  const texts = [
+    ...frontmatterFields.filter((field) => field.value).map((field) => field.value),
+    body,
+  ]
+  const params = new URLSearchParams()
+
+  for (const text of texts) {
+    params.append("text", text)
+  }
+  params.append("target_lang", TARGET_LANG)
+  params.append("source_lang", "KO")
+
+  const response = await fetch("https://api-free.deepl.com/v2/translate", {
+    method: "POST",
+    headers: {
+      Authorization: `DeepL-Auth-Key ${apiKey}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: params,
+  })
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: "Unknown error" }))
+    throw new Error(`DeepL HTTP ${response.status}: ${errorData.message ?? response.statusText}`)
+  }
+
+  const data = await response.json()
+  if (!Array.isArray(data.translations) || data.translations.length !== texts.length) {
+    throw new Error("DeepL 응답 개수가 요청과 일치하지 않습니다.")
+  }
+
+  let translationIndex = 0
+  for (const field of frontmatterFields) {
+    if (!field.value) {
+      continue
+    }
+    frontmatter = frontmatter.replace(
+      new RegExp(`^${field.key}:.+$`, "m"),
+      `${field.key}: ${data.translations[translationIndex].text}`,
+    )
+    translationIndex++
+  }
+
+  frontmatter = setFrontmatterField(frontmatter, TRANSLATION_HASH_FIELD, sourceHash)
+  const translatedBody = cleanupMarkdown(data.translations[translationIndex].text)
+  return `---\n${frontmatter}\n---\n${translatedBody}`
+}
+
+function getOptionValue(args, option) {
+  const index = args.indexOf(option)
+  return index >= 0 ? args[index + 1] : undefined
+}
+
+export async function main(args = process.argv.slice(2)) {
+  const restoreCacheDir = getOptionValue(args, "--restore-cache")
+  const saveCacheDir = getOptionValue(args, "--save-cache")
+
+  if (restoreCacheDir || saveCacheDir) {
+    const mode = restoreCacheDir ? "restore" : "save"
+    const cacheDir = path.resolve(restoreCacheDir ?? saveCacheDir)
+    const result = await syncTranslationCache({ mode, cacheDir })
+    console.info(`Translation cache ${mode}: copied ${result.copied}, skipped ${result.skipped}`)
+    return
+  }
+
+  const { originals, targets } = await findTranslationTargets({
+    stagedOnly: args.includes("--staged-only"),
+  })
+  const characterCount = targets.reduce((sum, target) => sum + target.content.length, 0)
+
+  console.info(`전체 한국어 콘텐츠 ${originals.length}개`)
+  console.info(`번역이 필요하거나 오래된 콘텐츠 ${targets.length}개 (${characterCount}자)`)
+
+  if (args.includes("--dry-run") || targets.length === 0) {
+    return
+  }
+
+  const apiKey = process.env.DEEPL_API_KEY
+  if (!apiKey) {
+    throw new Error("DEEPL_API_KEY 환경 변수가 설정되지 않았습니다.")
+  }
+
+  for (const [index, target] of targets.entries()) {
+    console.info(`(${index + 1}/${targets.length}) ${target.relativePath} 번역 시작`)
+    const translatedContent = await translateContent({
+      content: target.content,
+      sourceHash: target.sourceHash,
+      apiKey,
+    })
+    const translatedPath = path.join(CONTENT_DIR_PATH, target.translatedRelativePath)
+    await fs.mkdir(path.dirname(translatedPath), { recursive: true })
+    await fs.writeFile(translatedPath, translatedContent)
+    console.info(`(${index + 1}/${targets.length}) ${target.translatedRelativePath} 번역 완료`)
   }
 }
 
-main()
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error.message ?? error)
+    process.exitCode = 1
+  })
+}

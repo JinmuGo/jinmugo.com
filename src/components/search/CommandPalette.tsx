@@ -1,6 +1,6 @@
 import { Description as DialogDescription, Title as DialogTitle } from "@radix-ui/react-dialog"
 import { Command } from "cmdk"
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react"
+import { type Dispatch, type SetStateAction, useEffect, useRef, useState } from "react"
 import type { Lang } from "@/types/utils"
 import { withTrailingSlash } from "@/utils/language"
 
@@ -21,16 +21,48 @@ interface CommandPaletteProps {
   setOpen: Dispatch<SetStateAction<boolean>>
 }
 
+interface RequestedLangRef {
+  current: Lang | null
+}
+
+type SearchIndexFetcher = (url: string) => Promise<{ json: () => Promise<unknown> }>
+
+export async function loadSearchIndex(
+  open: boolean,
+  lang: Lang,
+  requestedLang: RequestedLangRef,
+  fetcher: SearchIndexFetcher = fetch,
+): Promise<SearchResultPost[] | undefined> {
+  if (!open || requestedLang.current === lang) {
+    return
+  }
+
+  requestedLang.current = lang
+
+  try {
+    const response = await fetcher(`${lang === "en" ? "/en" : ""}/search-index.json`)
+    return (await response.json()) as SearchResultPost[]
+  } catch (error) {
+    if (requestedLang.current === lang) {
+      requestedLang.current = null
+    }
+    throw error
+  }
+}
+
 export default function CommandPalette({ lang, open, setOpen }: CommandPaletteProps) {
   const [posts, setPosts] = useState<SearchResultPost[]>([])
+  const requestedLang = useRef<Lang | null>(null)
 
-  // 2. lang prop이 바뀔 때마다 해당 언어의 JSON 데이터를 다시 불러옵니다.
   useEffect(() => {
-    // '/ko/search-index.json' 또는 '/en/search-index.json'을 호출
-    fetch(`${lang === "en" ? "/en" : ""}/search-index.json`)
-      .then((res) => res.json())
-      .then((data) => setPosts(data))
-  }, [lang]) // lang이 변경될 때 이 useEffect를 다시 실행
+    loadSearchIndex(open, lang, requestedLang)
+      .then((data) => {
+        if (data && requestedLang.current === lang) {
+          setPosts(data)
+        }
+      })
+      .catch(() => undefined)
+  }, [lang, open])
 
   // 2. 키보드 단축키 (Cmd+K 또는 Ctrl+K) 리스너 등록
   useEffect(() => {

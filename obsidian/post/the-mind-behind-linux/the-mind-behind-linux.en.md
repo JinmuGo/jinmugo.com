@@ -1,4 +1,5 @@
 ---
+translationSourceHash: 15e1dc250d46f15d51cd9a858e7ad13db473c4dec5c9a931e865243faec1de9e
 date: "2024-04-19T00:00:00.000Z"
 draft: false
 summary: About Open Source

@@ -7,15 +7,8 @@ on:
     types:
       - completed
 
-  repository_dispatch:
-    types: [content-update]
-
-  workflow_dispatch:
-
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: "pages"
@@ -26,110 +19,90 @@ env:
 
 jobs:
   build:
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - uses: ./.github/actions/common-steps
 
-      - name: Validate required R2 secrets
+      - name: Validate required deployment configuration
         env:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          PUBLIC_COMMENT_API_URL: ${{ secrets.PUBLIC_COMMENT_API_URL }}
         run: |
           missing=0
-          for key in R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_ACCOUNT_ID R2_BUCKET_NAME; do
+          for key in R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_ACCOUNT_ID R2_BUCKET_NAME PUBLIC_COMMENT_API_URL; do
             if [ -z "${!key}" ]; then
               echo "::error::Missing required secret: $key"
               missing=1
             fi
           done
 
+          if [ -n "$PUBLIC_COMMENT_API_URL" ] && ! node -e '
+            try {
+              const url = new URL(process.env.PUBLIC_COMMENT_API_URL)
+              if (!["http:", "https:"].includes(url.protocol) || !url.hostname) process.exit(1)
+            } catch {
+              process.exit(1)
+            }
+          '; then
+            echo "::error::PUBLIC_COMMENT_API_URL must be an absolute http(s) URL"
+            missing=1
+          fi
+
           if [ "$missing" -ne 0 ]; then
-            echo "Required R2 secrets are missing. Failing build early."
+            echo "Required deployment configuration is missing or invalid. Failing build early."
             exit 1
           fi
 
       - name: Create .env file
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          PUBLIC_COMMENT_API_URL: ${{ secrets.PUBLIC_COMMENT_API_URL }}
         run: |
-          cat > .env << EOF
-          R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
-          R2_ACCOUNT_ID=${{ secrets.R2_ACCOUNT_ID }}
-          R2_BUCKET_NAME=${{ secrets.R2_BUCKET_NAME }}
-          GSC_PROPERTY_ID=${{ secrets.GSC_PROPERTY_ID }}
-          GSC_SITE_URL=${{ secrets.GSC_SITE_URL }}
-          GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          PUBLIC_COMMENT_API_URL=${{ secrets.PUBLIC_COMMENT_API_URL }}
-          EOF
+          printf '%s\n' \
+            "R2_ACCESS_KEY_ID=$R2_ACCESS_KEY_ID" \
+            "R2_SECRET_ACCESS_KEY=$R2_SECRET_ACCESS_KEY" \
+            "R2_ACCOUNT_ID=$R2_ACCOUNT_ID" \
+            "R2_BUCKET_NAME=$R2_BUCKET_NAME" \
+            "PUBLIC_COMMENT_API_URL=$PUBLIC_COMMENT_API_URL" \
+            > .env
 
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
 
       - name: Restore translation cache
-        uses: actions/cache@v5
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: .cache/translations
-          key: translations-${{ hashFiles('obsidian') }}
+          key: translations-${{ hashFiles('obsidian/**/*.md', '!obsidian/**/*.en.md', '!obsidian/**/*.en-US.md') }}
           restore-keys: translations-
 
       - name: Restore cached translations into Obsidian vault
-        run: |
-          if [ -d .cache/translations ]; then
-            echo "Restoring cached translations..."
-            restored=0
-            skipped_stale=0
-            find .cache/translations -name "*.en.md" | while read f; do
-              REL="${f#.cache/translations/}"
-              TARGET="obsidian/$REL"
-              KOREAN_SOURCE="${TARGET%.en.md}.md"
-              # Skip stale translations whose Korean source was removed (e.g., post migrated to another collection)
-              if [ ! -f "$KOREAN_SOURCE" ]; then
-                skipped_stale=$((skipped_stale + 1))
-                continue
-              fi
-              if [ ! -f "$TARGET" ]; then
-                mkdir -p "$(dirname "$TARGET")"
-                cp "$f" "$TARGET"
-                restored=$((restored + 1))
-              fi
-            done
-            echo "Cached translations restored: $restored, skipped stale: $skipped_stale."
-          else
-            echo "No translation cache found."
-          fi
+        run: node scripts/translate.js --restore-cache .cache/translations
 
       - name: Validate content frontmatter
         run: pnpm content:doctor
 
       - name: Translate content (Korean → English)
-        id: translate
         run: node scripts/translate.js
-        continue-on-error: true
         env:
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
 
       - name: Save translations to cache
-        run: |
-          mkdir -p .cache/translations
-          cd obsidian
-          find . -name "*.en.md" -type f | while read f; do
-            mkdir -p "../.cache/translations/$(dirname "$f")"
-            cp "$f" "../.cache/translations/$f"
-          done
-          TOTAL=$(find ../.cache/translations -name "*.en.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-          echo "Translation files cached: $TOTAL"
-          if [ "${{ steps.translate.outcome }}" = "failure" ]; then
-            echo "::warning::Translation step failed. Deploying with existing translations only ($TOTAL files)."
-          fi
+        run: node scripts/translate.js --save-cache .cache/translations
 
       - name: Prebuild (export Obsidian content)
         run: pnpm prebuild
@@ -143,12 +116,18 @@ jobs:
       - name: Verify Markdown tables rendered as HTML
         run: pnpm verify:tables
 
+      - name: Verify internal links
+        run: pnpm verify:links
+
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: dist
 
   deploy:
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -158,4 +137,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5

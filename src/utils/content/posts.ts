@@ -1,27 +1,31 @@
-import { getCollection } from "astro:content"
+import { type CollectionEntry, getCollection } from "astro:content"
 import type { Post } from "@/types/content"
 import { filterEnglishContent, filterKoreanContent, slugFromId } from "@/utils/content"
 import { withTrailingSlash } from "@/utils/language"
 
-const slug = (post: Post) => slugFromId(post.id)
+type PostEntry = CollectionEntry<"post">
+
+const slug = (post: PostEntry) => slugFromId(post.id)
 
 /**
  * 한국어 포스트들을 가져오는 함수
  */
-export async function getKoreanPosts() {
-  return (await getCollection("post", filterKoreanContent)).map((post: Post) => ({
-    ...post,
-    slug: slug(post),
-    href: withTrailingSlash(`/posts/${slug(post)}`),
-    type: "post",
-  }))
+export async function getKoreanPosts(): Promise<Post[]> {
+  return (await getCollection("post", filterKoreanContent)).map(
+    (post: PostEntry): Post => ({
+      ...post,
+      slug: slug(post),
+      href: withTrailingSlash(`/posts/${slug(post)}`),
+      type: "post",
+    }),
+  )
 }
 
 /**
  * 영어 포스트들을 가져오는 함수
  */
-export async function getEnglishPosts() {
-  return (await getCollection("post", filterEnglishContent)).map((post: Post) => {
+export async function getEnglishPosts(): Promise<Post[]> {
+  return (await getCollection("post", filterEnglishContent)).map((post: PostEntry): Post => {
     const cleanSlug = slug(post).replace(/\.en$/, "")
     return {
       ...post,

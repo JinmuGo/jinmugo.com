@@ -4,7 +4,6 @@ import MobileMenu from "@/components/app-shell/Header/MobileMenu.tsx"
 import BaseHead from "@/components/seo/BaseHead.astro"
 import GoogleTag from "@/components/seo/GoogleTag.astro"
 import Umami from "@/components/seo/Umami.astro"
-import { Toaster } from "@/components/ui/sonner"
 import Container from "@/layouts/Container.astro"
 import type { Post } from "@/types/content"
 import StructuredData from "@/utils/structuredData.astro"
@@ -19,6 +18,7 @@ const lang = Astro.props.lang ?? "ko"
 const jsonLd = Astro.props.jsonLd
 const ogImage = Astro.props.ogImage
 const type = Astro.props.type ?? "website"
+const robots = Astro.props.robots
 const tags = Astro.props.tags ?? frontmatter?.tags
 const publishedTime = Astro.props.publishedTime as Date | undefined
 const modifiedTime = Astro.props.modifiedTime as Date | undefined
@@ -40,6 +40,7 @@ const containerStyles = {
       image={image}
       ogImage={ogImage}
       type={type}
+      robots={robots}
       tags={tags}
       publishedTime={publishedTime}
       modifiedTime={modifiedTime}
@@ -59,6 +60,5 @@ const containerStyles = {
       <slot />
     </Container>
     <MobileMenu pathname={pathname} client:load />
-    <Toaster client:load position="bottom-right" />
   </body>
 </html>

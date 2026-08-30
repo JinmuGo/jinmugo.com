@@ -14,10 +14,11 @@ export default function EmbedCard({ title, image, description, url }: EmbedCardP
         {/* 카드 헤더: 이미지 영역 */}
         <CardHeader className="basis-1/3 px-0 py-0 h-32 shrink-0 flex items-center justify-center">
           <img
-            id="embed-card-image"
-            className="!my-0 w-full h-full object-cover min-h-0"
+            className="embed-card-image !my-0 w-full h-full object-cover min-h-0"
             src={image}
             alt={title}
+            loading="lazy"
+            decoding="async"
           />
         </CardHeader>
 

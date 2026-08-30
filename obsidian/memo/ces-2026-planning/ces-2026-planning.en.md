@@ -1,11 +1,13 @@
 ---
+translationSourceHash: dad5ec6191eac02d0f9a8671b48457781341adaf549cfabae912adbedd719b17
 title: Plan to attend CES 2026
 date: 2025-12-09T11:27:34.834Z
 tags:
   - CES
 category: experience
 draft: false
-lastmod: 2025-12-13T12:10:42+09:00
+summary: A planning note that groups the AI, smart home, and digital health companies and Innovation Award products to see at CES 2026, then maps an on-site route.
+lastmod: 2026-08-30T20:15:00+09:00
 layout:
 series: 2026 America Study Travel
 seriesOrder: 1

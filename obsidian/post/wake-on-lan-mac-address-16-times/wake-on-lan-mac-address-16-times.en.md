@@ -1,7 +1,9 @@
 ---
+translationSourceHash: 52e220614c5b9bd429d27a711993ec0fe03fa66e8342b8359dcb4f072db27063
 title: Why does a magic packet repeat its MAC address 16 times?
 date: 2025-08-17T12:25:50.063Z
 draft: false
+summary: Why a Wake-on-LAN magic packet contains six FF bytes followed by the target MAC address repeated 16 times, explained through frame layout and detection.
 tags:
   - WOL
   - WakeOnLan
@@ -10,7 +12,7 @@ tags:
   - Ethernet
   - Hardware
 category: network
-lastmod: 2025-08-20T09:40:21+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 layout:
 banner:
 ---

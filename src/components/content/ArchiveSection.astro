@@ -1,5 +1,16 @@
 ---
-const { title, items, baseUrl, itemClass = "" } = Astro.props
+import type { ArchiveClassification, ArchiveEntry, ArchivePrefix } from "@/utils/archive"
+import { getArchivePath } from "@/utils/archive"
+
+interface Props {
+  title: string
+  items: ArchiveEntry[]
+  classify: ArchiveClassification
+  prefix: ArchivePrefix
+  itemClass?: string
+}
+
+const { title, items, classify, prefix, itemClass = "" } = Astro.props
 ---
 
 <h2 class="text-fg font-semibold text-[26px]">{title}</h2>
@@ -8,16 +19,17 @@ const { title, items, baseUrl, itemClass = "" } = Astro.props
   data-animate
 >
   {
-    Object.entries(items).map(([key, count]) => (
+    items.map(({ label, count }) => (
       <li
         class={`mb-3 italic hover:text-primary-500 dark:hover:text-primary-400 ${itemClass}`}
         style="will-change: opacity"
       >
         <a
-          href={`${baseUrl}${key}`}
+          href={getArchivePath(prefix, classify, label)}
+          data-archive-label={label}
           class="flex justify-between py-1 no-underline border-b"
         >
-          {key} <span>{count}</span>
+          {label} <span>{count}</span>
         </a>
       </li>
     ))

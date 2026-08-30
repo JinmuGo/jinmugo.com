@@ -1,17 +1,17 @@
-import { getCollection } from "astro:content"
+import { type CollectionEntry, getCollection } from "astro:content"
 
-export async function getEnglishApp() {
-  return await getCollection("app", (item) => item.id === "about.en")
+export async function getEnglishApp(): Promise<CollectionEntry<"app">[]> {
+  return await getCollection("app", (item: CollectionEntry<"app">) => item.id === "about.en")
 }
 
-export async function getKoreanApp() {
-  return await getCollection("app", (item) => item.id === "about")
+export async function getKoreanApp(): Promise<CollectionEntry<"app">[]> {
+  return await getCollection("app", (item: CollectionEntry<"app">) => item.id === "about")
 }
 
-export async function getEnglishResume() {
-  return await getCollection("app", (item) => item.id === "resume.en")
+export async function getEnglishResume(): Promise<CollectionEntry<"app">[]> {
+  return await getCollection("app", (item: CollectionEntry<"app">) => item.id === "resume.en")
 }
 
-export async function getKoreanResume() {
-  return await getCollection("app", (item) => item.id === "resume")
+export async function getKoreanResume(): Promise<CollectionEntry<"app">[]> {
+  return await getCollection("app", (item: CollectionEntry<"app">) => item.id === "resume")
 }

@@ -23,7 +23,6 @@ sections:
           - 전시·작품 설명 페이지 구현
           - 챗봇 인터페이스 개발
           - CI/CD 파이프라인 구축
-        image: /placeholder.png
         category: Hackathon
         tags:
           - Frontend
@@ -44,7 +43,6 @@ sections:
           - 프론트엔드 개발
           - 기획자·디자이너와 협업
           - 서비스 배포
-        image: /placeholder.png
         category: Bootcamp
         tags:
           - Frontend
@@ -185,7 +183,6 @@ sections:
         responsibilities:
           - OpenGL을 이용한 렌더링 구현
           - 3D to 2D 변환 알고리즘 구현
-        image: /project/fdf.png
         category: Graphics
         tags:
           - C

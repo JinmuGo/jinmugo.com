@@ -1,4 +1,5 @@
 import type { BreadcrumbItem } from "@/types/schema"
+import { withTrailingSlash } from "@/utils/language"
 
 export interface BreadcrumbConfig {
   pathname: string
@@ -56,7 +57,7 @@ export function generateBreadcrumbItems(config: BreadcrumbConfig): BreadcrumbIte
 
   const t = texts[lang]
   const basePath = lang === "en" ? "/en" : ""
-  const itemUrl = (pathname: string) => new URL(pathname, origin).href
+  const itemUrl = (pathname: string) => new URL(withTrailingSlash(pathname), origin).href
 
   // 홈 항상 추가
   items.push({

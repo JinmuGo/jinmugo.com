@@ -6,7 +6,8 @@ tags:
   - Wi-fi
 category: network
 draft: false
-lastmod: 2025-09-30T21:17:45+09:00
+summary: 기기가 Wi-Fi 인증과 연결을 마친 뒤 DHCP DORA 과정으로 IP 주소와 네트워크 설정을 받기까지의 흐름을 설명합니다.
+lastmod: 2026-08-30T20:15:00+09:00
 layout:
 series:
 seriesOrder:

@@ -267,7 +267,6 @@ sections:
           - 3D → 2D 투영 및 등각 투영(Isometric) 알고리즘 구현
           - Bresenham 알고리즘을 사용한 선 그리기 최적화
           - 키보드 입력을 통한 회전, 확대/축소, 이동 기능 구현
-        image: /project/fdf.png
         category: Graphics Programming
         tags:
           - C

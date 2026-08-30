@@ -13,6 +13,28 @@ interface ObsidianDownloadCountProps {
   pluginId: string
 }
 
+let statsRequest: Promise<ObsidianStatsIndex> | undefined
+
+function fetchObsidianStats(): Promise<ObsidianStatsIndex> {
+  statsRequest ??= fetch(
+    "https://raw.githubusercontent.com/obsidianmd/obsidian-releases/master/community-plugin-stats.json",
+    { cache: "no-store" },
+  )
+    .then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`Failed to fetch: ${response.status}`)
+      }
+
+      return (await response.json()) as ObsidianStatsIndex
+    })
+    .catch((error) => {
+      statsRequest = undefined
+      throw error
+    })
+
+  return statsRequest
+}
+
 export function ObsidianDownloadCount({ pluginId }: ObsidianDownloadCountProps) {
   const [downloadCount, setDownloadCount] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -30,15 +52,7 @@ export function ObsidianDownloadCount({ pluginId }: ObsidianDownloadCountProps) 
 
       try {
         // Obsidian 공식 통계 JSON (obsidian-releases 레포)
-        const response = await fetch(
-          "https://raw.githubusercontent.com/obsidianmd/obsidian-releases/master/community-plugin-stats.json",
-          { cache: "no-store" },
-        )
-        if (!response.ok) {
-          throw new Error(`Failed to fetch: ${response.status}`)
-        }
-
-        const stats: ObsidianStatsIndex = await response.json()
+        const stats = await fetchObsidianStats()
         const pluginStats = stats[pluginId]
         if (!pluginStats) {
           throw new Error("Plugin not found in Obsidian stats")

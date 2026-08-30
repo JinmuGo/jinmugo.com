@@ -180,7 +180,6 @@ sections:
         responsibilities:
           - Rendering implementation using OpenGL
           - 3D to 2D conversion algorithm implementation
-        image: /project/fdf.png
         category: Graphics
         tags:
           - C
@@ -202,7 +201,6 @@ sections:
           - Shell parsing and execution logic implementation
           - Hash table data structure design and implementation
           - Environment variable management system development
-        image: /placeholder.png
         category: System Programming
         tags:
           - C
@@ -225,7 +223,6 @@ sections:
           - kqueue-based event loop implementation
           - HTTP protocol parsing and handling
           - Led object-oriented refactoring
-        image: /placeholder.png
         category: Web Server
         tags:
           - C++

@@ -1,11 +1,12 @@
 ---
 import UserSection from "@/components/app-shell/Comment/UserSection.astro"
-import FormattedDate from "@/components/content/FormattedDate.astro"
+import ContentMetadata from "@/components/content/ContentMetadata.astro"
 import Prose from "@/components/layout/Prose.astro"
 import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Layout from "@/layouts/Layout.astro"
 import type { PostMetadata } from "@/types/content"
 import type { ContentType } from "@/types/utils"
+import { getArchivePath } from "@/utils/archive"
 import { generateContentSchemas } from "@/utils/contentSchemas"
 import { buildContentOgImagePath } from "@/utils/openGraphMeta"
 
@@ -47,14 +48,14 @@ const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentS
           <>
             <a
               class="inline-flex items-center px-2.5 py-1 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors duration-200 font-medium"
-              href={`/archives/category/${category}`}
+              href={getArchivePath(lang === "en" ? "/en" : "", "category", category)}
             >
               {category}
             </a>
             <span class="text-gray-400 dark:text-gray-500">•</span>
           </>
         )}
-        <FormattedDate date={date} />
+        <ContentMetadata date={date} />
       </div>
     </div>
   </header>

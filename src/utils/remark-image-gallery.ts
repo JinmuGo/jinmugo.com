@@ -1,5 +1,5 @@
-import type { Code } from "mdast"
-import type { Node, Parent } from "unist"
+import type { Root } from "mdast"
+import type { MdxJsxAttribute, MdxJsxFlowElement } from "mdast-util-mdx-jsx"
 import { visit } from "unist-util-visit"
 
 type GalleryParseResult = {
@@ -55,18 +55,14 @@ function parseGalleryContent(value: string): GalleryParseResult {
  * gallery 코드블록을 ImageGrid MDX 컴포넌트로 변환하는 remark 플러그인
  */
 export default function remarkImageGallery() {
-  return (tree: Node) => {
-    visit(tree, "code", (node: Code, index: number | undefined, parent: Parent) => {
-      if (node.lang !== "gallery") {
+  return (tree: Root) => {
+    visit(tree, "code", (node, index, parent) => {
+      if (node.lang !== "gallery" || index === undefined || !parent) {
         return
       }
 
       const { title, images } = parseGalleryContent(node.value)
-      const attributes: Array<{
-        type: "mdxJsxAttribute"
-        name: string
-        value: string
-      }> = [
+      const attributes: MdxJsxAttribute[] = [
         {
           type: "mdxJsxAttribute",
           name: "images",
@@ -82,12 +78,13 @@ export default function remarkImageGallery() {
         })
       }
 
-      parent.children[index ?? 0] = {
+      const imageGrid: MdxJsxFlowElement = {
         type: "mdxJsxFlowElement",
         name: "ImageGrid",
         attributes,
         children: [],
       }
+      parent.children[index] = imageGrid
     })
   }
 }

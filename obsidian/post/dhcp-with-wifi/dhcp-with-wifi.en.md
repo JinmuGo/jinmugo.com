@@ -1,4 +1,5 @@
 ---
+translationSourceHash: fbc5f8be01c09b49718e3a881353184fce34c3f1100d812fa0f222562898ec0a
 title: DHCP with wi-fi
 date: 2025-09-21T10:07:21.580Z
 tags:
@@ -6,9 +7,10 @@ tags:
   - Wi-fi
 category: network
 draft: false
-lastmod: 2025-09-30T21:18:06+09:00
+summary: How a device receives an IP address and network configuration through the DHCP DORA process after Wi-Fi authentication and association.
+lastmod: 2026-08-30T20:15:00+09:00
 layout:
-Series:
+series:
 seriesOrder:
 banner:
 ---

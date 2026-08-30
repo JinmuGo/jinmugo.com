@@ -5,7 +5,6 @@ interface Project {
   tags: string[]
   period: string
   link?: string
-  image?: string
 }
 
 interface PortfolioListProps {
@@ -49,13 +48,6 @@ export function PortfolioList({ projects }: PortfolioListProps) {
               {project.period}
             </span>
           </div>
-
-          {/* Image - supports both relative paths and external URLs */}
-          {project.image && (
-            <div className="mb-4 rounded-lg overflow-hidden">
-              <img src={project.image} alt={project.title} className="w-full h-64 object-cover" />
-            </div>
-          )}
 
           {/* Description */}
           <p className="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed whitespace-pre-line">

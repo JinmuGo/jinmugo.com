@@ -1,4 +1,5 @@
 ---
+translationSourceHash: 83ddbd7f390c171e8bd22f3a11f99591d51d296380f7425b2ec16f85885d0277
 title: Rashomon
 director: Akira Kurosawa
 originalTitle: 羅生門
@@ -24,7 +25,7 @@ draft: false
 To what extent can we trust the word of others, or can we say that we do? In biblical studies, we are born with "original sin" and the origin of that sin is human desire.
 Selfish desires. We are weak because we can only think of ourselves, and so we create an idealized version of ourselves. They tell lies to fill the gap that they cannot reach. Reality is harsh, so we can't live without lying.
 
-<Rashomon is a film directed by Akira Kurosawa based on the short stories "Rashomon" and "In the Bush" from the novelist Ryunosuke Akutagawa's short story collection ^aladin-book.
+\<Rashomon> is a film directed by Akira Kurosawa based on the short stories "Rashomon" and "In the Bush" from the novelist Ryunosuke Akutagawa's short story collection[^aladin-book].
 The narrative is framed by the story of "The Woodcutter," one of three characters sheltering from the rain under the Nasamun Gate. However, the "hidden narrators" are a samurai, a bandit, and his wife. Finally, the events are thrown into chaos when the woodcutter's statements are conflicting.
 Their testimonies are inconsistent, and in the end, there can only be one truth. This is the moment when each person's desires create a lie. Their testimony, a cunning mixture of truth and lies, is powerful enough to deceive even themselves.
 

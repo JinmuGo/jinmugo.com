@@ -5,6 +5,11 @@ import "@/styles/global.css"
 import { Font } from "astro:assets"
 import type { ImageMetadata } from "astro"
 import Themes from "astro-themes"
+import {
+  type ArchiveClassification,
+  getArchiveEntries,
+  getPairedArchiveSegments,
+} from "@/utils/archive"
 import { getEnglishPosts, getKoreanPosts } from "@/utils/content/posts"
 import { getEnglishWeeklies, getKoreanWeeklies } from "@/utils/content/weekly"
 import { detectLanguage } from "@/utils/language"
@@ -21,6 +26,7 @@ interface Props {
   ogImage?: string
   tags?: string[]
   type?: "article" | "website"
+  robots?: "index,follow" | "noindex,follow"
   publishedTime?: Date
   modifiedTime?: Date
 }
@@ -34,10 +40,11 @@ const ogLocale = isEnglish ? "en_US" : "ko_KR"
 // hreflang: build alternate URL for the other language
 const pathWithoutLang = isEnglish ? pathname.replace(/^\/en/, "") || "/" : pathname
 const koUrl = new URL(pathWithoutLang, Astro.site).href
-const enUrl = new URL(`/en${pathWithoutLang === "/" ? "" : pathWithoutLang}`, Astro.site).href
+const enUrl = new URL(`/en${pathWithoutLang}`, Astro.site).href
 const contentMatch = pathWithoutLang.match(
   /^\/(posts|weekly|library\/books|library\/movies)\/([^/]+)\/?$/,
 )
+const archiveMatch = pathWithoutLang.match(/^\/archives\/(category|year)\/([^/]+)\/?$/)
 let hasAlternate =
   !/^\/(?:404|portfolio)\/?$/.test(pathWithoutLang) &&
   !/^\/(?:archives\/(?:category|tag|year)|series)\//.test(pathWithoutLang)
@@ -61,6 +68,23 @@ if (contentMatch) {
   }
 }
 
+if (archiveMatch) {
+  const classify = archiveMatch[1] as ArchiveClassification
+  const segment = decodeURIComponent(archiveMatch[2])
+  const [koPosts, enPosts, koWeeklies, enWeeklies] = await Promise.all([
+    getKoreanPosts(),
+    getEnglishPosts(),
+    getKoreanWeeklies(),
+    getEnglishWeeklies(),
+  ])
+
+  hasAlternate = getPairedArchiveSegments(
+    classify,
+    getArchiveEntries([...koPosts, ...koWeeklies], classify),
+    getArchiveEntries([...enPosts, ...enWeeklies], classify),
+  ).has(segment)
+}
+
 // RSS feed path based on language
 const rssFeedPath = isEnglish ? "en/rss.xml" : "rss.xml"
 
@@ -71,6 +95,7 @@ const {
   ogImage,
   tags,
   type = "website",
+  robots,
   publishedTime,
   modifiedTime,
 } = Astro.props
@@ -79,8 +104,7 @@ const resolvedOgImage = ogImage ?? getOpenGraphImageSource(image) ?? FallbackIma
 ---
 
 <title>{title.includes("Jinmu Go") ? title : `${title} | Jinmu Go`}</title>
-<Font cssVariable="--font-geist" preload />
-<link rel="preload" href="/fonts/Pretendard-Regular.woff2" as="font" type="font/woff2" crossorigin />
+<Font cssVariable="--font-geist" />
 
 <Themes defaultTheme="light" />
 
@@ -98,6 +122,7 @@ const resolvedOgImage = ogImage ?? getOpenGraphImageSource(image) ?? FallbackIma
   href={new URL(rssFeedPath, Astro.site).href}
 />
 <meta name="generator" content={Astro.generator} />
+{robots && <meta name="robots" content={robots} />}
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL.href} />

@@ -2,13 +2,14 @@
 title: 제4회 선샤인런 하프마라톤 완주 후기
 date: 2025-09-05T02:06:49.176Z
 draft: false
+summary: 변화무쌍한 날씨와 후반 정강이 통증 속에서 처음 공식 하프마라톤을 완주하며 배운 페이스와 욕심에 관한 기록.
 tags:
   - marathon
   - running
   - sunshine-run
   - half-marathon
 category: health
-lastmod: 2025-09-15T20:47:21+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 ---
 ![[first-half-marathon-1757565989065.webp]]
 

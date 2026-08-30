@@ -1,12 +1,14 @@
 ---
+translationSourceHash: 51b129cb9dea12ad2f6503b3dd20d3ca60cc6376a18c8fd6b3d6129ee51325ab
 title: Domain Name System (DNS) DeepDive - Registry, Registrar
 date: 2025-06-28T11:46:25.268Z
 draft: false
+summary: The roles and operating models of domain registries and registrars, plus how name-server delegation works.
 tags:
   - DNS
   - Registry
   - Registrar
-lastmod: 2025-07-01T21:41:45+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: develop
 series: DNS-DeepDive
 seriesOrder: 2

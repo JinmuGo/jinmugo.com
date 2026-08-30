@@ -1,9 +1,18 @@
 import { format } from "date-fns"
 import type { Post, Weekly } from "@/types/content"
+import {
+  ARCHIVE_CLASSIFICATIONS,
+  type ArchiveContent,
+  getArchiveEntries,
+  getArchivePath,
+  getPairedArchiveSegments,
+  isArchiveIndexable,
+} from "@/utils/archive"
 import { getEnglishPosts, getKoreanPosts } from "@/utils/content/posts"
 import { getEnglishWeeklies, getKoreanWeeklies } from "@/utils/content/weekly"
 import { getBookMedia } from "@/utils/library/books"
 import { getMovieMedia } from "@/utils/library/movies"
+import { groupContentBySeries } from "@/utils/series"
 
 export async function GET() {
   const siteUrl = import.meta.env.SITE
@@ -18,6 +27,8 @@ export async function GET() {
       getMovieMedia("ko"),
       getMovieMedia("en"),
     ])
+  const koSeries = groupContentBySeries(koPosts)
+  const enSeries = groupContentBySeries(enPosts)
 
   const renderUrl = (
     slug: string,
@@ -60,6 +71,32 @@ export async function GET() {
 
     return result
   }
+
+  const renderStandaloneUrl = (path: string) =>
+    `<url><loc>${new URL(path, siteUrl).href}</loc></url>`
+
+  const renderArchiveUrls = (koContent: ArchiveContent[], enContent: ArchiveContent[]) =>
+    ARCHIVE_CLASSIFICATIONS.flatMap((classify) => {
+      const koEntries = getArchiveEntries(koContent, classify).filter((entry) =>
+        isArchiveIndexable(classify, entry.count),
+      )
+      const enEntries = getArchiveEntries(enContent, classify).filter((entry) =>
+        isArchiveIndexable(classify, entry.count),
+      )
+      const pairedSegments = getPairedArchiveSegments(classify, koEntries, enEntries)
+
+      return [
+        ...koEntries.map((entry) =>
+          pairedSegments.has(entry.segment)
+            ? renderUrl(getArchivePath("", classify, entry.label))
+            : renderStandaloneUrl(getArchivePath("", classify, entry.label)),
+        ),
+        ...enEntries
+          .filter((entry) => !pairedSegments.has(entry.segment))
+          .map((entry) => renderStandaloneUrl(getArchivePath("/en", classify, entry.label))),
+      ]
+    }).join("\n")
+
   const result = `
   <?xml version="1.0" encoding="UTF-8"?>
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -69,12 +106,21 @@ export async function GET() {
     ${renderUrl("/posts")}
     ${renderUrl("/weekly")}
     ${renderUrl("/series")}
+    ${koSeries
+      .map((series) =>
+        renderUrl(`/series/${encodeURIComponent(series.name)}`, {
+          hasEn: enSeries.some((item) => item.name === series.name),
+        }),
+      )
+      .join("\n")}
     ${renderUrl("/gallery")}
     ${renderUrl("/projects")}
+    ${renderUrl("/portfolio", { hasEn: false })}
     ${renderUrl("/resume")}
     ${renderUrl("/library")}
     ${renderUrl("/library/books")}
     ${renderUrl("/library/movies")}
+    ${renderArchiveUrls([...koPosts, ...koWeeklies], [...enPosts, ...enWeeklies])}
     ${koPosts
       .map((post: Post) => {
         const lastMod = format(post.data.lastmod ?? post.data.date, "yyyy-MM-dd")

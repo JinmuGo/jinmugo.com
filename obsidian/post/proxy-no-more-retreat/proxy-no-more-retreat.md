@@ -2,12 +2,13 @@
 title: 프록시, 이제는 더이상 물러날 곳이 없다!
 date: 2025-07-12T06:31:40.848Z
 draft: false
+summary: 프록시의 기본 역할부터 포워드·리버스 프록시의 위치, 트래픽을 전달받는 방식, 라우팅 활용과 단점까지 한 흐름으로 정리합니다.
 tags:
   - ReverseProxy
   - ForwardProxy
   - Proxy
   - Network
-lastmod: 2025-07-15T17:18:42+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: develop
 withAI: true
 bannerOnlyText: true

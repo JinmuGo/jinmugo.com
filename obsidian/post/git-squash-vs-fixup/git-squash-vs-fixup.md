@@ -1,97 +1,135 @@
 ---
-title: Git Squash vs Fixup
+title: Git Squash와 Fixup 차이, 언제 무엇을 쓸까
 date: 2025-07-11T01:13:41.081Z
 draft: false
+summary: squash는 커밋 메시지를 합쳐 편집하고 fixup은 보완 커밋의 메시지를 버립니다. --fixup과 --autosquash를 이용한 안전한 정리 흐름도 함께 설명합니다.
 tags:
   - git
-lastmod: 2025-07-12T00:01:55+09:00
+lastmod: 2026-08-30T20:10:00+09:00
 category: develop
 bannerOnlyText: true
 ---
 
-## Intro
+둘 다 현재 커밋을 앞선 커밋에 합치지만 차이는 **커밋 메시지 처리**입니다.
 
-`git`을 사용하는 워크플로우에서 remote에 push하기 이전 커밋들을 정리할 때 Interactive Rebase(`git rebase -i`)기능을 자주사용합니다. 지금까지 한 작업들을 돌아보기에도 좋고 커밋이 정확히 의미있는 단위로 묶어졌는지 확인할 때도 좋죠. 이때, 여러 커밋을 하나로 합칠 때 저는 `squash`만 사용했었습니다. 그것만 있는줄 알았거든요. 😅 그런데 이번에 `lazygit`을 사용하면서 `fixup` 커맨드를 발견했습니다. 이게 뭔가 했더니 제가 `squash`를 사용하면서 원하던 기능 이었습니다. 오늘은 Interactive Rebase시에 사용할 수 있는 명령어인 `squash`와 `fixup`을 비교하면서 어떨때 사용해야하는지 알아 보겠습니다.
+- `squash`: 두 커밋의 메시지를 모아 보여주고 최종 메시지를 편집합니다.
+- `fixup`: 보완 커밋의 메시지를 버리고 대상 커밋의 메시지를 그대로 유지합니다.
 
-![[git-squash-vs-fixup-1752198125071.webp]]
+이미 설명이 완성된 커밋에 오타나 누락을 보태는 작업이라면 `fixup`이 맞습니다. 여러 커밋의 의미를 하나로 재작성해야 한다면 `squash`를 씁니다.
 
-`git rebase -i`를 입력했을 때 나오는 `interactive`화면입니다. 사용하신 분들은 아시다시피 커밋의 이름앞에 command을 적어 해당 커밋에서 원하는 작업을 할 수 있습니다. `squash`와 `fixup`은 이때 사용할 수 있습니다.
+![Git interactive rebase에서 pick, squash, fixup 명령을 선택하는 화면](./git-squash-vs-fixup-1752198125071.webp "git rebase -i 편집 화면")
 
-## `squash` (또는 `s`)
+## squash
 
-- **기능:** 해당 커밋을 이전 커밋과 합칩니다.
-- **커밋 메시지 처리:** 합쳐지는 모든 커밋의 메시지를 편집할 수 있도록 에디터가 열립니다. 즉, **이전 커밋 메시지와 현재 커밋 메시지를 모두 보여주며, 사용자가 이들을 조합하거나 새로운 메시지를 작성**할 수 있도록 합니다.
-- **주요 사용 시점:** 여러 개의 작은 기능 추가 커밋이나 리팩토링 커밋들을 하나의 의미 있는 큰 기능 커밋으로 만들고 싶을 때, 또는 여러 수정 커밋들을 하나의 깔끔한 커밋으로 정리하면서 그 내용을 통합된 하나의 메시지로 남기고 싶을 때 유용합니다.
-
-|  |  |
-|:-:|:-:|
-| ![[git-squash-vs-fixup-1752198570627.webp]] | ![[git-squash-vs-fixup-1752199918988.webp]] |
-## `fixup` (또는 `f`)
-
-- **기능:** 해당 커밋을 이전 커밋과 합칩니다. (`squash`와 기능은 동일합니다.)
-- **커밋 메시지 처리:** 현재 커밋의 메시지를 버리고, **오직 이전 커밋의 메시지만을 유지**합니다. 별도의 에디터가 열리지 않고 자동으로 메시지가 처리됩니다.
-- **주요 사용 시점:** 오타 수정, 아주 작은 버그 수정, 이전 커밋의 사소한 변경 누락 등과 같이 이전 커밋의 내용을 보완하거나 수정하는 커밋을 만들 때 사용합니다. 이 경우, 새로운 커밋 메시지가 불필요하며 원래 커밋의 메시지가 변경 사항을 잘 설명하는 경우에 적합합니다. `git commit --fixup <commit-hash>` 명령어로 커밋을 생성하면 `fixup!` 접두사가 붙은 커밋 메시지가 자동으로 생성되어 `git rebase --autosquash`와 함께 사용 시 매우 편리합니다.
-
-## 예시를 통해 알아보기
-
-만약 이러한 아직 remote에 push되지 않은 커밋들이 있을 때
-
-|  |  |
-|:-:|:-:|
-| ![[git-squash-vs-fixup-1752199918988.webp]] | ![[git-squash-vs-fixup-1752199951224.webp]] |
-
-저는 lazygit의 config를 수정하고 커밋 `3f05b2a` 에 합치고 싶습니다.
+Interactive rebase 목록에서 `squash` 또는 `s`로 바꾼 커밋은 바로 위 커밋에 합쳐집니다.
 
 ```text
-* 3fa9966 - (HEAD -> main) remove: zsh-completions (46 seconds ago) <JinmuGo>
-* 6cfcc67 - fix(git): author name (6 minutes ago) <JinmuGo>
-* 52e1173 - fix: a wezterm config typo (14 minutes ago) <JinMuGo>
-* 3f05b2a - feat: add lazygit config (14 minutes ago) <JinMuGo> // [!code highlight]
-* e9f4306 - refactor: cleanup zsh config (14 minutes ago) <JinMuGo>
-* a7020a2 - refactor: tmux config (15 minutes ago) <JinMuGo>
-* 76add98 - remove: catppuccin-tmux module (24 hours ago) <JinMuGo>
+pick   9ecdf8 refactor: tmux config
+squash 8d5218 refactor: cleanup zsh config
 ```
 
-이때 저는 수정 파일을 stage하고 `git commit --fixup  3f05b2a`하게 되면
+![Interactive rebase에서 두 번째 커밋을 squash로 바꾼 화면](./git-squash-vs-fixup-1752198570627.webp "squash 액션을 지정한 rebase 목록")
 
-![[git-squash-vs-fixup-1752200222658.webp]]
+Git은 합쳐질 커밋 메시지들을 에디터에 열어 줍니다. 최종 커밋이 두 작업을 모두 설명해야 하거나 메시지를 새로 정리하고 싶을 때 유용합니다.
 
-이렇게 `fixup! feat: add lazygit config`라는 이름으로 커밋이 하나 생겨나게 됩니다. 여기에서 볼 수 있듯이 `--fixup`은 커밋 메시지를 손쉽게 `fixup`기능을 사용하기 위해 있는 단순한 템플릿 커맨드이고 저희가 직접 `fixup!`접두어를 추가해서 만들 수 도 있겠죠?
+대상 커밋을 미리 지정해 보완 커밋을 만들 수도 있습니다.
 
-이렇게 fixup! 접두사를 가진 커밋은 git rebase interactive시에 해당 커밋으로 합쳐지게 됩니다. 이때 `git rebase -i --autosquash`를 입력하게 되면, 커밋 목록을 자동으로 분석하여 `fixup!` 또는 `squash!` 접두사를 가진 커밋들을 해당 대상 커밋 바로 아래로 이동시키고, `pick` 대신 **`fixup` 또는 `squash` 액션으로 변경**해줍니다.
+```bash
+git commit --squash=<target-commit>
+```
 
-![[git-squash-vs-fixup-1752200853821.webp]]
+이 커밋은 `squash!` 접두사를 가지며, 뒤에서 설명할 `--autosquash`가 대상 위치로 옮겨 줍니다.
 
-이렇게 말이죠! 그리고 저장하고 나오면
-![[git-squash-vs-fixup-1752201099133.webp]]
+## fixup
 
-이렇게 제가 수정한 커밋이 깔끔하게 합쳐진 것을 볼 수 있습니다.
+`fixup` 또는 `f`도 변경 내용을 바로 위 커밋에 합칩니다. 기본 `fixup`은 보완 커밋의 메시지를 버리므로 메시지 에디터를 다시 열 필요가 없습니다.
 
-## 요약 비교
+제가 lazygit 설정 커밋 `3f05b2a`의 누락을 발견했다고 해보겠습니다.
 
-| 특징            | `squash`                                       | `fixup`                                         |
-| --------------- | ---------------------------------------------- | ----------------------------------------------- |
-| **합치기**      | 이전 커밋과 합침                               | 이전 커밋과 합침                                |
-| **메시지 처리** | 합쳐지는 모든 커밋 메시지를 통합하여 편집 가능 | 현재 커밋 메시지 버리고 이전 커밋 메시지 유지   |
-| **에디터**      | 열림                                           | 열리지 않음                                     |
-| **주요 용도**   | 여러 커밋의 내용과 메시지를 의미 있게 통합     | 이전 커밋의 사소한 수정/보완 (메시지 필요 없음) |
+![fixup 대상 커밋이 포함된 Git 로그](./git-squash-vs-fixup-1752199918988.webp "lazygit 설정 커밋을 포함한 정리 전 로그")
 
-> [!note] 💡 참고
-> Interactive rebase에서는 `edit`(커밋을 수정), `drop`(커밋 삭제), `reword`(메시지만 수정) 등의 명령어도 사용할 수 있습니다.
+수정 파일을 스테이징한 뒤 Git이 제공하는 `--fixup` 옵션으로 커밋을 만듭니다.
 
-## 유용한 팁들
+```bash
+git add lazygit/
+git commit --fixup=3f05b2a
+```
 
-1. `--autosquash`를 기본 설정으로 만들기
-   - 매번 `--autosquash`를 입력하기 번거롭다면 Git 설정으로 기본 동작으로 만들 수 있습니다
-   - `git config --global rebase.autoSquash true`
-2. 빠른 fixup 커밋을 위한 alias
-   - `git config --global alias.fixup 'commit --fixup'`
-   - 이제 `git fixup <commit-hash>`로 간단하게 사용할 수 있어요!
+![git commit --fixup으로 fixup 접두사 커밋을 만든 결과](./git-squash-vs-fixup-1752200222658.webp "대상 커밋을 가리키는 fixup 커밋")
 
-## Outro
+Git이 `fixup! feat: add lazygit config` 같은 제목을 정확히 만들어 줍니다. 접두사를 손으로 작성할 수도 있지만 대상 제목이 바뀌거나 비슷한 커밋이 있을 때 실수하기 쉬우므로 `git commit --fixup=<commit>`을 쓰는 편이 안전합니다.
 
-이제 `squash`와 `fixup`의 차이를 명확히 알게 되었습니다. 예전에는 모든 커밋을 합칠 때 `squash`만 사용했었는데, 사실 대부분의 경우에는 `fixup`이 더 적합했던 것 같습니다. 특히 오타 수정이나 작은 버그 픽스 같은 경우에는 굳이 커밋 메시지를 다시 편집할 필요가 없었거든요.
+## autosquash로 대상 위치에 붙이기
 
-그리고 `git commit --fixup`과 `git rebase --autosquash`의 조합은 정말 강력합니다. 작업하면서 실수를 발견했을 때 즉시 `fixup` 커밋을 만들어두고, 나중에 한 번에 정리하는 워크플로우를 사용하면 커밋 히스토리를 훨씬 깔끔하게 유지할 수 있을 것 같아요.
+보완 커밋은 작업 중인 HEAD에 만들어져 대상과 떨어져 있을 수 있습니다. `--autosquash`는 `fixup!`, `squash!`, `amend!` 커밋을 찾아 대상 바로 뒤로 이동하고 rebase 액션도 알맞게 바꿉니다.
 
-앞으로는 상황에 맞게 `squash`와 `fixup`을 구분해서 사용해 보려고 합니다. 여러분도 커밋을 정리할 때 이 두 명령어의 차이를 고려해서 더 효율적인 Git 워크플로우를 만들어보시길 바랍니다! 🚀
+```bash
+git rebase -i --autosquash <base>
+```
+
+`<base>`에는 정리할 범위의 바로 앞 커밋을 지정합니다. 예시의 대상부터 정리하려면 다음처럼 실행할 수 있습니다.
+
+```bash
+git rebase -i --autosquash 3f05b2a^
+```
+
+![autosquash가 fixup 커밋을 대상 바로 아래로 옮긴 rebase 목록](./git-squash-vs-fixup-1752200853821.webp "autosquash가 정렬한 fixup 액션")
+
+목록을 확인하고 저장하면 보완 변경은 대상 커밋에 합쳐지고 `fixup!` 커밋은 사라집니다.
+
+![autosquash rebase 전후 Git 로그와 성공 메시지](./git-squash-vs-fixup-1752201099133.webp "fixup 커밋이 대상에 합쳐진 결과")
+
+매번 옵션을 입력하기 싫다면 Git의 기본 설정을 사용할 수 있습니다.
+
+```bash
+git config --global rebase.autoSquash true
+```
+
+이 설정 뒤에도 `git rebase -i <base>`의 목록을 저장하기 전에는 배치를 직접 확인할 수 있습니다.
+
+## 메시지도 고치고 싶을 때
+
+최신 Git은 fixup 계열에서 메시지 교체까지 표현할 수 있습니다.
+
+| 명령 | 결과 |
+| --- | --- |
+| `git commit --fixup=<commit>` | 변경을 합치고 기존 대상 메시지를 유지 |
+| `git commit --fixup=amend:<commit>` | 변경을 합치며 대상 메시지의 수정안을 작성 |
+| `git commit --fixup=reword:<commit>` | 파일 변경 없이 대상 메시지만 수정 |
+
+`amend:`와 `reword:`는 `amend!` 커밋을 만들고, `--autosquash` rebase 때 그 메시지를 대상 커밋의 새 메시지로 사용합니다. 단순 보완에는 기본 `--fixup`이면 충분합니다.
+
+## 한눈에 비교
+
+| 기준 | `squash` | `fixup` |
+| --- | --- | --- |
+| 변경 내용 | 이전 커밋에 합침 | 이전 커밋에 합침 |
+| 메시지 | 여러 메시지를 모아 편집 | 보완 메시지를 버리고 대상 메시지 유지 |
+| 주 용도 | 여러 작업의 의미를 하나로 재작성 | 기존 커밋의 작은 누락·오타·리뷰 반영 |
+| 빠른 생성 | `git commit --squash=<commit>` | `git commit --fixup=<commit>` |
+
+## 안전하게 쓰는 범위
+
+Rebase는 커밋 ID를 다시 만듭니다. 아직 공유하지 않은 로컬 브랜치에서 정리하는 것이 가장 안전합니다.
+
+이미 원격에 올린 개인 브랜치를 꼭 고쳐야 한다면 팀원과 먼저 조율하고, 테스트 후 일반 `--force` 대신 다음 명령을 사용합니다.
+
+```bash
+git push --force-with-lease
+```
+
+`--force-with-lease`도 다른 사람이 같은 브랜치에서 작업 중일 때는 충돌을 없애 주지 않습니다. 공유 브랜치와 기본 브랜치의 공개 이력은 다시 쓰지 않는 편이 낫습니다.
+
+제가 가장 자주 쓰는 흐름은 짧습니다.
+
+```bash
+git commit --fixup=<target>
+git rebase -i --autosquash <base>
+```
+
+작업 중에는 보완점을 바로 fixup 커밋으로 남기고, 리뷰 전 한 번에 정리하면 메시지를 반복해서 고치는 수고 없이 읽기 좋은 이력을 만들 수 있습니다.
+
+## 참고 자료
+
+- [git commit 공식 문서](https://git-scm.com/docs/git-commit)
+- [git rebase 공식 문서](https://git-scm.com/docs/git-rebase)

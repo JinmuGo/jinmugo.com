@@ -14,6 +14,6 @@ const relatedFrontmatter = frontmatter as PostMetadata | undefined
 ---
 
 <section class="flex flex-col gap-8 mt-28 mb-12 text md:text-lg">
-	<FumaComments client:load slug={slug} />
+	<FumaComments client:visible slug={slug} />
 	{relatedFrontmatter && type !== "weekly" && <RelatedPosts current={{ slug, data: relatedFrontmatter, type }} />}
 </section>

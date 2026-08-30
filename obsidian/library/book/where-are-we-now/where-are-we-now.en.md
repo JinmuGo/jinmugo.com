@@ -1,4 +1,5 @@
 ---
+translationSourceHash: b28e53575211fa5bfdb931e724c7c22b4d897ee499d4955708cb1bee9a8a4a55
 title: Where are we now?
 author: Haruki Murakami
 year: 2021

@@ -1,4 +1,5 @@
 ---
+translationSourceHash: e01ea5494a1fb1ce245fce8b5501db006e8ae3e91ee21a835ba8b8db54d291d3
 title: The History and Limitations of HTTP/1.1 Pipelining
 date: 2025-10-16T13:08:17.234Z
 tags:
@@ -10,9 +11,10 @@ tags:
   - HOL
 category: network
 draft: false
+summary: How HTTP/1.1 pipelining reduced RTT but suffered head-of-line blocking from ordered responses, and how HTTP/2 and HTTP/3 improved on it.
 lastmod: 2025-10-17T23:20:48+09:00
 layout:
-Series:
+series:
 seriesOrder:
 banner:
 ---

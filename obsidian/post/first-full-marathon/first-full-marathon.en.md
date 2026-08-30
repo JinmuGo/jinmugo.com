@@ -1,4 +1,5 @@
 ---
+translationSourceHash: 69f79f38fe0575ff9f08914677b1900291dfc1ce16ac510297b44c24de804d72
 title: 2025 Chuncheon Marathon completes its first full marathon
 date: 2025-10-27T05:32:08.476Z
 tags:
@@ -8,7 +9,7 @@ category: health
 draft: false
 lastmod: 2025-11-02T23:39:28+09:00
 layout:
-Summary: I thought I was going to die.
+summary: I thought I was going to die.
 series:
 seriesOrder:
 banner:

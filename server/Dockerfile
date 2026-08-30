@@ -1,16 +1,13 @@
 FROM node:22-alpine AS base
 # Build tools for native modules (better-sqlite3)
 RUN apk add --no-cache python3 make g++ sqlite
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.13.1 --activate
 WORKDIR /app
-# pnpm 10+: 빌드 스크립트 허용 설정은 pnpm-workspace.yaml에만 읽힘 (.npmrc/package.json 필드 무시)
-RUN printf 'onlyBuiltDependencies:\n  - better-sqlite3\n  - esbuild\n' > pnpm-workspace.yaml
 
 # Install dependencies (compiles better-sqlite3 native binding)
 FROM base AS deps
-COPY package.json pnpm-lock.yaml* ./
-RUN pnpm install --frozen-lockfile || pnpm install
-RUN pnpm rebuild better-sqlite3
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 
 # Build TypeScript
 FROM base AS build
@@ -18,18 +15,22 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN pnpm build
 
+FROM base AS production-deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --prod --frozen-lockfile
+
 # Production
-FROM base AS production
+FROM node:22-alpine AS production
 ENV NODE_ENV=production
-COPY --from=deps /app/node_modules ./node_modules
+RUN apk add --no-cache sqlite
+WORKDIR /app
+COPY --from=production-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package.json ./
-COPY --from=build /app/drizzle.config.ts ./
-COPY --from=build /app/src/db ./src/db
+COPY --from=build /app/drizzle ./drizzle
 
 RUN mkdir -p /app/data
 
 EXPOSE 3001
 
-# Run migrations then start server
-CMD ["sh", "-c", "pnpm db:push && node dist/index.js"]
+CMD ["sh", "-c", "node dist/migrate.js && exec node dist/index.js"]
