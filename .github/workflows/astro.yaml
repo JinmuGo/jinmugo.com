@@ -78,58 +78,22 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .cache/translations
-          key: translations-${{ hashFiles('obsidian') }}
+          key: translations-${{ hashFiles('obsidian/**/*.md', '!obsidian/**/*.en.md', '!obsidian/**/*.en-US.md') }}
           restore-keys: translations-
 
       - name: Restore cached translations into Obsidian vault
-        run: |
-          if [ -d .cache/translations ]; then
-            echo "Restoring cached translations..."
-            restored=0
-            skipped_stale=0
-            find .cache/translations -name "*.en.md" | while read f; do
-              REL="${f#.cache/translations/}"
-              TARGET="obsidian/$REL"
-              KOREAN_SOURCE="${TARGET%.en.md}.md"
-              # Skip stale translations whose Korean source was removed (e.g., post migrated to another collection)
-              if [ ! -f "$KOREAN_SOURCE" ]; then
-                skipped_stale=$((skipped_stale + 1))
-                continue
-              fi
-              if [ ! -f "$TARGET" ]; then
-                mkdir -p "$(dirname "$TARGET")"
-                cp "$f" "$TARGET"
-                restored=$((restored + 1))
-              fi
-            done
-            echo "Cached translations restored: $restored, skipped stale: $skipped_stale."
-          else
-            echo "No translation cache found."
-          fi
+        run: node scripts/translate.js --restore-cache .cache/translations
 
       - name: Validate content frontmatter
         run: pnpm content:doctor
 
       - name: Translate content (Korean → English)
-        id: translate
         run: node scripts/translate.js
-        continue-on-error: true
         env:
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
 
       - name: Save translations to cache
-        run: |
-          mkdir -p .cache/translations
-          cd obsidian
-          find . -name "*.en.md" -type f | while read f; do
-            mkdir -p "../.cache/translations/$(dirname "$f")"
-            cp "$f" "../.cache/translations/$f"
-          done
-          TOTAL=$(find ../.cache/translations -name "*.en.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-          echo "Translation files cached: $TOTAL"
-          if [ "${{ steps.translate.outcome }}" = "failure" ]; then
-            echo "::warning::Translation step failed. Deploying with existing translations only ($TOTAL files)."
-          fi
+        run: node scripts/translate.js --save-cache .cache/translations
 
       - name: Prebuild (export Obsidian content)
         run: pnpm prebuild

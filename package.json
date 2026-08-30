@@ -23,6 +23,7 @@
 		"deploy:gsc": "node scripts/submit-to-gsc.js",
 		"translate": "node --env-file=.env scripts/translate.js",
 		"translate:staged": "node --env-file=.env scripts/translate.js --staged-only",
+		"translate:dry-run": "node scripts/translate.js --dry-run",
 		"gallery:manifest": "node --env-file=.env scripts/build-gallery-manifest.js",
 		"weekly:new": "node scripts/weekly-new.js",
 		"content:doctor": "node scripts/content-doctor.js",
