@@ -6,7 +6,7 @@ import test from "node:test"
 import Database from "better-sqlite3"
 import { backupDatabase, inspectDatabase } from "../dist/backup.js"
 
-test("backup is validated and restored into a separate temporary database", () => {
+test("backup is restored separately and invalid partial output is removed", () => {
   const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), "jinmu-comment-backup-"))
   const databasePath = path.join(rootDir, "comments.db")
   const backupDir = path.join(rootDir, "backup's directory")
@@ -31,6 +31,14 @@ test("backup is validated and restored into a separate temporary database", () =
     assert.equal(report.rowCounts.user, 1)
     assert.equal(report.rowCounts.comments, 1)
     assert.deepEqual(inspectDatabase(report.backupPath), { rowCounts: report.rowCounts })
+
+    const incompletePath = path.join(rootDir, "incomplete.db")
+    const incompleteBackupDir = path.join(rootDir, "incomplete-backups")
+    const incomplete = new Database(incompletePath)
+    incomplete.exec('CREATE TABLE "user" (id TEXT PRIMARY KEY)')
+    incomplete.close()
+    assert.throws(() => backupDatabase(incompletePath, incompleteBackupDir), /no such table/)
+    assert.deepEqual(fs.readdirSync(incompleteBackupDir), [])
   } finally {
     if (database.open) {
       database.close()

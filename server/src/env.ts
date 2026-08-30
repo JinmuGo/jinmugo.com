@@ -8,6 +8,18 @@ export function requiredEnv(name: string, source: Environment = process.env) {
   return value
 }
 
+export function minimumLengthEnv(
+  name: string,
+  minimumLength: number,
+  source: Environment = process.env,
+) {
+  const value = requiredEnv(name, source)
+  if (value.trim().length < minimumLength) {
+    throw new Error(`${name} must be at least ${minimumLength} characters`)
+  }
+  return value
+}
+
 export function commaSeparatedEnv(name: string, source: Environment = process.env) {
   const values = requiredEnv(name, source)
     .split(",")

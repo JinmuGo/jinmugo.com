@@ -27,4 +27,4 @@ RUN mkdir -p /app/data
 
 EXPOSE 3001
 
-CMD ["node", "dist/index.js"]
+CMD ["sh", "-c", "node dist/migrate.js && exec node dist/index.js"]

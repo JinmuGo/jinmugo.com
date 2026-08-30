@@ -4,31 +4,87 @@ import { fileURLToPath } from "node:url"
 import Database from "better-sqlite3"
 import { drizzle } from "drizzle-orm/better-sqlite3"
 import { migrate } from "drizzle-orm/better-sqlite3/migrator"
+import { readMigrationFiles } from "drizzle-orm/migrator"
 import { backupDatabase } from "./backup.js"
 import { requiredEnv } from "./env.js"
 
-export function prepareDatabase(
-  databasePath: string,
-  backup: typeof backupDatabase = backupDatabase,
-) {
-  if (fs.existsSync(databasePath)) {
-    return backup(databasePath)
+const migrationsTable = "__drizzle_migrations"
+
+function migrationState(databasePath: string, migrationsFolder: string) {
+  const migrations = readMigrationFiles({ migrationsFolder })
+  if (!fs.existsSync(databasePath)) {
+    return { hasApplicationSchema: false, hasPendingMigrations: migrations.length > 0 }
   }
-  fs.mkdirSync(path.dirname(databasePath), { recursive: true })
+
+  const database = new Database(databasePath, { readonly: true, fileMustExist: true })
+  try {
+    const hasApplicationSchema = Boolean(
+      database
+        .prepare(
+          `SELECT EXISTS (
+            SELECT 1 FROM sqlite_master
+            WHERE type = 'table'
+              AND name <> '${migrationsTable}'
+              AND name NOT GLOB 'sqlite_*'
+          )`,
+        )
+        .pluck()
+        .get(),
+    )
+    const hasMigrationsTable = Boolean(
+      database
+        .prepare(
+          `SELECT EXISTS (
+            SELECT 1 FROM sqlite_master
+            WHERE type = 'table' AND name = '${migrationsTable}'
+          )`,
+        )
+        .pluck()
+        .get(),
+    )
+    const lastMigrationAt = hasMigrationsTable
+      ? database
+          .prepare(`SELECT created_at FROM "${migrationsTable}" ORDER BY created_at DESC LIMIT 1`)
+          .pluck()
+          .get()
+      : undefined
+
+    return {
+      hasApplicationSchema,
+      hasPendingMigrations: migrations.some(
+        (migration) =>
+          lastMigrationAt === undefined || Number(lastMigrationAt) < migration.folderMillis,
+      ),
+    }
+  } finally {
+    database.close()
+  }
 }
 
-function runMigrations() {
-  const databasePath = path.resolve(requiredEnv("DATABASE_URL"))
-  const backup = prepareDatabase(databasePath)
-  if (backup) {
-    console.log(`[Migrate] Backup verified: ${backup.backupPath}`)
+export function runMigrations(
+  databasePath: string,
+  migrationsFolder: string,
+  backup: typeof backupDatabase = backupDatabase,
+) {
+  const sourcePath = path.resolve(databasePath)
+  const folderPath = path.resolve(migrationsFolder)
+  const state = migrationState(sourcePath, folderPath)
+  if (!state.hasPendingMigrations) {
+    console.log("[Migrate] No pending migrations")
+    return
   }
 
-  const sqlite = new Database(databasePath)
+  fs.mkdirSync(path.dirname(sourcePath), { recursive: true })
+  if (state.hasApplicationSchema) {
+    const report = backup(sourcePath)
+    console.log(`[Migrate] Backup verified: ${report.backupPath}`)
+  }
+
+  const sqlite = new Database(sourcePath)
   try {
     sqlite.pragma("foreign_keys = ON")
     migrate(drizzle(sqlite), {
-      migrationsFolder: path.resolve(import.meta.dirname, "../drizzle"),
+      migrationsFolder: folderPath,
     })
     console.log("[Migrate] Migrations complete")
   } finally {
@@ -37,5 +93,5 @@ function runMigrations() {
 }
 
 if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {
-  runMigrations()
+  runMigrations(requiredEnv("DATABASE_URL"), path.resolve(import.meta.dirname, "../drizzle"))
 }

@@ -1,12 +1,20 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import { commaSeparatedEnv, requiredEnv, serverPort } from "../dist/env.js"
+import { commaSeparatedEnv, minimumLengthEnv, requiredEnv, serverPort } from "../dist/env.js"
 
 test("required server configuration fails fast and parses safe values", () => {
   assert.throws(() => requiredEnv("DATABASE_URL", {}), /DATABASE_URL/)
   assert.throws(
     () => requiredEnv("BETTER_AUTH_SECRET", { BETTER_AUTH_SECRET: "  " }),
     /BETTER_AUTH_SECRET/,
+  )
+  assert.throws(
+    () => minimumLengthEnv("BETTER_AUTH_SECRET", 32, { BETTER_AUTH_SECRET: "x".repeat(31) }),
+    /at least 32 characters/,
+  )
+  assert.equal(
+    minimumLengthEnv("BETTER_AUTH_SECRET", 32, { BETTER_AUTH_SECRET: "x".repeat(32) }),
+    "x".repeat(32),
   )
   assert.deepEqual(
     commaSeparatedEnv("FRONTEND_URL", {

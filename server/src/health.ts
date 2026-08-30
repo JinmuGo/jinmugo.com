@@ -7,7 +7,7 @@ type HealthDatabase = {
 export function registerHealth(app: Hono, database: HealthDatabase) {
   app.get("/health", (c) => {
     try {
-      database.prepare("SELECT 1").get()
+      database.prepare('SELECT 1 FROM "comments" LIMIT 1').get()
       return c.json({ status: "ok" })
     } catch (error) {
       console.error("[Health] Database check failed", error)

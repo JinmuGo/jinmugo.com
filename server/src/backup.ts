@@ -78,12 +78,17 @@ export function backupDatabase(databasePath: string, backupDir?: string) {
     `${path.basename(sourcePath)}.${timestamp}.${process.pid}.sqlite`,
   )
 
-  runDotCommand(sourcePath, ".backup", backupPath)
-  fs.chmodSync(backupPath, 0o600)
-  const report = inspectDatabase(backupPath)
-  rehearseRestore(backupPath, report.rowCounts)
+  try {
+    runDotCommand(sourcePath, ".backup", backupPath)
+    fs.chmodSync(backupPath, 0o600)
+    const report = inspectDatabase(backupPath)
+    rehearseRestore(backupPath, report.rowCounts)
 
-  return { backupPath, ...report }
+    return { backupPath, ...report }
+  } catch (error) {
+    fs.rmSync(backupPath, { force: true })
+    throw error
+  }
 }
 
 if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {
