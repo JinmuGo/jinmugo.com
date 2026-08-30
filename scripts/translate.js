@@ -209,7 +209,7 @@ function cleanupMarkdown(text) {
     .replace(/\\---/g, "---")
 }
 
-async function translateContent({ content, sourceHash, apiKey }) {
+export async function translateContent({ content, sourceHash, apiKey }) {
   const frontmatterMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/)
   let frontmatter = frontmatterMatch?.[1] ?? ""
   const body = frontmatterMatch?.[2] ?? content
@@ -255,7 +255,7 @@ async function translateContent({ content, sourceHash, apiKey }) {
     }
     frontmatter = frontmatter.replace(
       new RegExp(`^${field.key}:.+$`, "m"),
-      `${field.key}: ${data.translations[translationIndex].text}`,
+      () => `${field.key}: ${JSON.stringify(data.translations[translationIndex].text)}`,
     )
     translationIndex++
   }
