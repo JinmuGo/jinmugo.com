@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest"
-import { createArchiveEntries, getArchivePath, isArchiveIndexable } from "./archive"
+import {
+  createArchiveEntries,
+  getArchivePath,
+  getPairedArchiveSegments,
+  isArchiveIndexable,
+} from "./archive"
 import { normalizeArchiveSegment } from "./archive-segment.js"
 
 describe("archive URLs", () => {
@@ -19,5 +24,13 @@ describe("archive URLs", () => {
     expect(isArchiveIndexable("tag", 1)).toBe(false)
     expect(isArchiveIndexable("tag", 2)).toBe(true)
     expect(isArchiveIndexable("category", 1)).toBe(true)
+  })
+
+  it("pairs matching category archives but never assumes tag translations", () => {
+    const koEntries = createArchiveEntries(["Tech", "Network"])
+    const enEntries = createArchiveEntries(["Tech", "Cloud"])
+
+    expect([...getPairedArchiveSegments("category", koEntries, enEntries)]).toEqual(["tech"])
+    expect([...getPairedArchiveSegments("tag", koEntries, enEntries)]).toEqual([])
   })
 })

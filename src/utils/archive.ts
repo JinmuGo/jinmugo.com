@@ -69,6 +69,30 @@ export function isArchiveIndexable(classify: ArchiveClassification, count: numbe
   return classify !== "tag" || count > 1
 }
 
+export function getPairedArchiveSegments(
+  classify: ArchiveClassification,
+  sourceEntries: ArchiveEntry[],
+  alternateEntries: ArchiveEntry[],
+): Set<string> {
+  if (classify === "tag") {
+    return new Set()
+  }
+
+  const sourceSegments = new Set(
+    sourceEntries
+      .filter((entry) => isArchiveIndexable(classify, entry.count))
+      .map((entry) => entry.segment),
+  )
+
+  return new Set(
+    alternateEntries
+      .filter(
+        (entry) => isArchiveIndexable(classify, entry.count) && sourceSegments.has(entry.segment),
+      )
+      .map((entry) => entry.segment),
+  )
+}
+
 export function getArchivePath(
   prefix: ArchivePrefix,
   classify: ArchiveClassification,

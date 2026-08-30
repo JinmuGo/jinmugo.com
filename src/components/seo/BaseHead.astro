@@ -5,6 +5,11 @@ import "@/styles/global.css"
 import { Font } from "astro:assets"
 import type { ImageMetadata } from "astro"
 import Themes from "astro-themes"
+import {
+  type ArchiveClassification,
+  getArchiveEntries,
+  getPairedArchiveSegments,
+} from "@/utils/archive"
 import { getEnglishPosts, getKoreanPosts } from "@/utils/content/posts"
 import { getEnglishWeeklies, getKoreanWeeklies } from "@/utils/content/weekly"
 import { detectLanguage } from "@/utils/language"
@@ -39,6 +44,7 @@ const enUrl = new URL(`/en${pathWithoutLang}`, Astro.site).href
 const contentMatch = pathWithoutLang.match(
   /^\/(posts|weekly|library\/books|library\/movies)\/([^/]+)\/?$/,
 )
+const archiveMatch = pathWithoutLang.match(/^\/archives\/(category|year)\/([^/]+)\/?$/)
 let hasAlternate =
   !/^\/(?:404|portfolio)\/?$/.test(pathWithoutLang) &&
   !/^\/(?:archives\/(?:category|tag|year)|series)\//.test(pathWithoutLang)
@@ -60,6 +66,23 @@ if (contentMatch) {
     const items = await getMovies(isEnglish ? "ko" : "en")
     hasAlternate = items.some((item) => item.slug === slug)
   }
+}
+
+if (archiveMatch) {
+  const classify = archiveMatch[1] as ArchiveClassification
+  const segment = decodeURIComponent(archiveMatch[2])
+  const [koPosts, enPosts, koWeeklies, enWeeklies] = await Promise.all([
+    getKoreanPosts(),
+    getEnglishPosts(),
+    getKoreanWeeklies(),
+    getEnglishWeeklies(),
+  ])
+
+  hasAlternate = getPairedArchiveSegments(
+    classify,
+    getArchiveEntries([...koPosts, ...koWeeklies], classify),
+    getArchiveEntries([...enPosts, ...enWeeklies], classify),
+  ).has(segment)
 }
 
 // RSS feed path based on language

@@ -3,9 +3,9 @@ import type { Post, Weekly } from "@/types/content"
 import {
   ARCHIVE_CLASSIFICATIONS,
   type ArchiveContent,
-  type ArchivePrefix,
   getArchiveEntries,
   getArchivePath,
+  getPairedArchiveSegments,
   isArchiveIndexable,
 } from "@/utils/archive"
 import { getEnglishPosts, getKoreanPosts } from "@/utils/content/posts"
@@ -72,15 +72,30 @@ export async function GET() {
     return result
   }
 
-  const renderArchiveUrls = (content: ArchiveContent[], prefix: ArchivePrefix) =>
-    ARCHIVE_CLASSIFICATIONS.flatMap((classify) =>
-      getArchiveEntries(content, classify)
-        .filter((entry) => isArchiveIndexable(classify, entry.count))
-        .map(
-          (entry) =>
-            `<url><loc>${new URL(getArchivePath(prefix, classify, entry.label), siteUrl).href}</loc></url>`,
+  const renderStandaloneUrl = (path: string) =>
+    `<url><loc>${new URL(path, siteUrl).href}</loc></url>`
+
+  const renderArchiveUrls = (koContent: ArchiveContent[], enContent: ArchiveContent[]) =>
+    ARCHIVE_CLASSIFICATIONS.flatMap((classify) => {
+      const koEntries = getArchiveEntries(koContent, classify).filter((entry) =>
+        isArchiveIndexable(classify, entry.count),
+      )
+      const enEntries = getArchiveEntries(enContent, classify).filter((entry) =>
+        isArchiveIndexable(classify, entry.count),
+      )
+      const pairedSegments = getPairedArchiveSegments(classify, koEntries, enEntries)
+
+      return [
+        ...koEntries.map((entry) =>
+          pairedSegments.has(entry.segment)
+            ? renderUrl(getArchivePath("", classify, entry.label))
+            : renderStandaloneUrl(getArchivePath("", classify, entry.label)),
         ),
-    ).join("\n")
+        ...enEntries
+          .filter((entry) => !pairedSegments.has(entry.segment))
+          .map((entry) => renderStandaloneUrl(getArchivePath("/en", classify, entry.label))),
+      ]
+    }).join("\n")
 
   const result = `
   <?xml version="1.0" encoding="UTF-8"?>
@@ -105,8 +120,7 @@ export async function GET() {
     ${renderUrl("/library")}
     ${renderUrl("/library/books")}
     ${renderUrl("/library/movies")}
-    ${renderArchiveUrls([...koPosts, ...koWeeklies], "")}
-    ${renderArchiveUrls([...enPosts, ...enWeeklies], "/en")}
+    ${renderArchiveUrls([...koPosts, ...koWeeklies], [...enPosts, ...enWeeklies])}
     ${koPosts
       .map((post: Post) => {
         const lastMod = format(post.data.lastmod ?? post.data.date, "yyyy-MM-dd")
