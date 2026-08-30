@@ -1,31 +1,17 @@
 ---
 import FormattedDate from "@/components/content/FormattedDate.astro"
-import { getArchivePath } from "@/utils/archive"
+import pkg from "~/package.json"
 
 interface Props {
-  category?: string
   date: Date
-  slug: string
-  variant?: "default" | "compact"
 }
 
-const { category, date, slug, variant = "default" } = Astro.props
+const { date } = Astro.props
+const aboutPath = Astro.url.pathname.startsWith("/en/") ? "/en/about/" : "/about/"
 ---
 
-<div class:list={[
-	"text-sm",
-	variant === "default" ? "text-gray-500 dark:text-gray-300" : "text-gray-600 dark:text-gray-400"
-]}>
-	{category && (
-		<>
-			<a
-				href={getArchivePath(Astro.url.pathname.startsWith("/en") ? "/en" : "", "category", category)}
-				class="underline"
-			>
-				{category}
-			</a>
-			<span> / </span>
-		</>
-	)}
-	<FormattedDate date={date} />
-</div>
+<span class="inline-flex items-center">
+  <a href={aboutPath} rel="author" class="underline underline-offset-2">{pkg.author}</a>
+  {" · "}
+  <FormattedDate date={date} />
+</span>

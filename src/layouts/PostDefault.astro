@@ -1,6 +1,6 @@
 ---
 import UserSection from "@/components/app-shell/Comment/UserSection.astro"
-import FormattedDate from "@/components/content/FormattedDate.astro"
+import ContentMetadata from "@/components/content/ContentMetadata.astro"
 import Prose from "@/components/layout/Prose.astro"
 import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Layout from "@/layouts/Layout.astro"
@@ -55,7 +55,7 @@ const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentS
             <span class="text-gray-400 dark:text-gray-500">•</span>
           </>
         )}
-        <FormattedDate date={date} />
+        <ContentMetadata date={date} />
       </div>
     </div>
   </header>

@@ -2,7 +2,7 @@
 import { Image } from "astro:assets"
 import type { ImageMetadata } from "astro"
 import UserSection from "@/components/app-shell/Comment/UserSection.astro"
-import FormattedDate from "@/components/content/FormattedDate.astro"
+import ContentMetadata from "@/components/content/ContentMetadata.astro"
 import Prose from "@/components/layout/Prose.astro"
 import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Layout from "@/layouts/Layout.astro"
@@ -47,7 +47,7 @@ const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentS
           {title}
         </h1>
         <div class="flex flex-wrap items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-          <FormattedDate date={date} />
+          <ContentMetadata date={date} />
           {
             tags?.length ? (
               <>
