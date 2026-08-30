@@ -33,7 +33,3 @@ overrides:
   'svgo@>=3.0.0 <3.3.4': '>=3.3.4'
   'svgo@>=4.0.0 <4.0.2': '>=4.0.2'
   '@babel/core@<=7.29.0': '>=7.29.6'
-
-auditConfig:
-  ignoreGhsas:
-    - GHSA-rpr9-rxv7-x643

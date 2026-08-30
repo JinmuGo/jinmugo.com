@@ -1,14 +1,14 @@
-import type { Code } from "mdast"
-import type { Node, Parent } from "unist"
+import type { Root } from "mdast"
+import type { MdxJsxFlowElement } from "mdast-util-mdx-jsx"
 import { visit } from "unist-util-visit"
 
 /**
  * embed 코드블록을 EmbedCard 컴포넌트로 변환하는 remark 플러그인
  */
 export default function remarkEmbedCard() {
-  return (tree: Node) => {
-    visit(tree, "code", (node: Code, index: number | undefined, parent: Parent) => {
-      if (node.lang === "embed") {
+  return (tree: Root) => {
+    visit(tree, "code", (node, index, parent) => {
+      if (node.lang === "embed" && index !== undefined && parent) {
         // key: "value" 형태 파싱
         const regex = /(\w+):\s*"([^"]*)"/g
         const result: Record<string, string> = {}
@@ -21,7 +21,7 @@ export default function remarkEmbedCard() {
           result[key] = value
         }
         // EmbedCard JSX 노드로 변환
-        parent.children[index ?? 0] = {
+        const embedCard: MdxJsxFlowElement = {
           type: "mdxJsxFlowElement",
           name: "EmbedCard",
           attributes: Object.entries(result).map(([key, value]) => ({
@@ -31,6 +31,7 @@ export default function remarkEmbedCard() {
           })),
           children: [],
         }
+        parent.children[index] = embedCard
       }
     })
   }

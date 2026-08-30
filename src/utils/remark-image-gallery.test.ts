@@ -1,15 +1,10 @@
+import type { Root } from "mdast"
+import type { MdxJsxFlowElement } from "mdast-util-mdx-jsx"
 import { describe, expect, it } from "vitest"
 import remarkImageGallery from "./remark-image-gallery"
 
-type MdxJsxFlowElement = {
-  type: "mdxJsxFlowElement"
-  name: string
-  attributes: Array<{ name: string; value: string }>
-  children: unknown[]
-}
-
 function runPlugin(markdown: string) {
-  const tree = {
+  const tree: Root = {
     type: "root",
     children: [
       {
@@ -22,7 +17,11 @@ function runPlugin(markdown: string) {
 
   remarkImageGallery()(tree)
 
-  return tree.children[0] as MdxJsxFlowElement
+  const node = tree.children[0]
+  if (node?.type !== "mdxJsxFlowElement") {
+    throw new Error("Expected ImageGrid node")
+  }
+  return node satisfies MdxJsxFlowElement
 }
 
 describe("remarkImageGallery", () => {
@@ -35,15 +34,22 @@ describe("remarkImageGallery", () => {
     expect(node.name).toBe("ImageGrid")
     expect(node.children).toEqual([])
 
-    const imagesAttr = node.attributes.find((attr) => attr.name === "images")
-    expect(JSON.parse(imagesAttr?.value ?? "[]")).toEqual(["./a.webp", "./b.webp"])
+    const imagesAttr = node.attributes.find(
+      (attr) => attr.type === "mdxJsxAttribute" && attr.name === "images",
+    )
+    expect(typeof imagesAttr?.value === "string" ? JSON.parse(imagesAttr.value) : []).toEqual([
+      "./a.webp",
+      "./b.webp",
+    ])
 
-    const titleAttr = node.attributes.find((attr) => attr.name === "title")
+    const titleAttr = node.attributes.find(
+      (attr) => attr.type === "mdxJsxAttribute" && attr.name === "title",
+    )
     expect(titleAttr?.value).toBe("운동 기록")
   })
 
   it("ignores non-gallery code blocks", () => {
-    const tree = {
+    const tree: Root = {
       type: "root",
       children: [{ type: "code", lang: "text", value: "hello" }],
     }

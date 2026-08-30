@@ -1,8 +1,4 @@
 import type { CollectionEntry } from "astro:content"
-import type { getKoreanPosts } from "@/utils/content/posts"
-import type { getKoreanWeeklies } from "@/utils/content/weekly"
-
-type ContentType = "post" | "weekly"
 
 // 공통 필드만 타입으로 정의
 interface BaseMetadata {
@@ -25,12 +21,16 @@ export type WeeklyMetadata = BaseMetadata &
     week: number
   }
 
-export type Post = Awaited<ReturnType<typeof getKoreanPosts>>[number] & {
-  type: ContentType
+export type Post = CollectionEntry<"post"> & {
+  slug: string
+  href: string
+  type: "post"
 }
 
-export type Weekly = Awaited<ReturnType<typeof getKoreanWeeklies>>[number] & {
-  type: ContentType
+export type Weekly = CollectionEntry<"weekly"> & {
+  slug: string
+  href: string
+  type: "weekly"
 }
 
 /**
