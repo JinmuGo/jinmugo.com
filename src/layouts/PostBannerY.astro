@@ -7,6 +7,7 @@ import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Layout from "@/layouts/Layout.astro"
 import type { PostMetadata } from "@/types/content"
 import type { ContentType } from "@/types/utils"
+import { getArchivePath } from "@/utils/archive"
 import { generateContentSchemas } from "@/utils/contentSchemas"
 import { buildContentOgImagePath } from "@/utils/openGraphMeta"
 
@@ -62,7 +63,12 @@ const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentS
         <div class="text-sm text-gray-500 dark:text-gray-300">
           {category && (
             <>
-              <a href={`/archives/category/${category}`} class="underline">{category}</a>
+              <a
+                href={getArchivePath(lang === "en" ? "/en" : "", "category", category)}
+                class="underline"
+              >
+                {category}
+              </a>
               <span> / </span>
             </>
           )}

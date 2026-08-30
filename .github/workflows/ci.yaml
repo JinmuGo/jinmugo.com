@@ -67,6 +67,9 @@ jobs:
       - name: Verify Markdown Tables
         run: pnpm verify:tables
 
+      - name: Verify Internal Links
+        run: pnpm verify:links
+
   server:
     name: Server Build & Audit
     runs-on: ubuntu-latest

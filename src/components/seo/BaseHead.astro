@@ -21,6 +21,7 @@ interface Props {
   ogImage?: string
   tags?: string[]
   type?: "article" | "website"
+  robots?: "index,follow" | "noindex,follow"
   publishedTime?: Date
   modifiedTime?: Date
 }
@@ -71,6 +72,7 @@ const {
   ogImage,
   tags,
   type = "website",
+  robots,
   publishedTime,
   modifiedTime,
 } = Astro.props
@@ -97,6 +99,7 @@ const resolvedOgImage = ogImage ?? getOpenGraphImageSource(image) ?? FallbackIma
   href={new URL(rssFeedPath, Astro.site).href}
 />
 <meta name="generator" content={Astro.generator} />
+{robots && <meta name="robots" content={robots} />}
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL.href} />

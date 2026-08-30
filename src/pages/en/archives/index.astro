@@ -3,19 +3,20 @@ import ArchiveSection from "@/components/content/ArchiveSection.astro"
 import Title from "@/components/layout/Title"
 import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Layout from "@/layouts/Layout.astro"
-import type { Post } from "@/types/content"
+import { getArchiveEntries } from "@/utils/archive"
 import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
-import { countBy } from "@/utils/cn"
 import { getEnglishPosts } from "@/utils/content/posts"
+import { getEnglishWeeklies } from "@/utils/content/weekly"
 import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
 
 const posts = await getEnglishPosts()
+const weeklies = await getEnglishWeeklies()
 
-const allContent = posts.map((post: Post) => ({ ...post, type: post.type }))
+const allContent = [...posts, ...weeklies]
 
-const years = countBy(allContent, (item) => new Date(item.data.date).getFullYear().toString())
-const categories = countBy(allContent, (item) => item.data.category ?? [])
-const tags = countBy(allContent, (item) => item.data.tags ?? [])
+const years = getArchiveEntries(allContent, "year")
+const categories = getArchiveEntries(allContent, "category")
+const tags = getArchiveEntries(allContent, "tag")
 
 const title = "Archives"
 const description = "Archives by category, tag, and year."
@@ -56,21 +57,24 @@ const jsonLd = [pageSchema, breadcrumbSchema]
   <ArchiveSection
     title="Year"
     items={years}
-    baseUrl="/en/archives/year/"
+    classify="year"
+    prefix="/en"
     itemClass="font-medium"
   />
   <ArchiveSection
     title="Category"
     items={categories}
-    baseUrl="/en/archives/category/"
+    classify="category"
+    prefix="/en"
     itemClass="font-medium"
   />
   {
-    Object.keys(tags).length > 0 && (
+    tags.length > 0 && (
       <ArchiveSection
         title="Tag"
         items={tags}
-        baseUrl="/en/archives/tag/"
+        classify="tag"
+        prefix="/en"
         itemClass="font-medium"
       />
     )

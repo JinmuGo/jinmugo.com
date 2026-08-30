@@ -100,6 +100,9 @@ jobs:
       - name: Verify Markdown tables rendered as HTML
         run: pnpm verify:tables
 
+      - name: Verify internal links
+        run: pnpm verify:links
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:

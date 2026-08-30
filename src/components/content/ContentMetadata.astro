@@ -1,5 +1,6 @@
 ---
 import FormattedDate from "@/components/content/FormattedDate.astro"
+import { getArchivePath } from "@/utils/archive"
 
 interface Props {
   category?: string
@@ -17,7 +18,10 @@ const { category, date, slug, variant = "default" } = Astro.props
 ]}>
 	{category && (
 		<>
-			<a href={`/archives/category/${category}`} class="underline">
+			<a
+				href={getArchivePath(Astro.url.pathname.startsWith("/en") ? "/en" : "", "category", category)}
+				class="underline"
+			>
 				{category}
 			</a>
 			<span> / </span>
@@ -25,4 +29,3 @@ const { category, date, slug, variant = "default" } = Astro.props
 	)}
 	<FormattedDate date={date} />
 </div>
-

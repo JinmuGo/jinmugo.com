@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import type { PostMetadata, WeeklyMetadata } from "@/types/content"
+import { getArchivePath } from "@/utils/archive"
 
 function isWeeklyMetadata(metadata: PostMetadata | WeeklyMetadata): metadata is WeeklyMetadata {
   return "year" in metadata && "week" in metadata
@@ -33,9 +34,7 @@ export default function HeaderSlider({
       ? "/en/weekly/"
       : "/weekly/"
     : category
-      ? pathname.startsWith("/en")
-        ? `/en/archives/category/${category}`
-        : `/archives/category/${category}`
+      ? getArchivePath(pathname.startsWith("/en") ? "/en" : "", "category", category)
       : undefined
   const contextLabel = isWeekly
     ? `Weekly ${postMetadata.year}-W${String(postMetadata.week).padStart(2, "0")}`

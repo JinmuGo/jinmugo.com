@@ -1,5 +1,13 @@
 import { format } from "date-fns"
 import type { Post, Weekly } from "@/types/content"
+import {
+  ARCHIVE_CLASSIFICATIONS,
+  type ArchiveContent,
+  type ArchivePrefix,
+  getArchiveEntries,
+  getArchivePath,
+  isArchiveIndexable,
+} from "@/utils/archive"
 import { getEnglishPosts, getKoreanPosts } from "@/utils/content/posts"
 import { getEnglishWeeklies, getKoreanWeeklies } from "@/utils/content/weekly"
 import { getBookMedia } from "@/utils/library/books"
@@ -60,6 +68,17 @@ export async function GET() {
 
     return result
   }
+
+  const renderArchiveUrls = (content: ArchiveContent[], prefix: ArchivePrefix) =>
+    ARCHIVE_CLASSIFICATIONS.flatMap((classify) =>
+      getArchiveEntries(content, classify)
+        .filter((entry) => isArchiveIndexable(classify, entry.count))
+        .map(
+          (entry) =>
+            `<url><loc>${new URL(getArchivePath(prefix, classify, entry.label), siteUrl).href}</loc></url>`,
+        ),
+    ).join("\n")
+
   const result = `
   <?xml version="1.0" encoding="UTF-8"?>
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -75,6 +94,8 @@ export async function GET() {
     ${renderUrl("/library")}
     ${renderUrl("/library/books")}
     ${renderUrl("/library/movies")}
+    ${renderArchiveUrls([...koPosts, ...koWeeklies], "")}
+    ${renderArchiveUrls([...enPosts, ...enWeeklies], "/en")}
     ${koPosts
       .map((post: Post) => {
         const lastMod = format(post.data.lastmod ?? post.data.date, "yyyy-MM-dd")

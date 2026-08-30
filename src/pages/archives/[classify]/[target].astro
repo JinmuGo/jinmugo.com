@@ -1,100 +1,50 @@
 ---
 import Layout from "@/layouts/Layout.astro"
-import type { Post, Weekly } from "@/types/content"
+import {
+  type ArchivePageProps,
+  getArchiveContent,
+  getArchivePath,
+  getArchiveStaticPaths,
+  isArchiveIndexable,
+} from "@/utils/archive"
 import { generateArchiveBreadcrumbs } from "@/utils/breadcrumbUtils"
 import { getKoreanPosts } from "@/utils/content/posts"
 import { getKoreanWeeklies } from "@/utils/content/weekly"
-import { withTrailingSlash } from "@/utils/language"
 import { buildPageUrl, generateBreadcrumbSchema, generatePageSchema } from "@/utils/structuredData"
 
 export async function getStaticPaths() {
   const posts = await getKoreanPosts()
   const weeklies = await getKoreanWeeklies()
-
-  const allContent = [...posts, ...weeklies] as (Post | Weekly)[]
-
-  const categories = [
-    ...new Set(
-      allContent
-        .map((item) => ("category" in item.data ? item.data.category : undefined))
-        .filter(Boolean),
-    ),
-  ]
-  const tags = [...new Set([...allContent.flatMap((item) => item.data.tags ?? [])].filter(Boolean))]
-  const years = [
-    ...new Set([
-      ...allContent
-        .map((item) => (item.data.date ? new Date(item.data.date).getFullYear().toString() : null))
-        .filter(Boolean),
-    ]),
-  ]
-
-  const paths = [
-    ...categories.map((category) => ({
-      params: { classify: "category", target: category }, // 인코딩 X
-    })),
-    ...tags.map((tag) => ({
-      params: { classify: "tag", target: tag }, // 인코딩 X
-    })),
-    ...years.map((year) => ({
-      params: { classify: "year", target: year }, // 인코딩 X
-    })),
-  ]
-
-  return paths
+  return getArchiveStaticPaths([...posts, ...weeklies], "")
 }
 
-const { classify, target } = Astro.params
-const decodeTarget = decodeURIComponent(target ?? "")
+const { classify, label, redirectTo } = Astro.props as ArchivePageProps
+if (redirectTo) {
+  return Astro.redirect(encodeURI(redirectTo), 301)
+}
 
 const posts = await getKoreanPosts()
 const weeklies = await getKoreanWeeklies()
-const allContent = [...posts, ...weeklies] as (Post | Weekly)[]
+const allContent = [...posts, ...weeklies]
 
 const capitalizeFirst = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
-function getContentBySlug(allContent: (Post | Weekly)[], classify: string, target: string) {
-  if (!classify || !target) {
-    return []
-  }
-
-  switch (classify) {
-    case "category":
-      return allContent
-        .filter((item) => "category" in item.data && item.data.category === target)
-        .map((item) => ({ ...item, type: item.type }))
-    case "tag":
-      return [
-        ...allContent
-          .filter((item) => item.data.tags?.includes(target))
-          .map((item) => ({ ...item, type: item.type })),
-      ]
-    case "year":
-      return [
-        ...allContent
-          .filter(
-            (item) =>
-              item.data.date && new Date(item.data.date).getFullYear().toString() === target,
-          )
-          .map((item) => ({ ...item, type: item.type })),
-      ]
-    default:
-      return []
-  }
-}
-
-const contentWithSlug = getContentBySlug(allContent, classify ?? "", decodeTarget ?? "")
-const title = `${capitalizeFirst(decodeTarget ?? "")} - ${capitalizeFirst(classify ?? "")}`
-const description = `Archives of ${capitalizeFirst(decodeTarget ?? "")} in ${capitalizeFirst(classify ?? "")}`
-const url = buildPageUrl("", `/archives/${classify}/${decodeTarget}`)
+const contentWithSlug = getArchiveContent(allContent, classify, label)
+const title = `${capitalizeFirst(label)} - ${capitalizeFirst(classify)}`
+const description = `Archives of ${capitalizeFirst(label)} in ${capitalizeFirst(classify)}`
+const pathname = getArchivePath("", classify, label)
+const url = buildPageUrl("", pathname)
+const robots = isArchiveIndexable(classify, contentWithSlug.length)
+  ? "index,follow"
+  : "noindex,follow"
 
 // Breadcrumb 항목 생성
 const breadcrumbItems = generateArchiveBreadcrumbs({
-  pathname: `/archives/${classify}/${target}`,
+  pathname,
   origin: Astro.url.origin,
   lang: "ko",
-  classify: classify ?? "",
-  target: decodeTarget ?? "",
+  classify,
+  target: label,
 })
 
 const pageSchema = generatePageSchema({
@@ -102,7 +52,7 @@ const pageSchema = generatePageSchema({
   title,
   description,
   url,
-  keywords: `archives, ${classify}, ${decodeTarget}`,
+  keywords: `archives, ${classify}, ${label}`,
   inLanguage: "ko",
 })
 
@@ -116,13 +66,14 @@ const jsonLd = [pageSchema, breadcrumbSchema]
   lang="ko"
   jsonLd={jsonLd}
   type="website"
+  robots={robots}
 >
   <div class="min-h-screen px-2 sm:px-4">
     <div class="space-y-2 py-6 md:space-y-1">
       <h1
         class="text-3xl capitalize leading-9 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-100"
       >
-        {decodeTarget}
+        {label}
       </h1>
       <p class="text-lg leading-7 text-gray-500 dark:text-gray-400">
         {description}
@@ -135,13 +86,7 @@ const jsonLd = [pageSchema, breadcrumbSchema]
           <li class:list={["flex", "justify-between", "items-center", "py-3"]}>
             <div class="flex items-center space-x-2">
               <a
-                href={
-                  withTrailingSlash(
-                    item.type === "weekly"
-                      ? `/weekly/${item.slug}`
-                      : `/posts/${item.slug}`,
-                  )
-                }
+                href={item.href}
                 class="text-base sm:text-lg font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
               >
                 {item.data.title}
