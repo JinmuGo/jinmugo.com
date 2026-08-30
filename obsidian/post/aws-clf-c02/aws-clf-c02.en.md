@@ -1,11 +1,13 @@
 ---
+translationSourceHash: 2fbd413fb461104b956c3923213bca13f44c45ede280da5d486f388121d6cd57
 title: "[CLF-C02] AWS Cloud Practitioner Certification Review"
 date: 2025-05-22T00:03:25.401Z
 draft: false
-Tags:
+summary: How I prepared for AWS Cloud Practitioner CLF-C02, used official learning materials and practice exams, and handled the online-proctored test day.
+tags:
   - AWS
   - CLF-C02
-lastmod: 2025-05-22T14:18:22+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: cloud
 ---
 

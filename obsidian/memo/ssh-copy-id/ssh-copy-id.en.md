@@ -1,13 +1,15 @@
 ---
+translationSourceHash: 5bd47f8d86edc3a9d6969721008bc124878f12452cd66d181a6c471bfb7a2531
 title: Using ssh-copy-id to easily set up remote connections
 date: 2025-09-02T08:17:04.305Z
 draft: false
+summary: How SSH public-key authentication works, how to register a key on a remote server with ssh-copy-id, and which sshd settings are required.
 tags:
   - Linux
   - ssh
   - ssh-copy-id
 category: linux
-lastmod: 2025-09-03T21:08:43+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 ---
 
 It's really annoying to enter a password every time I want to SSH into a remote server. ssh supports various authentication methods such as GSSAPI, host-based, etc. but I usually use **password (symmetric key encryption)** or **public key method authentication**.

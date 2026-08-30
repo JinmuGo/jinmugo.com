@@ -1,13 +1,15 @@
 ---
+translationSourceHash: ac4d3afa483ec565cb341dcba87565afc2dbdc839a3b8555702f4715218bfe24
 title: Proxies, there's nowhere to hide!
 date: 2025-07-12T06:31:40.848Z
 draft: false
+summary: A practical overview of proxies—forward and reverse placement, how they receive traffic, routing uses, and trade-offs.
 tags:
   - ReverseProxy
   - ForwardProxy
   - Proxy
   - Network
-lastmod: 2025-07-15T17:18:42+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: develop
 withAI: true
 bannerOnlyText: true

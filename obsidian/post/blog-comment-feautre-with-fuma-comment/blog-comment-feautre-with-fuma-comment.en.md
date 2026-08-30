@@ -1,4 +1,5 @@
 ---
+translationSourceHash: 7e7b1949ecfcbb86853c13de710a96243565029742bfff58a2ad2c0f4772a45b
 title: How to apply blog comment function With Fuma Comment
 date: 2025-05-01T01:46:46.245Z
 draft: false

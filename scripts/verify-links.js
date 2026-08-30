@@ -230,6 +230,14 @@ export function verifyLinks(distDir) {
       }
     }
 
+    for (const image of document.querySelectorAll("img[src]")) {
+      const url = internalUrl(image.getAttribute("src") ?? "", route)
+      const pathname = url && decodedPathname(url.pathname)
+      if (pathname && !resolveFile(pathname)) {
+        errors.push(`${route}: broken internal image: ${url.pathname}`)
+      }
+    }
+
     const canonical = document.querySelector('link[rel~="canonical"][href]')
     if (canonical && !redirects.has(route) && route !== "/404.html") {
       const url = resolvedUrl(canonical.getAttribute("href") ?? "", route)

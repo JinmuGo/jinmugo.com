@@ -1,11 +1,13 @@
 ---
+translationSourceHash: d69a683b16383f407e65de0f007a836308c8fcd9339ed69298c30431546df258
 title: Amazon Q Developer CLI Quick Start Guide
 date: 2025-06-04T13:25:20.437Z
 draft: false
+summary: Installing Amazon Q Developer CLI, giving it a planning document as context, building a Pygame game, and reflecting on the experience.
 tags:
   - AmazonQCLI
   - AWS
-lastmod: 2025-06-05T13:34:57+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: cloud
 ---
 

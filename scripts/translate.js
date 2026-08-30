@@ -49,6 +49,10 @@ function isTranslation(relativePath) {
   return relativePath.endsWith(".en.md") || relativePath.endsWith(".en-US.md")
 }
 
+function isAutomaticTranslationPath(relativePath) {
+  return !/^app[\\/]/.test(relativePath)
+}
+
 function translationPathFor(relativePath) {
   return relativePath.replace(/\.md$/, ".en.md")
 }
@@ -105,11 +109,12 @@ export async function findTranslationTargets({
         (file) => file.startsWith("obsidian/") && file.endsWith(".md") && !isTranslation(file),
       )
       .map((file) => file.slice("obsidian/".length))
+      .filter(isAutomaticTranslationPath)
   } else {
     const allFiles = await findMdFiles(contentDir)
     originalRelativePaths = allFiles
       .map((file) => path.relative(contentDir, file))
-      .filter((file) => !isTranslation(file))
+      .filter((file) => !isTranslation(file) && isAutomaticTranslationPath(file))
   }
 
   const originals = []
@@ -154,7 +159,7 @@ export async function syncTranslationCache({ mode, cacheDir, contentDir = CONTEN
   const targetRoot = mode === "restore" ? contentDir : cacheDir
   const translatedFiles = (await findMdFiles(sourceRoot))
     .map((file) => path.relative(sourceRoot, file))
-    .filter((file) => file.endsWith(".en.md"))
+    .filter((file) => file.endsWith(".en.md") && isAutomaticTranslationPath(file))
     .sort()
 
   let copied = 0
@@ -163,17 +168,27 @@ export async function syncTranslationCache({ mode, cacheDir, contentDir = CONTEN
   for (const relativePath of translatedFiles) {
     const sourceContent = await readIfExists(path.join(contentDir, sourcePathFor(relativePath)))
     const translatedContent = await readIfExists(path.join(sourceRoot, relativePath))
+    const sourceHash = sourceContent === null ? undefined : hashTranslationSource(sourceContent)
 
     if (
       sourceContent === null ||
       translatedContent === null ||
-      getTranslationSourceHash(translatedContent) !== hashTranslationSource(sourceContent)
+      getTranslationSourceHash(translatedContent) !== sourceHash
     ) {
       skipped++
       continue
     }
 
     const targetPath = path.join(targetRoot, relativePath)
+    if (mode === "restore") {
+      const targetContent = await readIfExists(targetPath)
+      const targetHash =
+        targetContent === null ? undefined : getTranslationSourceHash(targetContent)
+      if (targetContent !== null && (!targetHash || targetHash === sourceHash)) {
+        skipped++
+        continue
+      }
+    }
     await fs.mkdir(path.dirname(targetPath), { recursive: true })
     await fs.copyFile(path.join(sourceRoot, relativePath), targetPath)
     copied++

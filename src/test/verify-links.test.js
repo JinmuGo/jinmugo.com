@@ -39,7 +39,7 @@ describe("built link verifier", () => {
     distDir = fs.mkdtempSync(path.join(os.tmpdir(), "verify-links-"))
     write(
       "index.html",
-      '<link rel="canonical" href="https://jinmu.me/"><a href="/missing/">Missing</a><a href="/archives/tag/Open%20Source/">Legacy</a>',
+      '<link rel="canonical" href="https://jinmu.me/"><a href="/missing/">Missing</a><a href="/archives/tag/Open%20Source/">Legacy</a><img src="/missing.png">',
     )
     write(
       "archives/index.html",
@@ -52,7 +52,9 @@ describe("built link verifier", () => {
       '<meta http-equiv="refresh" content="0;url=/archives/tag/open-source/">',
     )
 
-    expect(() => verifyLinks(distDir)).toThrow(/broken internal link[\s\S]*legacy archive redirect/)
+    expect(() => verifyLinks(distDir)).toThrow(
+      /broken internal link[\s\S]*legacy archive redirect[\s\S]*broken internal image/,
+    )
   })
 
   it("derives the generated archive redirect count", () => {

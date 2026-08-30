@@ -1,11 +1,13 @@
 ---
+translationSourceHash: 3ab1ed963474a434780c7c6599cae205d2db6c4502bbe7ced237d58a1075f358
 title: Domain Name System (DNS) DeepDive - Background and Systems
 date: 2025-06-08T12:58:28.806Z
 draft: false
+summary: How the limits of centrally managed HOSTS.TXT led to hierarchical, delegated DNS and its distributed domain-name management model.
 tags:
   - DNS
   - NameServer
-lastmod: 2025-06-28T11:42:15+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: develop
 series: DNS-DeepDive
 seriesOrder: 1

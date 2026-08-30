@@ -1,11 +1,12 @@
 ---
+translationSourceHash: b36c355cd76866ecee36cc2dcc17888230366022bc4ccb2c05c2da7324da2952
 title: Domain Name System (DNS) DeepDive - Name Resolution
 date: 2025-07-06T02:48:10.982Z
 draft: false
-sanner: banner/dns-deepdive.jpg
+summary: How DNS queries follow hierarchical name servers, how recursive and iterative queries differ, and how caching reduces load and latency.
 tags:
   - DNS
-lastmod: 2025-07-06T23:29:49+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: develop
 series: DNS-DeepDive
 seriesOrder: 3

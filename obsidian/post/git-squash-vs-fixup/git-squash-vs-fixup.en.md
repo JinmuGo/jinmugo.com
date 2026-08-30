@@ -1,4 +1,5 @@
 ---
+translationSourceHash: d84a271607520997bf1937637b247ce81bcedd5ac0c775637965678e42c43169
 title: Git Squash vs Fixup
 date: 2025-07-11T01:13:41.081Z
 draft: false

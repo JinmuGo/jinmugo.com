@@ -1,4 +1,5 @@
 ---
+translationSourceHash: 19ec8ac14541b1b726521ba7b52877d12d85bd5ddacf89a6572313db1feeff8d
 date: 2024-12-20T02:40:24.461Z
 draft: false
 lastmod: 2025-07-12T11:51:53+09:00

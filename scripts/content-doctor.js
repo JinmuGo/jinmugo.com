@@ -4,6 +4,7 @@ import path from "node:path"
 import { getContentSourceLabel, getContentSourceRoot } from "./content-paths.js"
 
 const vaultRoot = getContentSourceRoot()
+const translationHashPattern = /^[a-f0-9]{64}$/
 
 const errors = []
 const warnings = []
@@ -96,14 +97,17 @@ function formatWeekLabel(year, week) {
   return `${year}-W${String(week).padStart(2, "0")}`
 }
 
-function validateTranslation(file, files) {
+function validateTranslation(file, files, frontmatter) {
   if (!file.endsWith(".en.md")) {
     return
   }
 
   const sourceFile = file.replace(/\.en\.md$/, ".md")
   if (!files.has(sourceFile)) {
-    addWarning(file, `English translation has no exact source file match (${sourceFile})`)
+    addError(file, `English translation has no exact source file match (${sourceFile})`)
+  }
+  if (!translationHashPattern.test(frontmatter.get("translationSourceHash") ?? "")) {
+    addError(file, "missing valid translationSourceHash")
   }
 }
 
@@ -205,16 +209,20 @@ function main() {
   const files = new Set(getAllMarkdownFiles(vaultRoot))
 
   for (const file of files) {
-    if (!/^(post|memo|weekly)\//.test(file)) {
+    if (!/^(post|memo|weekly|library)\//.test(file)) {
       continue
     }
-
-    validateTranslation(file, files)
 
     const content = fs.readFileSync(path.join(vaultRoot, file), "utf8")
     const frontmatter = parseFrontmatter(content)
     if (!frontmatter) {
       addError(file, "missing frontmatter")
+      continue
+    }
+
+    validateTranslation(file, files, frontmatter)
+
+    if (!/^(post|memo|weekly)\//.test(file)) {
       continue
     }
 

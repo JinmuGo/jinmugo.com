@@ -1,10 +1,12 @@
 ---
+translationSourceHash: 2ab03c7e81f9ddf1b0af0c4b4d4249ca781389dc7bd19da0e6a36a35486a16dc
 title: Snails 'running their own race'
 date: 2025-06-04T02:33:54.594Z
 draft: false
+summary: A short note of encouragement for people moving through each day at their own pace, like a snail sprinting in its own way.
 tags:
   - snail
-lastmod: 2025-06-04T12:00:39+09:00
+lastmod: 2026-08-30T20:15:00+09:00
 category: thinking
 ---
 

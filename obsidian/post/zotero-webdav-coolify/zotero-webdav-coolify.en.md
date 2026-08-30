@@ -1,4 +1,5 @@
 ---
+translationSourceHash: c51c96338a68bea891c2861324ac99044f2621e9889efba91ac17254a59196fe
 title: Deploying a WebDAV server for Zotero synchronization with Coolify
 date: 2025-03-25T04:46:34.380Z
 draft: false

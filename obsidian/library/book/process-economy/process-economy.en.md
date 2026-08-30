@@ -1,4 +1,5 @@
 ---
+translationSourceHash: 6ef8ce4c98a5a5d15d54bb9345c083be2fdb34858b82f25f52f7ae7444cd8827
 title: Process Economy
 author: Kazuhiro Obara
 year: 2021

@@ -215,7 +215,6 @@ sections:
           - Implemented 3D → 2D projection and isometric algorithms.
           - Optimize line drawing using the Bresenham algorithm
           - Implemented rotation, zooming, and panning via keyboard input
-        image: /project/fdf.png
         category: Graphics Programming
         tags:
           - C
