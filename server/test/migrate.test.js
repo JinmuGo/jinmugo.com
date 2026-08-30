@@ -12,9 +12,10 @@ test("migration backs up only pending application data and initializes fresh dat
   const freshPath = path.join(rootDir, "fresh", "comments.db")
   const emptyPath = path.join(rootDir, "empty.db")
   const existingPath = path.join(rootDir, "existing.db")
+  const malformedPath = path.join(rootDir, "malformed.db")
   const backupCalls = []
-  const backup = (databasePath) => {
-    backupCalls.push(databasePath)
+  const backup = (databasePath, _backupDir, backupName) => {
+    backupCalls.push({ databasePath, backupName })
     const database = new Database(databasePath, { readonly: true })
     try {
       assert.equal(database.prepare('SELECT COUNT(*) FROM "comments"').pluck().get(), 1)
@@ -56,14 +57,34 @@ test("migration backs up only pending application data and initializes fresh dat
     existing.close()
 
     runMigrations(existingPath, migrationsFolder, backup)
-    assert.deepEqual(backupCalls, [existingPath])
+    assert.deepEqual(backupCalls, [
+      {
+        databasePath: existingPath,
+        backupName:
+          "existing.db.before-105a387582c975d73517b234a63a3022fbfed725205a362aad19166f519859be.sqlite",
+      },
+    ])
     runMigrations(existingPath, migrationsFolder, backup)
-    assert.deepEqual(backupCalls, [existingPath])
+    assert.equal(backupCalls.length, 1)
 
     const migrated = new Database(existingPath, { readonly: true })
     assert.equal(migrated.prepare('SELECT COUNT(*) FROM "comments"').pluck().get(), 1)
     assert.equal(migrated.prepare('SELECT COUNT(*) FROM "__drizzle_migrations"').pluck().get(), 1)
     migrated.close()
+
+    const malformed = new Database(malformedPath)
+    malformed.exec(
+      fs
+        .readFileSync(path.join(migrationsFolder, "0000_initial.sql"), "utf8")
+        .replaceAll("--> statement-breakpoint", ""),
+    )
+    malformed.exec('DROP TABLE "comments"; CREATE TABLE "comments" (id INTEGER PRIMARY KEY)')
+    malformed.close()
+    assert.throws(
+      () => runMigrations(malformedPath, migrationsFolder, backup),
+      /schema does not match committed migrations at table "comments"/,
+    )
+    assert.equal(backupCalls.length, 1)
   } finally {
     fs.rmSync(rootDir, { recursive: true, force: true })
   }

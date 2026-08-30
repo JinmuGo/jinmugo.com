@@ -32,6 +32,19 @@ test("backup is restored separately and invalid partial output is removed", () =
     assert.equal(report.rowCounts.comments, 1)
     assert.deepEqual(inspectDatabase(report.backupPath), { rowCounts: report.rowCounts })
 
+    const retryDir = path.join(rootDir, "retry-backups")
+    const first = backupDatabase(databasePath, retryDir, "before-migration.sqlite")
+    const retry = backupDatabase(databasePath, retryDir, "before-migration.sqlite")
+    assert.equal(first.reused, false)
+    assert.equal(retry.reused, true)
+    assert.equal(retry.backupPath, first.backupPath)
+    assert.deepEqual(fs.readdirSync(retryDir), ["before-migration.sqlite"])
+
+    const invalidReusablePath = path.join(retryDir, "invalid.sqlite")
+    fs.writeFileSync(invalidReusablePath, "not a database")
+    assert.throws(() => backupDatabase(databasePath, retryDir, "invalid.sqlite"), /not a database/)
+    assert.equal(fs.existsSync(invalidReusablePath), true)
+
     const incompletePath = path.join(rootDir, "incomplete.db")
     const incompleteBackupDir = path.join(rootDir, "incomplete-backups")
     const incomplete = new Database(incompletePath)

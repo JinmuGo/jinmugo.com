@@ -64,7 +64,7 @@ function rehearseRestore(backupPath: string, expectedCounts: Record<string, numb
   }
 }
 
-export function backupDatabase(databasePath: string, backupDir?: string) {
+export function backupDatabase(databasePath: string, backupDir?: string, backupName?: string) {
   const sourcePath = path.resolve(databasePath)
   if (!fs.existsSync(sourcePath) || !fs.statSync(sourcePath).isFile()) {
     throw new Error(`SQLite database does not exist: ${sourcePath}`)
@@ -75,18 +75,28 @@ export function backupDatabase(databasePath: string, backupDir?: string) {
   const timestamp = new Date().toISOString().replaceAll(/[:.]/g, "-")
   const backupPath = path.join(
     destinationDir,
-    `${path.basename(sourcePath)}.${timestamp}.${process.pid}.sqlite`,
+    backupName ?? `${path.basename(sourcePath)}.${timestamp}.${process.pid}.sqlite`,
   )
+  let created = false
 
   try {
+    if (fs.existsSync(backupPath)) {
+      const report = inspectDatabase(backupPath)
+      rehearseRestore(backupPath, report.rowCounts)
+      return { backupPath, ...report, reused: true }
+    }
+
+    created = true
     runDotCommand(sourcePath, ".backup", backupPath)
     fs.chmodSync(backupPath, 0o600)
     const report = inspectDatabase(backupPath)
     rehearseRestore(backupPath, report.rowCounts)
 
-    return { backupPath, ...report }
+    return { backupPath, ...report, reused: false }
   } catch (error) {
-    fs.rmSync(backupPath, { force: true })
+    if (created) {
+      fs.rmSync(backupPath, { force: true })
+    }
     throw error
   }
 }

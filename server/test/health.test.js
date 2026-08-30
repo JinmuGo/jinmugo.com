@@ -1,4 +1,5 @@
 import assert from "node:assert/strict"
+import fs from "node:fs"
 import test from "node:test"
 import Database from "better-sqlite3"
 import { Hono } from "hono"
@@ -13,6 +14,13 @@ test("health requires the comments schema and returns 503 when SQLite fails", as
   assert.equal(missingSchema.status, 503)
 
   database.exec('CREATE TABLE "comments" (id INTEGER PRIMARY KEY)')
+  const incompleteSchema = await app.request("/health")
+  assert.equal(incompleteSchema.status, 503)
+
+  database.exec('DROP TABLE "comments"')
+  database.exec(
+    fs.readFileSync("drizzle/0000_initial.sql", "utf8").replaceAll("--> statement-breakpoint", ""),
+  )
   const healthy = await app.request("/health")
   assert.equal(healthy.status, 200)
   assert.deepEqual(await healthy.json(), { status: "ok" })

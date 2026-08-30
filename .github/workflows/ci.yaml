@@ -101,5 +101,26 @@ jobs:
       - name: Test Server
         run: pnpm --dir server test
 
+      - name: Smoke Test Production Image
+        run: |
+          docker build --tag jinmu-comment-server:test server
+          container_id="$(docker run --detach --publish 127.0.0.1:3001:3001 \
+            --env DATABASE_URL=/app/data/comments.db \
+            --env BETTER_AUTH_SECRET=0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_ \
+            --env BETTER_AUTH_URL=https://comment.example.com \
+            --env GITHUB_CLIENT_ID=test \
+            --env GITHUB_CLIENT_SECRET=test \
+            --env FRONTEND_URL=https://example.com \
+            jinmu-comment-server:test)"
+          trap 'docker rm --force "$container_id" >/dev/null' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3001/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs "$container_id"
+          exit 1
+
       - name: Audit Server Dependencies
         run: pnpm --dir server audit

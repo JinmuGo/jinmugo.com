@@ -20,6 +20,15 @@ export function minimumLengthEnv(
   return value
 }
 
+export function secureSecretEnv(name: string, source: Environment = process.env) {
+  const value = minimumLengthEnv(name, 32, source)
+  const estimatedEntropy = value.length * Math.log2(new Set(value).size)
+  if (estimatedEntropy < 120) {
+    throw new Error(`${name} must have at least 120 bits of estimated entropy`)
+  }
+  return value
+}
+
 export function commaSeparatedEnv(name: string, source: Environment = process.env) {
   const values = requiredEnv(name, source)
     .split(",")
