@@ -3,22 +3,50 @@ import fs from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
 import { promisify } from "node:util"
-import { afterEach, describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import {
   findTranslationTargets,
   hashTranslationSource,
   syncTranslationCache,
+  translateContent,
 } from "../../scripts/translate.js"
 
 const temporaryDirectories = []
 const execFileAsync = promisify(execFile)
 
 afterEach(async () => {
+  vi.unstubAllGlobals()
   await Promise.all(
     temporaryDirectories
       .splice(0)
       .map((directory) => fs.rm(directory, { recursive: true, force: true })),
   )
+})
+
+it("quotes translated frontmatter strings that contain YAML syntax", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        translations: [
+          { text: 'Git Squash vs Fixup: When to Use "$&"' },
+          { text: "Summary: safe and parseable" },
+          { text: "Translated body" },
+        ],
+      }),
+    }),
+  )
+
+  const translated = await translateContent({
+    content: "---\ntitle: 제목\nsummary: 요약\ndraft: false\n---\n본문",
+    sourceHash: "a".repeat(64),
+    apiKey: "test",
+  })
+
+  expect(translated).toContain('title: "Git Squash vs Fixup: When to Use \\"$&\\""')
+  expect(translated).toContain('summary: "Summary: safe and parseable"')
+  expect(translated).toContain("---\nTranslated body")
 })
 
 async function temporaryDirectory(prefix) {
