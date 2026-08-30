@@ -15,10 +15,16 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN pnpm build
 
+FROM base AS production-deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --prod --frozen-lockfile
+
 # Production
-FROM base AS production
+FROM node:22-alpine AS production
 ENV NODE_ENV=production
-COPY --from=deps /app/node_modules ./node_modules
+RUN apk add --no-cache sqlite
+WORKDIR /app
+COPY --from=production-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package.json ./
 COPY --from=build /app/drizzle ./drizzle

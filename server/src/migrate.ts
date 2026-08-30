@@ -6,7 +6,6 @@ import { drizzle } from "drizzle-orm/better-sqlite3"
 import { migrate } from "drizzle-orm/better-sqlite3/migrator"
 import { readMigrationFiles } from "drizzle-orm/migrator"
 import { backupDatabase } from "./backup.js"
-import { requiredEnv } from "./env.js"
 
 const migrationsTable = "__drizzle_migrations"
 type SqliteDatabase = InstanceType<typeof Database>
@@ -197,5 +196,6 @@ export function runMigrations(
 }
 
 if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {
-  runMigrations(requiredEnv("DATABASE_URL"), path.resolve(import.meta.dirname, "../drizzle"))
+  const { config } = await import("./runtime-config.js")
+  runMigrations(config.databaseUrl, path.resolve(import.meta.dirname, "../drizzle"))
 }

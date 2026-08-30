@@ -1,4 +1,5 @@
 import assert from "node:assert/strict"
+import { spawnSync } from "node:child_process"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
@@ -85,6 +86,34 @@ test("migration backs up only pending application data and initializes fresh dat
       /schema does not match committed migrations at table "comments"/,
     )
     assert.equal(backupCalls.length, 1)
+  } finally {
+    fs.rmSync(rootDir, { recursive: true, force: true })
+  }
+})
+
+test("migration CLI validates runtime configuration before creating the database", () => {
+  const rootDir = fs.mkdtempSync(path.join(os.tmpdir(), "jinmu-comment-migrate-env-"))
+  const databasePath = path.join(rootDir, "comments.db")
+
+  try {
+    const result = spawnSync(process.execPath, ["dist/migrate.js"], {
+      cwd: process.cwd(),
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        DATABASE_URL: databasePath,
+        BETTER_AUTH_SECRET: "x".repeat(32),
+        BETTER_AUTH_URL: "https://comment.example.com",
+        GITHUB_CLIENT_ID: "test",
+        GITHUB_CLIENT_SECRET: "test",
+        FRONTEND_URL: "https://example.com",
+        PORT: "3001",
+      },
+    })
+
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /BETTER_AUTH_SECRET must have at least 120 bits/)
+    assert.equal(fs.existsSync(databasePath), false)
   } finally {
     fs.rmSync(rootDir, { recursive: true, force: true })
   }
