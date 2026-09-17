@@ -124,7 +124,7 @@ export const OpenGraphImage = ({ title, summary, category, date }: OpengraphImag
           fontWeight: 700,
         }}
       >
-        jinmu.me
+        jinmugo.com
       </div>
     </div>
   )

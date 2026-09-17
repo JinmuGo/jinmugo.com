@@ -1,4 +1,4 @@
-# Jinmu.me
+# Jinmugo.com
 
 Obsidian에서 콘텐츠를 가져오는 Astro 기반 이중언어(한국어/영어) 개인 블로그.
 
@@ -44,7 +44,7 @@ pnpm install
 `.env` 파일을 생성하세요:
 
 ```bash
-PUBLIC_API_URL=http://localhost:3001  # 외부 API 서버 (조회수/좋아요)
+PUBLIC_COMMENT_API_URL=http://localhost:3001  # 로컬 댓글 API
 PUBLIC_ENV=development
 DEEPL_API_KEY=...                     # 번역 스크립트용 (선택)
 ```
@@ -83,3 +83,11 @@ Obsidian 파일 변경 감시 + Astro dev 서버가 동시에 실행됩니다.
 ## 라이센스
 
 MIT License
+
+## 운영 도메인
+
+블로그의 공개 URL은 `package.json`의 `homepage` (`https://jinmugo.com`)가 기준입니다. Pages 빌드도 이 URL과 루트 base를 사용합니다. GitHub Pages custom domain과 DNS는 별도로 같은 주소에 연결해야 합니다.
+
+배포용 `PUBLIC_COMMENT_API_URL`은 `https://comment.jinmugo.com`입니다. 댓글 서버의 `BETTER_AUTH_URL`, `FRONTEND_URL`과 GitHub OAuth callback도 함께 맞춰야 합니다. 댓글의 page 키는 기존 slug를 유지하며 도메인 변경 시 DB를 재작성하지 않습니다.
+
+CDN `cdn.jinmu.me`, 갤러리 객체 prefix `jinmu.me/`, 이메일 주소는 별도 설정으로 유지합니다.

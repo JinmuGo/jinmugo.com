@@ -5,7 +5,9 @@ import { fileURLToPath } from "node:url"
 import { JSDOM } from "jsdom"
 import { normalizeArchiveSegment } from "../src/utils/archive-segment.js"
 
-const SITE_ORIGIN = "https://jinmu.me"
+const SITE_ORIGIN = new URL(
+  JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).homepage,
+).origin
 
 function walkFiles(dir, root = dir, files = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -243,6 +245,9 @@ export function verifyLinks(distDir) {
       const url = resolvedUrl(canonical.getAttribute("href") ?? "", route)
       const pathname = url && decodedPathname(url.pathname)
       const targetFile = pathname ? resolveFile(pathname) : undefined
+      if (url?.origin !== SITE_ORIGIN) {
+        errors.push(`${route}: canonical must use ${SITE_ORIGIN}`)
+      }
       if (!targetFile || targetFile !== file || (pathname && archiveLegacyPaths.has(pathname))) {
         errors.push(`${route}: canonical does not resolve to the current page`)
       }
@@ -263,6 +268,9 @@ export function verifyLinks(distDir) {
       const url = resolvedUrl(value, "/")
       if (!url) {
         continue
+      }
+      if (url.origin !== SITE_ORIGIN) {
+        errors.push(`sitemap.xml: URL must use ${SITE_ORIGIN}`)
       }
       const pathname = decodedPathname(url.pathname)
       const targetFile = pathname ? resolveFile(pathname) : undefined

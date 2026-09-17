@@ -8,7 +8,7 @@ export const profile = {
   email: "hi@jinmu.me",
   github: "https://github.com/JinmuGo",
   linkedin: "https://linkedin.com/in/jinmugo",
-  site: "https://jinmu.me",
+  site: "https://jinmugo.com",
 }
 
 export const proofMetrics = [

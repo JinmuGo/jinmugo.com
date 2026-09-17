@@ -44,6 +44,6 @@ if (allSet) {
   console.log("   3. 또는 export 명령어로 설정")
   console.log("\n   예시:")
   console.log('   export GOOGLE_APPLICATION_CREDENTIALS=\'{"type":"service_account",...}\'')
-  console.log("   export GSC_SITE_URL=https://jinmu.me")
-  console.log("   export GSC_PROPERTY_ID=https://jinmu.me")
+  console.log("   export GSC_SITE_URL=https://jinmugo.com")
+  console.log("   export GSC_PROPERTY_ID=https://jinmugo.com")
 }
