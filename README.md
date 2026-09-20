@@ -56,7 +56,7 @@ mise run preview
 미리보기는 http://localhost:4323, 사이트맵은 http://localhost:4323/sitemap.xml 입니다.
 수정 후 미리보기에 반영하려면 중지하고 다시 실행하세요.
 
-`mise.toml`은 Node 22와 pnpm 10.13.1을 설치하고 기존 pnpm 스크립트를 실행합니다.
+`mise.toml`은 Node 22.23.2와 pnpm 10.13.1을 설치하고 기존 pnpm 스크립트를 실행합니다.
 로컬 작업에서는 `.env` 값보다 우선하여 댓글 API를 `http://localhost:3001`로 지정하고,
 운영 R2 갤러리 조회와 분석 전송을 끕니다. 댓글 서버는 별도로 실행해야 하며,
 실행하지 않아도 블로그와 사이트맵을 확인할 수 있습니다.
