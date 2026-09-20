@@ -32,7 +32,14 @@ describe("built link verifier", () => {
     write("archives/index.html", "<p>No Korean archives</p>")
     write("en/archives/index.html", "<p>No English archives</p>")
 
+    write(
+      "sitemap-index.xml",
+      "<sitemapindex><sitemap><loc>https://jinmugo.com/sitemap-0.xml</loc></sitemap></sitemapindex>",
+    )
+    write("sitemap-0.xml", "<urlset><url><loc>https://jinmugo.com/target/</loc></url></urlset>")
     expect(verifyLinks(distDir)).toMatchObject({ internalLinks: 3, redirects: 1 })
+    write("sitemap-0.xml", "<urlset><url><loc>https://jinmugo.com/missing/</loc></url></urlset>")
+    expect(() => verifyLinks(distDir)).toThrow("sitemap-0.xml: URL does not exist: /missing/")
   })
 
   it("rejects broken and legacy archive links", () => {

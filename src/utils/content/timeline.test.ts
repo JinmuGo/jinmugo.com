@@ -51,12 +51,12 @@ describe("timelineEntryToListItem", () => {
 
     expect(timelineEntryToListItem(weekly, 1)).toEqual({
       "@type": "ListItem",
-      url: "https://jinmu.me/weekly/2026-w20/",
+      url: "https://jinmugo.com/weekly/2026-w20/",
       position: 1,
       item: {
         "@type": "Article",
         name: "Weekly 2026-w20",
-        url: "https://jinmu.me/weekly/2026-w20/",
+        url: "https://jinmugo.com/weekly/2026-w20/",
         description: "weekly summary",
       },
     })

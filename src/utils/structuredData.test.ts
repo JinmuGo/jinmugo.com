@@ -13,8 +13,8 @@ import {
 
 describe("structured data", () => {
   it("links canonical pages, author, and website with stable IDs", () => {
-    expect(buildPageUrl("", "/posts")).toBe("https://jinmu.me/posts/")
-    expect(buildItemUrl("/en/posts/Trie-208")).toBe("https://jinmu.me/en/posts/Trie-208/")
+    expect(buildPageUrl("", "/posts")).toBe("https://jinmugo.com/posts/")
+    expect(buildItemUrl("/en/posts/Trie-208")).toBe("https://jinmugo.com/en/posts/Trie-208/")
     const page = generatePageSchema({
       title: "Series",
       description: "Series",
@@ -30,13 +30,13 @@ describe("structured data", () => {
     })
 
     expect(page).toMatchObject({
-      "@id": "https://jinmu.me/series/#webpage",
+      "@id": "https://jinmugo.com/series/#webpage",
       isPartOf: { "@id": WEBSITE_ID },
       mainEntity: {
         itemListElement: [
           {
-            url: "https://jinmu.me/series/example/",
-            item: { url: "https://jinmu.me/series/example/" },
+            url: "https://jinmugo.com/series/example/",
+            item: { url: "https://jinmugo.com/series/example/" },
           },
         ],
       },
@@ -52,7 +52,7 @@ describe("structured data", () => {
     })
 
     expect(article).toMatchObject({
-      "@id": "https://jinmu.me/posts/example/#article",
+      "@id": "https://jinmugo.com/posts/example/#article",
       author: {
         "@type": "Person",
         "@id": PERSON_ID,
@@ -63,7 +63,7 @@ describe("structured data", () => {
       publisher: { "@type": "Person", "@id": PERSON_ID },
       mainEntityOfPage: {
         "@type": "WebPage",
-        "@id": "https://jinmu.me/posts/example/#webpage",
+        "@id": "https://jinmugo.com/posts/example/#webpage",
       },
     })
 
@@ -82,7 +82,7 @@ describe("structured data", () => {
     expect(
       generateWebsiteSchema({
         name: "Jinmu Go",
-        url: "https://jinmu.me",
+        url: "https://jinmugo.com",
         description: "Blog",
       }),
     ).toMatchObject({ "@id": WEBSITE_ID, publisher: { "@id": PERSON_ID } })

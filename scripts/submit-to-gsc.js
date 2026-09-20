@@ -104,7 +104,7 @@ async function submitAllToGSC() {
 
     // 제출할 URL 목록
     const urlsToSubmit = [
-      { url: `${GSC_SITE_URL}/sitemap.xml`, type: "Sitemap" },
+      { url: `${GSC_SITE_URL}/sitemap-index.xml`, type: "Sitemap" },
       { url: `${GSC_SITE_URL}/rss.xml`, type: "RSS Feed" },
       { url: `${GSC_SITE_URL}/en/rss.xml`, type: "English RSS Feed" },
     ]

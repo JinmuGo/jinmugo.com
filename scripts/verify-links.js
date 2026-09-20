@@ -249,8 +249,10 @@ export function verifyLinks(distDir) {
     }
   }
 
-  const sitemapPath = path.join(distDir, "sitemap.xml")
-  if (fs.existsSync(sitemapPath)) {
+  for (const sitemapFile of fs
+    .readdirSync(distDir)
+    .filter((file) => /^sitemap(?:-.*)?\.xml$/.test(file))) {
+    const sitemapPath = path.join(distDir, sitemapFile)
     const document = new JSDOM(fs.readFileSync(sitemapPath, "utf8"), {
       contentType: "text/xml",
     }).window.document
@@ -267,9 +269,9 @@ export function verifyLinks(distDir) {
       const pathname = decodedPathname(url.pathname)
       const targetFile = pathname ? resolveFile(pathname) : undefined
       if (!targetFile) {
-        errors.push(`sitemap.xml: URL does not exist: ${url.pathname}`)
+        errors.push(`${sitemapFile}: URL does not exist: ${url.pathname}`)
       } else if (pathname && archiveLegacyPaths.has(pathname)) {
-        errors.push(`sitemap.xml: URL points to legacy archive redirect: ${url.pathname}`)
+        errors.push(`${sitemapFile}: URL points to legacy archive redirect: ${url.pathname}`)
       }
     }
   }
