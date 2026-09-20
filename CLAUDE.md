@@ -115,7 +115,7 @@ DEEPL_API_KEY=...                     # 번역 스크립트용
 - **Prebuild 필수**: `pnpm dev`가 자동으로 처리하지만, 빌드 전에는 `pnpm prebuild`로 Obsidian 콘텐츠 동기화 필요
 - **obsidian은 이 repo에 통합된 로컬 콘텐츠 디렉터리**: 별도 checkout이 필요하지 않음
 - **pre-commit 훅**: Lefthook이 Biome check, type-check, 한국어 게시물 자동 번역을 커밋 시 실행
-- **CDN**: 정적 자산 URL은 `package.json`의 `cdnUrl` 필드 참조 (`https://cdn.jinmu.me`)
+- **CDN**: 정적 자산 URL은 `package.json`의 `cdnUrl` 필드 참조 (`https://cdn.jinmugo.com`)
 - **`@r4ai/remark-callout` 패치**: `patches/@r4ai__remark-callout.patch`로 패치된 버전 사용
 - **테스트 파일 위치**: `src/**/*.{test,spec}.{js,ts,jsx,tsx}` (Vitest)
 - **never use 'any' type**: TypeScript에서 `any` 대신 적절한 타입 인터페이스 정의

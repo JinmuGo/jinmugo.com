@@ -90,4 +90,4 @@ MIT License
 
 배포용 `PUBLIC_COMMENT_API_URL`은 `https://comment.jinmugo.com`입니다. 댓글 서버의 `BETTER_AUTH_URL`, `FRONTEND_URL`과 GitHub OAuth callback도 함께 맞춰야 합니다. 댓글의 page 키는 기존 slug를 유지하며 도메인 변경 시 DB를 재작성하지 않습니다.
 
-CDN `cdn.jinmu.me`, 갤러리 객체 prefix `jinmu.me/`, 이메일 주소는 별도 설정으로 유지합니다.
+CDN `cdn.jinmugo.com`, 갤러리 객체 prefix `jinmu.me/`, 이메일 주소는 별도 설정으로 유지합니다.
