@@ -6,7 +6,7 @@ import { JSDOM } from "jsdom"
 import { expect, it } from "vitest"
 import blogSitemap from "../../scripts/sitemap.js"
 
-it("generates a formatted plain URL sitemap while keeping the official index usable", async () => {
+it("generates only a formatted plain URL sitemap", async () => {
   const dir = pathToFileURL(`${fs.mkdtempSync(path.join(os.tmpdir(), "blog-sitemap-"))}/`)
   const site = "https://jinmugo.com"
   const routes = {
@@ -60,14 +60,9 @@ it("generates a formatted plain URL sitemap while keeping the official index usa
         logger,
       })
     }
-    const index = fs.readFileSync(new URL("sitemap-index.xml", dir), "utf8")
-    const indexDom = new JSDOM(index, { contentType: "text/xml" })
-    expect(indexDom.window.document.querySelector("loc").textContent).toBe(`${site}/sitemap-0.xml`)
-    indexDom.window.close()
+    expect(fs.existsSync(new URL("sitemap-index.xml", dir))).toBe(false)
+    expect(fs.existsSync(new URL("sitemap-0.xml", dir))).toBe(false)
     const xml = fs.readFileSync(new URL("sitemap.xml", dir), "utf8")
-    expect(xml.replace(/>\s+</g, "><").trim()).toBe(
-      fs.readFileSync(new URL("sitemap-0.xml", dir), "utf8").replace(/>\s+</g, "><").trim(),
-    )
     expect(xml).toContain(
       '\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>',
     )

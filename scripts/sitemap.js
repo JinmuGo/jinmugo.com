@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs"
+import { existsSync, readFileSync, unlinkSync, writeFileSync } from "node:fs"
 import sitemap from "@astrojs/sitemap"
 import { JSDOM } from "jsdom"
 
@@ -57,6 +57,8 @@ export default function blogSitemap() {
             .replace(/^<\/?url>/gm, "  $&")
             .replace(/^<(loc|lastmod|changefreq|priority)>/gm, "    <$1>")
           writeFileSync(new URL("sitemap.xml", dir), `${xml.trim()}\n`)
+          unlinkSync(new URL("sitemap-index.xml", dir))
+          unlinkSync(new URL("sitemap-0.xml", dir))
           lastmods.clear()
         },
       },
