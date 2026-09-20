@@ -1,0 +1,22 @@
+[tools]
+node = "22"
+pnpm = "10.13.1"
+
+# Local tasks must not connect to production services, even when .env contains them.
+[env]
+PUBLIC_ENV = "development"
+PUBLIC_COMMENT_API_URL = "http://localhost:3001"
+DISABLE_REMOTE_GALLERY = "true"
+OBSIDIAN_VAULT_PATH = ""
+
+[tasks.setup]
+description = "Install project dependencies"
+run = "pnpm install --frozen-lockfile --registry=https://registry.npmjs.org"
+
+[tasks.dev]
+description = "Start Astro and the content watcher on port 4322"
+run = "pnpm dev"
+
+[tasks.preview]
+description = "Build and preview the site, including sitemap.xml, on port 4323"
+run = ["pnpm build", "pnpm preview --host 127.0.0.1 --port 4323"]

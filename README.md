@@ -33,29 +33,34 @@ Obsidian 마크다운 (`obsidian/`) → `scripts/build-content.js`가 `src/conte
 
 ## 개발 환경 설정
 
-### 1. 의존성 설치
+### mise로 실행
+
+`mise`가 없다면 macOS에서 `brew install mise`로 설치하세요.
 
 ```bash
-pnpm install
+mise trust
+mise install
+mise run setup
+mise run dev
 ```
 
-### 2. 환경 변수 설정
+개발 서버는 http://localhost:4322 에서 실행되며, Obsidian 파일 변경을 감시합니다.
+중지는 `Ctrl+C`입니다.
 
-`.env` 파일을 생성하세요:
+사이트맵은 빌드 시 생성됩니다. XML까지 확인하려면 별도 터미널에서 실행하세요:
 
 ```bash
-PUBLIC_COMMENT_API_URL=http://localhost:3001  # 로컬 댓글 API
-PUBLIC_ENV=development
-DEEPL_API_KEY=...                     # 번역 스크립트용 (선택)
+mise run preview
 ```
 
-### 3. 개발 서버 실행
+미리보기는 http://localhost:4323, 사이트맵은 http://localhost:4323/sitemap.xml 입니다.
+수정 후 미리보기에 반영하려면 중지하고 다시 실행하세요.
 
-```bash
-pnpm dev
-```
-
-Obsidian 파일 변경 감시 + Astro dev 서버가 동시에 실행됩니다.
+`mise.toml`은 Node 22와 pnpm 10.13.1을 설치하고 기존 pnpm 스크립트를 실행합니다.
+로컬 작업에서는 `.env` 값보다 우선하여 댓글 API를 `http://localhost:3001`로 지정하고,
+운영 R2 갤러리 조회와 분석 전송을 끕니다. 댓글 서버는 별도로 실행해야 하며,
+실행하지 않아도 블로그와 사이트맵을 확인할 수 있습니다.
+콘텐츠는 저장소의 `obsidian/`를 사용합니다.
 
 ## 주요 명령어
 
