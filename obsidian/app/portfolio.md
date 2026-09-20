@@ -4,7 +4,7 @@ philosophy: |
   이름 중 撫(무)는 '형체 없는 것을 손으로 어루만져 가라앉힌다'는 뜻을 담고 있습니다.
   겉으로 드러나지 않는 문제를 발견하고 해결하며 살아가고자 합니다.
 contact:
-  email: hi@jinmu.me
+  email: hi@jinmugo.com
   github: https://github.com/JinmuGo
 hero:
   tagline: SOLUTIONIST
@@ -114,7 +114,7 @@ sections:
     title: 자격증
     data:
       - name: AWS CLF-C02
-        link: https://jinmu.me/posts/aws-clf-c02
+        link: https://jinmugo.com/posts/aws-clf-c02
   - type: projects
     title: 프로젝트
     data:

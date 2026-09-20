@@ -4,7 +4,7 @@ philosophy: |
   The 撫 (mu) part of my name means "to touch the formless and make it sink".
   I want to live by discovering and solving problems that are not visible on the surface.
 contact:
-  email: hi@jinmu.me
+  email: hi@jinmugo.com
   github: https://github.com/JinmuGo
 hero:
   tagline: SOLUTIONIST
@@ -143,7 +143,7 @@ sections:
     title: Certifications
     data:
       - name: AWS CLF-C02
-        link: https://jinmu.me/posts/aws-clf-c02
+        link: https://jinmugo.com/posts/aws-clf-c02
   - type: projects
     title: Projects
     data:

@@ -40,13 +40,11 @@ const jsonLd = generatePageSchema({
     <Image
       src={HeroImageSrc}
       alt="boat"
-      layout="full-width"
       class="object-cover w-full h-full"
       loading="eager"
       fetchpriority="high"
       data-blur-src="sea-boat-blur.webp"
     />
   </Bleed>
-  <h1 class="sr-only">{title}</h1>
-  <ContentTimeline items={timelineEntries} />
+  <ContentTimeline items={timelineEntries} showDescriptions={false} />
 </Layout>

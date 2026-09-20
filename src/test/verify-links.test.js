@@ -19,11 +19,11 @@ describe("built link verifier", () => {
     distDir = fs.mkdtempSync(path.join(os.tmpdir(), "verify-links-"))
     write(
       "index.html",
-      '<link rel="canonical" href="https://jinmu.me/"><a href="/target/?q=1#ok">Target</a><a href="https://example.com">External</a>',
+      '<link rel="canonical" href="https://jinmugo.com/"><a href="/target/?q=1#ok">Target</a><a href="https://example.com">External</a>',
     )
     write(
       "target/index.html",
-      '<link rel="canonical" href="https://jinmugo.github.io/target/"><a href="/old/">Old</a>',
+      '<link rel="canonical" href="https://jinmugo.com/target/"><a href="/old/">Old</a>',
     )
     write(
       "old/index.html",
@@ -46,7 +46,7 @@ describe("built link verifier", () => {
     distDir = fs.mkdtempSync(path.join(os.tmpdir(), "verify-links-"))
     write(
       "index.html",
-      '<link rel="canonical" href="https://jinmu.me/"><a href="/missing/">Missing</a><a href="/archives/tag/Open%20Source/">Legacy</a><img src="/missing.png">',
+      '<link rel="canonical" href="https://jinmugo.com/"><a href="/missing/">Missing</a><a href="/archives/tag/Open%20Source/">Legacy</a><img src="/missing.png">',
     )
     write(
       "archives/index.html",
@@ -81,5 +81,16 @@ describe("built link verifier", () => {
       ko: 1,
       en: 0,
     })
+  })
+  it("rejects old-domain canonical and sitemap URLs even when paths exist", () => {
+    distDir = fs.mkdtempSync(path.join(os.tmpdir(), "verify-links-"))
+    write("index.html", '<link rel="canonical" href="https://jinmu.me/">')
+    write("archives/index.html", "<p>No Korean archives</p>")
+    write("en/archives/index.html", "<p>No English archives</p>")
+    write("sitemap.xml", "<urlset><url><loc>https://jinmu.me/</loc></url></urlset>")
+
+    expect(() => verifyLinks(distDir)).toThrow(
+      /canonical must use https:\/\/jinmugo.com[\s\S]*sitemap.xml: URL must use/,
+    )
   })
 })

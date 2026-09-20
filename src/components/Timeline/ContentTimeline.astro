@@ -11,9 +11,10 @@ import TimelineTitle from "./TimelineTitle.astro"
 
 interface Props {
   items: TimelineEntry[]
+  showDescriptions?: boolean
 }
 
-const { items } = Astro.props
+const { items, showDescriptions = true } = Astro.props
 ---
 
 <Timeline>
@@ -36,7 +37,7 @@ const { items } = Astro.props
                 {item.type === "weekly" && <ContentLabel variant="weekly" />}
                 {isDraft && <ContentLabel variant="draft" />}
               </div>
-              {item.data.summary && (
+              {showDescriptions && item.data.summary && (
                 <TimelineDescription class="mt-1 text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
                   {item.data.summary}
                 </TimelineDescription>

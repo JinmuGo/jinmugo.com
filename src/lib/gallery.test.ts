@@ -37,11 +37,11 @@ describe("gallery utils", () => {
             takenAt: "2026-05-08T13:24:00+09:00",
             locationLabel: "Seoul, South Korea",
           },
-          "https://cdn.jinmu.me",
+          "https://cdn.jinmugo.com",
         ),
       ).toEqual({
         key: "jinmu.me/2026/05/IMG 0001.jpeg",
-        src: "https://cdn.jinmu.me/jinmu.me/2026/05/IMG%200001.jpeg",
+        src: "https://cdn.jinmugo.com/jinmu.me/2026/05/IMG%200001.jpeg",
         width: 3024,
         height: 4032,
         takenAt: "2026-05-08T13:24:00+09:00",
@@ -59,11 +59,11 @@ describe("gallery utils", () => {
             takenAt: "",
             locationLabel: "   ",
           },
-          "https://cdn.jinmu.me/",
+          "https://cdn.jinmugo.com/",
         ),
       ).toEqual({
         key: "jinmu.me/photo.jpeg",
-        src: "https://cdn.jinmu.me/jinmu.me/photo.jpeg",
+        src: "https://cdn.jinmugo.com/jinmu.me/photo.jpeg",
         width: 1200,
         height: 800,
       })

@@ -111,8 +111,8 @@ jobs:
       - name: Build with Astro
         run: |
           pnpm astro build \
-            --site "${{ steps.pages.outputs.origin }}" \
-            --base "${{ steps.pages.outputs.base_path }}"
+            --site "$(node -p 'require("./package.json").homepage')" \
+            --base "/"
 
       - name: Verify Markdown tables rendered as HTML
         run: pnpm verify:tables
