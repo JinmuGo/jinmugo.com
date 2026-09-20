@@ -5,7 +5,7 @@ export const profile = {
   focus: "Developer Tools · Infrastructure · Cloud Native",
   summary:
     "Go 기반 백엔드, 개발자 도구, 인프라 자동화를 중심으로 실제 배포와 운영까지 가져가는 엔지니어입니다.",
-  email: "hi@jinmu.me",
+  email: "hi@jinmugo.com",
   github: "https://github.com/JinmuGo",
   linkedin: "https://linkedin.com/in/jinmugo",
   site: "https://jinmugo.com",

@@ -180,7 +180,8 @@ async function reverseGeocodeCoarse(latitude, longitude, geocodeCache) {
     const response = await fetch(url, {
       headers: {
         "User-Agent":
-          process.env.GALLERY_GEOCODER_USER_AGENT ?? "jinmu.me gallery metadata (hi@jinmu.me)",
+          process.env.GALLERY_GEOCODER_USER_AGENT ??
+          "jinmugo.com gallery metadata (hi@jinmugo.com)",
       },
     })
     if (!response.ok) {

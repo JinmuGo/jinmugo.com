@@ -90,4 +90,6 @@ MIT License
 
 배포용 `PUBLIC_COMMENT_API_URL`은 `https://comment.jinmugo.com`입니다. 댓글 서버의 `BETTER_AUTH_URL`, `FRONTEND_URL`과 GitHub OAuth callback도 함께 맞춰야 합니다. 댓글의 page 키는 기존 slug를 유지하며 도메인 변경 시 DB를 재작성하지 않습니다.
 
-CDN `cdn.jinmugo.com`, 갤러리 객체 prefix `jinmu.me/`, 이메일 주소는 별도 설정으로 유지합니다.
+CDN 공개 주소는 `package.json`의 `cdnUrl` (`https://cdn.jinmugo.com`), 연락처는 `email` (`hi@jinmugo.com`)을 사용합니다. 이력서·포트폴리오의 연락처는 `obsidian/app/` frontmatter와 기본값도 함께 유지합니다.
+
+CDN 도메인 전환 시 R2 버킷과 객체 키는 변경하지 않습니다. 갤러리 객체 prefix는 계속 `jinmu.me/`이며, 새 CDN에서도 동일한 경로로 제공해야 합니다. CDN 연결과 이메일 라우팅 검증을 마친 뒤 사이트 변경을 배포합니다.

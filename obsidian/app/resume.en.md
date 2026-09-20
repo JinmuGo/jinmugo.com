@@ -5,7 +5,7 @@ philosophy: |-
   Discovering invisible problems like user inconveniences,
   and solving them one by one with code, I am a developer growing through this process.
 contact:
-  email: hi@jinmu.me
+  email: hi@jinmugo.com
   github: https://github.com/JinmuGo
 sections:
   - type: experiences
@@ -49,7 +49,7 @@ sections:
           - Collaboration
         timeline: "2024"
         github: https://github.com/ddol-mang/hey-oldlady
-        live: https://jinmu.me/posts/12th-9oormthon
+        live: https://jinmugo.com/posts/12th-9oormthon
         exhibitNumber: "02"
         year: 2024
   - type: opensource
@@ -118,7 +118,7 @@ sections:
     title: Certifications
     data:
       - name: AWS CLF-C02
-        link: https://jinmu.me/posts/aws-clf-c02
+        link: https://jinmugo.com/posts/aws-clf-c02
   - type: projects
     title: Projects
     data:
