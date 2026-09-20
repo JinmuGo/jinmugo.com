@@ -1,4 +1,4 @@
-import { copyFileSync, readFileSync } from "node:fs"
+import { existsSync, readFileSync, writeFileSync } from "node:fs"
 import sitemap from "@astrojs/sitemap"
 import { JSDOM } from "jsdom"
 
@@ -8,9 +8,13 @@ export default function blogSitemap() {
 
   return [
     sitemap({
-      i18n: { defaultLocale: "ko", locales: { ko: "ko", en: "en" } },
+      entryLimit: 50000,
+      namespaces: { news: false, xhtml: false, image: false, video: false },
       filter(url) {
         const pathname = new URL(url).pathname
+        if (/^\/(?:en\/)?(?:404|500)\/?$/.test(pathname)) {
+          return false
+        }
         const relativePath = pathname.slice(config.base.replace(/\/$/, "").length + 1)
         const file = new URL(`${relativePath}index.html`, config.outDir)
         const html = readFileSync(file, "utf8")
@@ -27,15 +31,11 @@ export default function blogSitemap() {
         return !redirect && !/\bnoindex\b/i.test(robots) && canonical === url
       },
       serialize(item) {
-        // Tags are language-specific, even when their URL segments happen to match.
-        if (/\/(?:en\/)?archives\/tag\//.test(new URL(item.url).pathname)) {
-          item.links = undefined
-        }
-        const korean = item.links?.find((link) => link.lang === "ko")
-        if (korean) {
-          item.links = [...item.links, { lang: "x-default", url: korean.url }]
-        }
+        const pathname = new URL(item.url).pathname.replace(/^\/en(?=\/)/, "")
+        const isHome = pathname === "/"
         item.lastmod = lastmods.get(item.url)
+        item.priority = isHome ? 1 : 0.8
+        item.changefreq = isHome ? "daily" : item.lastmod ? undefined : "weekly"
         return item
       },
     }),
@@ -46,8 +46,17 @@ export default function blogSitemap() {
           config = resolved
         },
         "astro:build:done": ({ dir }) => {
-          // Keep previously submitted sitemap.xml URLs working without an HTML redirect.
-          copyFileSync(new URL("sitemap-index.xml", dir), new URL("sitemap.xml", dir))
+          // ponytail: one file supports 50,000 URLs; use the index if the blog outgrows it.
+          if (existsSync(new URL("sitemap-1.xml", dir))) {
+            throw new Error(
+              "Single sitemap exceeds 50,000 URLs; switch discovery to sitemap-index.xml",
+            )
+          }
+          const xml = readFileSync(new URL("sitemap-0.xml", dir), "utf8")
+            .replace(/></g, ">\n<")
+            .replace(/^<\/?url>/gm, "  $&")
+            .replace(/^<(loc|lastmod|changefreq|priority)>/gm, "    <$1>")
+          writeFileSync(new URL("sitemap.xml", dir), `${xml.trim()}\n`)
           lastmods.clear()
         },
       },

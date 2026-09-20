@@ -6,7 +6,7 @@ import { JSDOM } from "jsdom"
 import { expect, it } from "vitest"
 import blogSitemap from "../../scripts/sitemap.js"
 
-it("generates valid official sitemaps with indexable pages, translations and a legacy alias", async () => {
+it("generates a formatted plain URL sitemap while keeping the official index usable", async () => {
   const dir = pathToFileURL(`${fs.mkdtempSync(path.join(os.tmpdir(), "blog-sitemap-"))}/`)
   const site = "https://jinmugo.com"
   const routes = {
@@ -61,11 +61,16 @@ it("generates valid official sitemaps with indexable pages, translations and a l
       })
     }
     const index = fs.readFileSync(new URL("sitemap-index.xml", dir), "utf8")
-    expect(fs.readFileSync(new URL("sitemap.xml", dir), "utf8")).toBe(index)
     const indexDom = new JSDOM(index, { contentType: "text/xml" })
     expect(indexDom.window.document.querySelector("loc").textContent).toBe(`${site}/sitemap-0.xml`)
     indexDom.window.close()
-    const xml = fs.readFileSync(new URL("sitemap-0.xml", dir), "utf8")
+    const xml = fs.readFileSync(new URL("sitemap.xml", dir), "utf8")
+    expect(xml.replace(/>\s+</g, "><").trim()).toBe(
+      fs.readFileSync(new URL("sitemap-0.xml", dir), "utf8").replace(/>\s+</g, "><").trim(),
+    )
+    expect(xml).toContain(
+      '\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>',
+    )
     const dom = new JSDOM(xml, { contentType: "text/xml" })
     const entries = [...dom.window.document.getElementsByTagName("url")]
     expect(entries.map((entry) => entry.querySelector("loc").textContent).sort()).toEqual(
@@ -78,16 +83,19 @@ it("generates valid official sitemaps with indexable pages, translations and a l
       (entry) => entry.querySelector("loc").textContent === `${site}/posts/a&b/`,
     )
     expect(post.querySelector("lastmod").textContent).toBe("2026-01-01T00:00:00.000Z")
-    expect(
-      [...post.getElementsByTagNameNS("*", "link")]
-        .map((link) => link.getAttribute("hreflang"))
-        .sort(),
-    ).toEqual(["en", "ko", "x-default"])
-    for (const entry of entries.filter((entry) =>
-      /portfolio|archives\/tag/.test(entry.querySelector("loc").textContent),
-    )) {
-      expect(entry.getElementsByTagNameNS("*", "link").length).toBe(0)
-    }
+    expect(dom.window.document.documentElement.localName).toBe("urlset")
+    expect(dom.window.document.getElementsByTagNameNS("*", "link").length).toBe(0)
+    expect(post.querySelector("priority").textContent).toBe("0.8")
+    expect(post.querySelector("changefreq")).toBeNull()
+    const home = entries.find((entry) => entry.querySelector("loc").textContent === `${site}/`)
+    expect(Number(home.querySelector("priority").textContent)).toBe(1)
+    expect(home.querySelector("changefreq").textContent).toBe("daily")
+    const portfolio = entries.find(
+      (entry) => entry.querySelector("loc").textContent === `${site}/portfolio/`,
+    )
+    expect(portfolio.querySelector("changefreq").textContent).toBe("weekly")
+    fs.writeFileSync(new URL("sitemap-1.xml", dir), "")
+    expect(() => integrations[1].hooks["astro:build:done"]({ dir })).toThrow("50,000 URLs")
     dom.window.close()
   } finally {
     fs.rmSync(dir, { recursive: true, force: true })
