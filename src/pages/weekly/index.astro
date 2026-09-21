@@ -8,7 +8,7 @@ import { buildItemUrl, buildPageUrl, generatePostsPageSchema } from "@/utils/str
 const weeklies = sortWeekliesByDate(await getKoreanWeeklies())
 
 const title = "Weekly"
-const description = "Weekly Jinmu"
+const description = "한 주 동안 읽고 보고 만든 것들을 정리한 주간 기록입니다."
 
 const jsonLd = generatePostsPageSchema({
   title,
