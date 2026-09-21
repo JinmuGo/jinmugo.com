@@ -7,6 +7,7 @@ import {
   getArchiveStaticPaths,
   isArchiveIndexable,
 } from "@/utils/archive"
+import { getKoreanArchiveDescription, getKoreanArchiveSubtitle } from "@/utils/archive-labels"
 import { generateArchiveBreadcrumbs } from "@/utils/breadcrumbUtils"
 import { getKoreanPosts } from "@/utils/content/posts"
 import { getKoreanWeeklies } from "@/utils/content/weekly"
@@ -31,7 +32,8 @@ const capitalizeFirst = (str: string) => str.charAt(0).toUpperCase() + str.slice
 
 const contentWithSlug = getArchiveContent(allContent, classify, label)
 const title = `${capitalizeFirst(label)} - ${capitalizeFirst(classify)}`
-const description = `Archives of ${capitalizeFirst(label)} in ${capitalizeFirst(classify)}`
+const description = getKoreanArchiveDescription(classify, label, contentWithSlug.length)
+const subtitle = getKoreanArchiveSubtitle(classify, label, contentWithSlug.length)
 const pathname = getArchivePath("", classify, label)
 const url = buildPageUrl("", pathname)
 const robots = isArchiveIndexable(classify, contentWithSlug.length)
@@ -76,10 +78,10 @@ const jsonLd = [pageSchema, breadcrumbSchema]
         {label}
       </h1>
       <p class="text-lg leading-7 text-gray-500 dark:text-gray-400">
-        {description}
+        {subtitle}
       </p>
     </div>
-    {contentWithSlug.length === 0 && "No content found."}
+    {contentWithSlug.length === 0 && "아직 이 목록에 글이 없습니다."}
     <ul>
       {
         contentWithSlug.map((item) => (

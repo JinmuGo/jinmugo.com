@@ -106,7 +106,8 @@ export function getSeriesTranslations(lang: Lang): SeriesTranslations {
   const translations: Record<Lang, SeriesTranslations> = {
     ko: {
       pageTitle: "Series",
-      pageDescription: "Jinmu's blog series",
+      pageDescription:
+        "여러 편에 걸쳐 이어 쓴 글을 시리즈로 묶었습니다. 한 주제를 처음부터 끝까지 따라 읽을 수 있습니다.",
       postsCount: (count: number) => `${count}개의 포스트`,
       sortByLabel: "정렬",
       sortOptions: {

@@ -34,7 +34,7 @@
 		"verify:tables": "node scripts/verify-tables.js",
 		"format": "biome format --write .",
 		"lint": "biome lint .",
-		"lint:fix": "biome lint --apply .",
+		"lint:fix": "biome lint --write .",
 		"check": "biome check .",
 		"test": "vitest run",
 		"test:watch": "vitest",
