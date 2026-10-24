@@ -82,7 +82,7 @@
 - **Home list:** one row per post, no type badges (weekly and posts look the same) — title (20px semibold), summary (line-clamp-2, gray-600), date (14px gray-500). Rows separated by gray-100 dividers, `py-6`, hover fades the row to 60% opacity
 - **Year nav:** on `lg+` a fixed left rail (`SideRail.astro`) of short lines links to the first post of each year; year labels appear on hover/focus
 - **Post page:** one layout (`PostLayout.astro`) for posts, books, and movies; weekly uses the same `PostHeader`. No breadcrumb or category chip on screen (breadcrumb stays in JSON-LD)
-- **Post header:** centered title (30px/600, 24px on mobile), summary (18px gray-500), image, then author · date (14px). Landscape images are cropped to 2:1 at full column width (rounded-2xl); portrait images (book covers) stay uncropped at 192px wide. Korean headings use `break-keep` + `text-balance`
+- **Post header:** centered title (30px/600, 24px on mobile), summary (18px gray-500), image, then the date (14px). No author name on screen; the author stays in JSON-LD. Landscape images are cropped to 2:1 at full column width (rounded-2xl); portrait images (book covers) stay uncropped at 192px wide. Korean headings use `break-keep` + `text-balance`
 - **Table of contents:** on `lg+` the same left rail as the home year nav lists the post's h2 headings; labels appear on hover/focus
 - **Heading anchors:** h2/h3 get a `#` link in the left gutter (`rehype-autolink-headings`), visible on hover
 - **Prose details:** links are brand orange with a faint primary-200 underline (offset 3px) that darkens on hover; images rounded-xl with no shadow; blockquote is a 2px gray-200 rule with gray-500 text; inline code 90% size on gray-100
