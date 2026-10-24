@@ -29,8 +29,6 @@ describe("built link verifier", () => {
       "old/index.html",
       '<meta http-equiv="refresh" content="0;url=/target/"><a href="/target/">Redirect</a>',
     )
-    write("archives/index.html", "<p>No Korean archives</p>")
-    write("en/archives/index.html", "<p>No English archives</p>")
 
     write(
       "sitemap-index.xml",
@@ -42,51 +40,19 @@ describe("built link verifier", () => {
     expect(() => verifyLinks(distDir)).toThrow("sitemap-0.xml: URL does not exist: /missing/")
   })
 
-  it("rejects broken and legacy archive links", () => {
+  it("rejects broken internal links and images", () => {
     distDir = fs.mkdtempSync(path.join(os.tmpdir(), "verify-links-"))
     write(
       "index.html",
-      '<link rel="canonical" href="https://jinmugo.com/"><a href="/missing/">Missing</a><a href="/archives/tag/Open%20Source/">Legacy</a><img src="/missing.png">',
-    )
-    write(
-      "archives/index.html",
-      '<a data-archive-label="Open Source" href="/archives/tag/open-source/">Open Source</a>',
-    )
-    write("en/archives/index.html", "<p>No English archives</p>")
-    write("archives/tag/open-source/index.html", "<p>Canonical archive</p>")
-    write(
-      "archives/tag/Open Source/index.html",
-      '<meta http-equiv="refresh" content="0;url=/archives/tag/open-source/">',
+      '<link rel="canonical" href="https://jinmugo.com/"><a href="/missing/">Missing</a><img src="/missing.png">',
     )
 
-    expect(() => verifyLinks(distDir)).toThrow(
-      /broken internal link[\s\S]*legacy archive redirect[\s\S]*broken internal image/,
-    )
+    expect(() => verifyLinks(distDir)).toThrow(/broken internal link[\s\S]*broken internal image/)
   })
 
-  it("derives the generated archive redirect count", () => {
-    distDir = fs.mkdtempSync(path.join(os.tmpdir(), "verify-links-"))
-    write(
-      "archives/index.html",
-      '<a data-archive-label="Open Source" href="/archives/tag/open-source/">Open Source</a>',
-    )
-    write("en/archives/index.html", "<p>No English archives</p>")
-    write("archives/tag/open-source/index.html", "<p>Canonical archive</p>")
-    write(
-      "archives/tag/Open Source/index.html",
-      '<meta http-equiv="refresh" content="0;url=/archives/tag/open-source/">',
-    )
-
-    expect(verifyLinks(distDir).archiveRedirectCounts).toEqual({
-      ko: 1,
-      en: 0,
-    })
-  })
   it("rejects old-domain canonical and sitemap URLs even when paths exist", () => {
     distDir = fs.mkdtempSync(path.join(os.tmpdir(), "verify-links-"))
     write("index.html", '<link rel="canonical" href="https://jinmu.me/">')
-    write("archives/index.html", "<p>No Korean archives</p>")
-    write("en/archives/index.html", "<p>No English archives</p>")
     write("sitemap.xml", "<urlset><url><loc>https://jinmu.me/</loc></url></urlset>")
 
     expect(() => verifyLinks(distDir)).toThrow(

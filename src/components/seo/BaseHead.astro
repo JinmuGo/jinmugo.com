@@ -4,16 +4,8 @@
 import "@/styles/global.css"
 import { Font } from "astro:assets"
 import type { ImageMetadata } from "astro"
-import {
-  type ArchiveClassification,
-  getArchiveEntries,
-  getPairedArchiveSegments,
-} from "@/utils/archive"
 import { getEnglishPosts, getKoreanPosts } from "@/utils/content/posts"
-import { getEnglishWeeklies, getKoreanWeeklies } from "@/utils/content/weekly"
 import { detectLanguage } from "@/utils/language"
-import { getBooks } from "@/utils/library/books"
-import { getMovies } from "@/utils/library/movies"
 import { getOpenGraphImageSource } from "@/utils/openGraphMeta"
 import pkg from "~/package.json"
 import FallbackImage from "~/public/avatar.webp"
@@ -40,48 +32,13 @@ const ogLocale = isEnglish ? "en_US" : "ko_KR"
 const pathWithoutLang = isEnglish ? pathname.replace(/^\/en/, "") || "/" : pathname
 const koUrl = new URL(pathWithoutLang, Astro.site).href
 const enUrl = new URL(`/en${pathWithoutLang}`, Astro.site).href
-const contentMatch = pathWithoutLang.match(
-  /^\/(posts|weekly|library\/books|library\/movies)\/([^/]+)\/?$/,
-)
-const archiveMatch = pathWithoutLang.match(/^\/archives\/(category|year)\/([^/]+)\/?$/)
-let hasAlternate =
-  !/^\/(?:404|portfolio)\/?$/.test(pathWithoutLang) &&
-  !/^\/(?:archives\/(?:category|tag|year)|series)\//.test(pathWithoutLang)
+const postMatch = pathWithoutLang.match(/^\/posts\/([^/]+)\/?$/)
+let hasAlternate = !/^\/404\/?$/.test(pathWithoutLang)
 
-if (contentMatch) {
-  const [, section, encodedSlug] = contentMatch
-  const slug = decodeURIComponent(encodedSlug)
-
-  if (section === "posts") {
-    const items = await (isEnglish ? getKoreanPosts() : getEnglishPosts())
-    hasAlternate = items.some((item: { slug: string }) => item.slug === slug)
-  } else if (section === "weekly") {
-    const items = await (isEnglish ? getKoreanWeeklies() : getEnglishWeeklies())
-    hasAlternate = items.some((item: { slug: string }) => item.slug === slug)
-  } else if (section === "library/books") {
-    const items = await getBooks(isEnglish ? "ko" : "en")
-    hasAlternate = items.some((item) => item.slug === slug)
-  } else {
-    const items = await getMovies(isEnglish ? "ko" : "en")
-    hasAlternate = items.some((item) => item.slug === slug)
-  }
-}
-
-if (archiveMatch) {
-  const classify = archiveMatch[1] as ArchiveClassification
-  const segment = decodeURIComponent(archiveMatch[2])
-  const [koPosts, enPosts, koWeeklies, enWeeklies] = await Promise.all([
-    getKoreanPosts(),
-    getEnglishPosts(),
-    getKoreanWeeklies(),
-    getEnglishWeeklies(),
-  ])
-
-  hasAlternate = getPairedArchiveSegments(
-    classify,
-    getArchiveEntries([...koPosts, ...koWeeklies], classify),
-    getArchiveEntries([...enPosts, ...enWeeklies], classify),
-  ).has(segment)
+if (postMatch) {
+  const slug = decodeURIComponent(postMatch[1])
+  const items = await (isEnglish ? getKoreanPosts() : getEnglishPosts())
+  hasAlternate = items.some((item: { slug: string }) => item.slug === slug)
 }
 
 // RSS feed path based on language

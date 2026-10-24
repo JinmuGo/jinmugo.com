@@ -1,5 +1,4 @@
 ---
-import Footer from "@/components/app-shell/Footer/Footer.astro"
 import { cn } from "@/utils/cn"
 
 export interface Props {
@@ -19,5 +18,4 @@ const { class: className, widthClass } = Astro.props
   <section class="flex-1">
     <slot />
   </section>
-  <Footer />
 </main>

@@ -19,12 +19,7 @@ const robots = Astro.props.robots
 const tags = Astro.props.tags ?? frontmatter?.tags
 const publishedTime = Astro.props.publishedTime as Date | undefined
 const modifiedTime = Astro.props.modifiedTime as Date | undefined
-// 그리드형 페이지(포트폴리오, 이력서 등)만 넓은 폭을 쓰고 나머지는 읽기용 단일 칼럼을 쓴다.
-const wide = Astro.props.wide === true
-
-const width = wide
-  ? "max-w-2xl lg:max-w-4xl xl:max-w-5xl px-4 sm:px-6 xl:px-0"
-  : "max-w-3xl px-4 sm:px-6"
+const width = "max-w-3xl px-4 sm:px-6"
 ---
 
 <!doctype html>

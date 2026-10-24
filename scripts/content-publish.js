@@ -38,7 +38,7 @@ function main() {
     console.info(
       "\nValidation passed. Review the status above, then commit/push inside the content source.",
     )
-    console.info('Optional: pnpm content:publish -- --message "publish weekly 001" --push')
+    console.info('Optional: pnpm content:publish -- --message "publish post" --push')
     return
   }
 

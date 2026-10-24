@@ -2,10 +2,10 @@
 import DraftLabel from "@/components/content/DraftLabel.astro"
 import FormattedDate from "@/components/content/FormattedDate.astro"
 import SideRail from "@/components/content/SideRail.astro"
-import type { TimelineEntry } from "@/utils/content/timeline"
+import type { Post } from "@/types/content"
 
 interface Props {
-  items: TimelineEntry[]
+  items: Post[]
 }
 
 const { items } = Astro.props

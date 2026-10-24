@@ -8,11 +8,6 @@
 export type Lang = "ko" | "en"
 
 /**
- * Types of content collections
- */
-export type ContentType = "post" | "weekly" | "book" | "movie"
-
-/**
  * Classification types for content organization
  */
 export type ClassifyType = "category" | "tag" | "year"

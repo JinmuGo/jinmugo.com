@@ -27,13 +27,9 @@ pnpm-debug.log*
 .cursor/
 
 # Astro content (generated from Obsidian)
-src/content/app/
 src/content/banner
 src/content/memo
 src/content/post/
-src/content/weekly/
-src/content/book/
-src/content/movie/
 
 # turbo (legacy)
 .turbo/

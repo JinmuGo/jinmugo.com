@@ -2,9 +2,8 @@
 import { Image } from "astro:assets"
 import PostList from "@/components/content/PostList.astro"
 import Layout from "@/layouts/Layout.astro"
-import { getKoreanPosts } from "@/utils/content/posts"
-import { mergeTimelineEntries, timelineEntryToListItem } from "@/utils/content/timeline"
-import { getKoreanWeeklies } from "@/utils/content/weekly"
+import { postToListItem } from "@/utils/content/listItem"
+import { getKoreanPosts, sortPostsByDate } from "@/utils/content/posts"
 import {
   AUTHOR_URL,
   generatePageSchema,
@@ -15,10 +14,8 @@ import pkg from "~/package.json"
 import Avatar from "~/public/avatar.webp"
 import HeroImageSrc from "~/public/sea-boat.webp"
 
-const posts = await getKoreanPosts()
-const weeklies = await getKoreanWeeklies()
-const timelineEntries = mergeTimelineEntries(posts, weeklies)
-const recentEntries = timelineEntries.slice(0, 5)
+const posts = sortPostsByDate(await getKoreanPosts())
+const recentPosts = posts.slice(0, 5)
 
 const title = "Jinmu Go"
 const description =
@@ -46,9 +43,9 @@ const pageSchema = generatePageSchema({
   title,
   description,
   url,
-  keywords: "blog, posts, weekly, timeline",
+  keywords: "blog, posts",
   inLanguage: "ko",
-  itemListElements: recentEntries.map((entry, index) => timelineEntryToListItem(entry, index + 1)),
+  itemListElements: recentPosts.map((post, index) => postToListItem(post, index + 1)),
 })
 
 const jsonLd = [websiteSchema, personSchema, pageSchema]
@@ -73,5 +70,5 @@ const jsonLd = [websiteSchema, personSchema, pageSchema]
     data-blur-src="sea-boat-blur.webp"
   />
   <h1 class="sr-only">{title}</h1>
-  <PostList items={timelineEntries} />
+  <PostList items={posts} />
 </Layout>

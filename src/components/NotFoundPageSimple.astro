@@ -11,14 +11,12 @@ const content = {
     description: "요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.",
     homeButton: "홈으로 돌아가기",
     postsLink: "포스트 목록",
-    archivesLink: "아카이브",
   },
   en: {
     title: "Page Not Found",
     description: "The page you requested does not exist or has been moved.",
     homeButton: "Back to Home",
     postsLink: "Posts",
-    archivesLink: "Archives",
   },
 }
 
@@ -53,12 +51,6 @@ const baseUrl = lang === "en" ? "/en" : ""
         class="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
       >
         {currentContent.postsLink}
-      </a>
-      <a
-        href={`${baseUrl}/archives`}
-        class="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
-      >
-        {currentContent.archivesLink}
       </a>
     </div>
   </div>

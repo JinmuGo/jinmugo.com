@@ -28,7 +28,7 @@ export const buildUrl = (basePath: string, path?: string) => {
 export const buildPageUrl = (basePath: string, path: string) => buildUrl(basePath, path)
 export const buildItemUrl = (url: string) => buildUrl(url)
 
-export const AUTHOR_URL = new URL("/about/", pkg.homepage).href
+export const AUTHOR_URL = new URL("/", pkg.homepage).href
 export const PERSON_ID = new URL("/#person", pkg.homepage).href
 export const WEBSITE_ID = new URL("/#website", pkg.homepage).href
 

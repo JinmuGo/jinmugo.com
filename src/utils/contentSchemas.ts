@@ -1,11 +1,10 @@
-import type { PostMetadata, WeeklyMetadata } from "@/types/content"
-import type { ContentType, Lang } from "@/types/utils"
-import { generateContentBreadcrumbs } from "@/utils/breadcrumbUtils"
+import type { PostMetadata } from "@/types/content"
+import type { Lang } from "@/types/utils"
+import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
 import { detectLanguage } from "@/utils/language"
 import {
   AUTHOR_URL,
   type BreadcrumbItem,
-  generateArticleSchema,
   generateBlogPostingSchema,
   generateBreadcrumbSchema,
 } from "@/utils/structuredData"
@@ -15,14 +14,12 @@ import pkg from "~/package.json"
  * Options for generating content schemas
  */
 export interface GenerateContentSchemasOptions {
-  /** Post or Weekly frontmatter */
-  frontmatter: PostMetadata | WeeklyMetadata
+  /** Post frontmatter */
+  frontmatter: PostMetadata
   /** Current page pathname */
   pathname: string
   /** Site origin URL */
   origin: string
-  /** Type of content (post or memo) */
-  contentType: ContentType
   /** Optional image URL override */
   imageUrl?: string
 }
@@ -31,10 +28,8 @@ export interface GenerateContentSchemasOptions {
  * Generated schemas for content pages
  */
 export interface ContentSchemas {
-  /** BlogPosting or Article schema */
-  pageSchema:
-    | ReturnType<typeof generateBlogPostingSchema>
-    | ReturnType<typeof generateArticleSchema>
+  /** BlogPosting schema */
+  pageSchema: ReturnType<typeof generateBlogPostingSchema>
   /** Breadcrumb list schema */
   breadcrumbSchema: ReturnType<typeof generateBreadcrumbSchema>
   /** Breadcrumb items for rendering */
@@ -44,16 +39,15 @@ export interface ContentSchemas {
 }
 
 /**
- * Generates all schemas needed for a content page (post, memo, or weekly)
+ * Generates all schemas needed for a post or memo page
  * Consolidates schema generation logic used across all layout files
  *
  * @param options - Schema generation options
  * @returns All generated schemas and metadata
  */
 export function generateContentSchemas(options: GenerateContentSchemasOptions): ContentSchemas {
-  const { frontmatter, pathname, origin, contentType, imageUrl } = options
+  const { frontmatter, pathname, origin, imageUrl } = options
   const { title, date, lastmod, summary, tags } = frontmatter
-  const category = "category" in frontmatter ? frontmatter.category : undefined
 
   // Detect language from pathname
   const lang = detectLanguage(pathname)
@@ -74,21 +68,8 @@ export function generateContentSchemas(options: GenerateContentSchemasOptions): 
     imageUrl: imageUrl || (frontmatter.image ? new URL(frontmatter.image, origin).href : undefined),
   }
 
-  // Generate appropriate schema based on content type
-  const pageSchema =
-    contentType === "post"
-      ? generateBlogPostingSchema(commonOptions)
-      : generateArticleSchema({ ...commonOptions, extra: { articleSection: contentType } })
-
-  // Generate breadcrumb items
-  const breadcrumbItems = generateContentBreadcrumbs({
-    pathname,
-    origin,
-    lang,
-    title,
-    category,
-    contentType,
-  })
+  const pageSchema = generateBlogPostingSchema(commonOptions)
+  const breadcrumbItems = generateBreadcrumbItems({ pathname, origin, title })
 
   // Generate breadcrumb schema
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)

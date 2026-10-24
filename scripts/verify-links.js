@@ -3,7 +3,6 @@ import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { JSDOM } from "jsdom"
-import { normalizeArchiveSegment } from "../src/utils/archive-segment.js"
 
 const SITE_ORIGIN = new URL(
   JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).homepage,
@@ -69,57 +68,8 @@ function internalUrl(value, route) {
   return url?.origin === SITE_ORIGIN ? url : undefined
 }
 
-function archiveRedirectMap(document, prefix, errors) {
-  const redirects = new Map()
-  for (const anchor of document.querySelectorAll("a[data-archive-label][href]")) {
-    const label = anchor.getAttribute("data-archive-label") ?? ""
-    const url = internalUrl(anchor.getAttribute("href") ?? "", `${prefix}/archives/`)
-    const canonical = url && decodedPathname(url.pathname)
-    const match = canonical?.match(new RegExp(`^${prefix}/archives/(category|tag|year)/([^/]+)/$`))
-    if (!match) {
-      errors.push(`${prefix || "/"}archives/: invalid archive link for ${JSON.stringify(label)}`)
-      continue
-    }
-
-    const [, classify, segment] = match
-    const expectedSegment = normalizeArchiveSegment(label)
-    if (segment !== expectedSegment) {
-      errors.push(
-        `${prefix || "/"}archives/: ${JSON.stringify(label)} uses ${JSON.stringify(segment)} instead of ${JSON.stringify(expectedSegment)}`,
-      )
-      continue
-    }
-
-    const legacy = `${prefix}/archives/${classify}/${label}/`
-    if (legacy !== canonical) {
-      redirects.set(legacy, canonical)
-    }
-  }
-  return redirects
-}
-
-function isCaseOnlyFilesystemCollision(legacy, canonical) {
-  return legacy.normalize("NFD").toLowerCase() === canonical.normalize("NFD").toLowerCase()
-}
-
-function hasCaseInsensitivePaths(distDir, files) {
-  const probe = [...files].find((file) => /[A-Za-z]/.test(file))
-  if (!probe) {
-    return false
-  }
-  const alternateCase = probe.replace(/[A-Za-z]/, (letter) =>
-    letter === letter.toLowerCase() ? letter.toUpperCase() : letter.toLowerCase(),
-  )
-  return alternateCase !== probe && fs.existsSync(path.join(distDir, alternateCase))
-}
-
 export function verifyLinks(distDir) {
   const files = new Set(walkFiles(distDir))
-  const caseInsensitivePaths = hasCaseInsensitivePaths(distDir, files)
-  const filesByFoldedPath = new Map(
-    [...files].map((file) => [file.normalize("NFD").toLowerCase(), file]),
-  )
-  const caseFoldedArchivePaths = new Set()
   const htmlFiles = [...files].filter((file) => file.endsWith(".html"))
   const routesByFile = new Map(htmlFiles.map((file) => [file, routeFromFile(file)]))
   const redirects = new Map()
@@ -135,12 +85,6 @@ export function verifyLinks(distDir) {
       if (files.has(normalized)) {
         return normalized
       }
-      if (caseInsensitivePaths && caseFoldedArchivePaths.has(pathname)) {
-        const folded = filesByFoldedPath.get(normalized.normalize("NFD").toLowerCase())
-        if (folded) {
-          return folded
-        }
-      }
     }
     return undefined
   }
@@ -153,61 +97,9 @@ export function verifyLinks(distDir) {
     }
   }
 
-  const expectedArchiveMap = new Map()
-  for (const [file, prefix] of [
-    ["archives/index.html", ""],
-    ["en/archives/index.html", "/en"],
-  ]) {
-    if (!files.has(file)) {
-      errors.push(`missing archive index: /${file}`)
-      continue
-    }
-    const document = new JSDOM(fs.readFileSync(path.join(distDir, file), "utf8"), {
-      url: `${SITE_ORIGIN}${prefix}/archives/`,
-    }).window.document
-    for (const entry of archiveRedirectMap(document, prefix, errors)) {
-      expectedArchiveMap.set(...entry)
-    }
-  }
-  const archiveLegacyPaths = new Set(expectedArchiveMap.keys())
-  for (const [legacy, canonical] of expectedArchiveMap) {
-    if (isCaseOnlyFilesystemCollision(legacy, canonical)) {
-      caseFoldedArchivePaths.add(canonical)
-    }
-  }
-
   for (const [route, target] of redirects) {
     if (!resolveFile(target)) {
       errors.push(`${route}: redirect target does not exist: ${target}`)
-    }
-  }
-
-  for (const [legacy, canonical] of expectedArchiveMap) {
-    const canonicalFile = resolveFile(canonical)
-    if (!canonicalFile || redirects.has(routesByFile.get(canonicalFile))) {
-      errors.push(`${legacy}: canonical archive page does not exist: ${canonical}`)
-      continue
-    }
-
-    const legacyFile = resolveFile(legacy)
-    if (!legacyFile) {
-      if (!(caseInsensitivePaths && isCaseOnlyFilesystemCollision(legacy, canonical))) {
-        errors.push(`${legacy}: legacy archive redirect does not exist`)
-      }
-      continue
-    }
-
-    if (
-      caseInsensitivePaths &&
-      legacyFile === canonicalFile &&
-      isCaseOnlyFilesystemCollision(legacy, canonical)
-    ) {
-      continue
-    }
-
-    const builtTarget = redirects.get(routesByFile.get(legacyFile))
-    if (builtTarget !== canonical) {
-      errors.push(`${legacy}: expected redirect to ${canonical}, found ${builtTarget ?? "a page"}`)
     }
   }
 
@@ -227,8 +119,6 @@ export function verifyLinks(distDir) {
       const targetFile = pathname ? resolveFile(pathname) : undefined
       if (!targetFile) {
         errors.push(`${route}: broken internal link: ${url.pathname}`)
-      } else if (!redirects.has(route) && pathname && archiveLegacyPaths.has(pathname)) {
-        errors.push(`${route}: internal link points to legacy archive redirect: ${url.pathname}`)
       }
     }
 
@@ -248,7 +138,7 @@ export function verifyLinks(distDir) {
       if (url?.origin !== SITE_ORIGIN) {
         errors.push(`${route}: canonical must use ${SITE_ORIGIN}`)
       }
-      if (!targetFile || targetFile !== file || (pathname && archiveLegacyPaths.has(pathname))) {
+      if (!targetFile || targetFile !== file) {
         errors.push(`${route}: canonical does not resolve to the current page`)
       }
     }
@@ -278,15 +168,8 @@ export function verifyLinks(distDir) {
       const targetFile = pathname ? resolveFile(pathname) : undefined
       if (!targetFile) {
         errors.push(`${sitemapFile}: URL does not exist: ${url.pathname}`)
-      } else if (pathname && archiveLegacyPaths.has(pathname)) {
-        errors.push(`${sitemapFile}: URL points to legacy archive redirect: ${url.pathname}`)
       }
     }
-  }
-
-  const archiveRedirectCounts = {
-    ko: [...archiveLegacyPaths].filter((route) => !route.startsWith("/en/")).length,
-    en: [...archiveLegacyPaths].filter((route) => route.startsWith("/en/")).length,
   }
 
   if (errors.length > 0) {
@@ -297,7 +180,6 @@ export function verifyLinks(distDir) {
     htmlFiles: htmlFiles.length,
     internalLinks,
     redirects: redirects.size,
-    archiveRedirectCounts,
   }
 }
 
@@ -311,7 +193,7 @@ if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {
   try {
     const result = verifyLinks(distDir)
     console.info(
-      `Verified ${result.internalLinks} internal links across ${result.htmlFiles} HTML files (${result.redirects} redirects; archive old→new map: ko ${result.archiveRedirectCounts.ko}, en ${result.archiveRedirectCounts.en}).`,
+      `Verified ${result.internalLinks} internal links across ${result.htmlFiles} HTML files (${result.redirects} redirects).`,
     )
   } catch (error) {
     console.error(error instanceof Error ? error.message : error)

@@ -9,9 +9,6 @@ const distDir = path.join(repoRoot, "dist")
 
 const COLLECTION_TO_PATH = {
   post: "posts",
-  weekly: "weekly",
-  book: "library/books",
-  movie: "library/movies",
 }
 
 function getAllMdxFiles(dir) {

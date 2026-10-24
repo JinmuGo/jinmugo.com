@@ -6,7 +6,6 @@ import SideRail from "@/components/content/SideRail.astro"
 import Prose from "@/components/layout/Prose.astro"
 import Layout from "@/layouts/Layout.astro"
 import type { PostMetadata } from "@/types/content"
-import type { ContentType } from "@/types/utils"
 import { generateContentSchemas } from "@/utils/contentSchemas"
 import { buildContentOgImagePath } from "@/utils/openGraphMeta"
 import { tocItems } from "@/utils/toc"
@@ -15,17 +14,15 @@ interface Props {
   frontmatter: PostMetadata
   bannerImage?: ImageMetadata
   headings?: MarkdownHeading[]
-  contentType?: ContentType
 }
 
-const { frontmatter, bannerImage, headings = [], contentType = "post" } = Astro.props
+const { frontmatter, bannerImage, headings = [] } = Astro.props
 const { title, date, lastmod, summary, slug, tags } = frontmatter
 
 const { pageSchema, breadcrumbSchema, lang } = generateContentSchemas({
   frontmatter,
   pathname: Astro.url.pathname,
   origin: Astro.url.origin,
-  contentType,
   imageUrl: bannerImage ? `${Astro.url.origin}${bannerImage.src}` : undefined,
 })
 ---
@@ -36,7 +33,7 @@ const { pageSchema, breadcrumbSchema, lang } = generateContentSchemas({
   description={summary || title}
   lang={lang}
   jsonLd={[pageSchema, breadcrumbSchema]}
-  ogImage={buildContentOgImagePath({ contentType, slug, pathname: Astro.url.pathname })}
+  ogImage={buildContentOgImagePath({ slug, pathname: Astro.url.pathname })}
   type="article"
   tags={tags}
   publishedTime={date}
@@ -49,5 +46,5 @@ const { pageSchema, breadcrumbSchema, lang } = generateContentSchemas({
       <slot />
     </Prose>
   </article>
-  <UserSection slug={slug} frontmatter={frontmatter} type="post" />
+  <UserSection slug={slug} frontmatter={frontmatter} />
 </Layout>

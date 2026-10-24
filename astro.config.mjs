@@ -30,13 +30,10 @@ export default defineConfig({
   redirects: {
     "/memos/": "/posts/",
     "/en/memos/": "/en/posts/",
-    "/posts/process-economy/": "/library/books/process-economy/",
-    "/posts/where-are-we-now/": "/library/books/where-are-we-now/",
-    "/posts/if-snow-is-silence-falling-from-the-sky/": "/library/books/if-snow-is-silence-falling-from-the-sky/",
-    "/en/posts/process-economy/": "/en/library/books/process-economy/",
-    "/en/posts/where-are-we-now/": "/en/library/books/where-are-we-now/",
-    "/en/posts/if-snow-is-silence-falling-from-the-sky/": "/en/library/books/if-snow-is-silence-falling-from-the-sky/",
     "/en/posts/leetcode-208-trie/": "/en/posts/trie-feat-leetcode-208/",
+    // 예전 글 본문의 시리즈 링크를 DNS 시리즈 첫 글로 보낸다.
+    "/series/": "/posts/dns-deepdive-1/",
+    "/en/series/": "/en/posts/dns-deepdive-1/",
   },
   fonts: [
     {

@@ -1,43 +1,27 @@
-import type { PostMetadata, WeeklyMetadata } from "@/types/content"
+import type { PostMetadata } from "@/types/content"
 import type { Lang } from "@/types/utils"
 import { getLanguagePrefix, withTrailingSlash } from "@/utils/language"
 
 type ListLayoutProps = {
-  posts: (PostMetadata | WeeklyMetadata)[]
-  postType: "post" | "weekly"
+  posts: PostMetadata[]
   lang?: Lang
 }
 
-function listHref(
-  postType: ListLayoutProps["postType"],
-  slug: string,
-  languagePrefix: string,
-): string {
-  const segment = postType === "post" ? "posts" : "weekly"
-  const path = `${languagePrefix}/${segment}/${slug}`.replace(/\/{2,}/g, "/")
-  return withTrailingSlash(path.startsWith("/") ? path : `/${path}`)
-}
-
-function emptyListMessage(postType: ListLayoutProps["postType"], lang: Lang): string {
-  if (postType === "weekly") {
-    return lang === "ko" ? "아직 발행된 Weekly가 없습니다." : "No Weekly issues yet."
-  }
-  return lang === "ko" ? "글을 찾을 수 없습니다." : "No posts found."
-}
-
-export default function ListLayouts({ posts, postType, lang = "ko" }: ListLayoutProps) {
+export default function ListLayouts({ posts, lang = "ko" }: ListLayoutProps) {
   const languagePrefix = getLanguagePrefix(lang)
 
   return (
     <div>
       {!posts.length && (
-        <p className="text-gray-500 dark:text-gray-400">{emptyListMessage(postType, lang)}</p>
+        <p className="text-gray-500 dark:text-gray-400">
+          {lang === "ko" ? "글을 찾을 수 없습니다." : "No posts found."}
+        </p>
       )}
       <ul>
         {posts.map((post) => (
           <li key={post.slug} className="flex justify-between items-center py-3">
             <a
-              href={listHref(postType, post.slug, languagePrefix)}
+              href={withTrailingSlash(`${languagePrefix}/posts/${post.slug}`)}
               className="text-base sm:text-lg font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
             >
               {post.title}
