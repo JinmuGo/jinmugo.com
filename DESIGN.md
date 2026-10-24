@@ -77,7 +77,7 @@
 - **Approach:** Single reading column — header, home list, and article share one narrow column so the eye never re-aligns
 - **Reading column:** `max-w-3xl` (768px) with `px-4 sm:px-6`. Default for every page using `Layout.astro`
 - **Wide pages:** `<Layout wide>` keeps the 1024px (`max-w-5xl`) container for grid pages: portfolio, resume, projects, library lists
-- **Header:** flower logo (36px tall, same flower as the favicon) and one 20px gray-500 line icon with no text that points to the other view: on the gallery it is Posts (`AlignLeft`, links to the home list), everywhere else it is Gallery (`Image`). The icon carries `aria-label` and `title`. The header is sticky, 80px tall, over a blurred white fade; it does not hide or swap on scroll. No search, theme toggle, dropdowns, or mobile menu; the same row shows on every screen size. Other pages (About, Resume, Weekly, Library, Projects, Archives, Series, Portfolio) are linked from the footer
+- **Header:** flower logo (36px tall, same flower as the favicon) and one 20px gray-500 line icon with no text that points to the other view: on the gallery it is Posts (`AlignLeft`, links to the home list), everywhere else it is Gallery (`Image`). The icon carries `aria-label` and `title`. The header is sticky, 80px tall, over a blurred white fade. On post, book, movie, and weekly pages, once the page's h1 (`#post-title`) passes under the header, the logo and icon fade up and out and the post title (16px/600, centered, truncated) fades up in over a denser fade (300ms ease-out, off under reduced motion). Clicking that title scrolls to the top. No search, theme toggle, dropdowns, or mobile menu; the same row shows on every screen size. Other pages (About, Resume, Weekly, Library, Projects, Archives, Series, Portfolio) are linked from the footer
 - **Home hero:** photo fills the reading column (rounded-xl), aligned with the list below
 - **Home list:** one row per post, no type badges (weekly and posts look the same) — title (20px semibold), summary (line-clamp-2, gray-600), date (14px gray-500). Rows separated by gray-100 dividers, `py-6`, hover fades the row to 60% opacity
 - **Year nav:** on `lg+` a fixed left rail (`SideRail.astro`) of short lines links to the first post of each year; year labels appear on hover/focus
@@ -100,6 +100,7 @@
   - Only animate `transform` and `opacity` (never layout properties)
   - Respect `prefers-reduced-motion`
   - No scroll-triggered entrance animations
+  - The post-title header swap is the one scroll-triggered transition: it keeps the reader's place visible
 
 ## Accessibility
 - **Focus:** 2px solid primary-500 outline with 2px offset on all focusable elements

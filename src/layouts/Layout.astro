@@ -46,7 +46,7 @@ const width = wide
     <Umami />
   </head>
   <body class="text-foreground font-sans dark:bg-gray-950">
-    <Header widthClass={width} />
+    <Header widthClass={width} title={type === "article" ? title : undefined} />
     <Container widthClass={width}>
       <slot />
     </Container>

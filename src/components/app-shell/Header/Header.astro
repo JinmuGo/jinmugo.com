@@ -4,23 +4,70 @@ import Logo from "./Logo"
 
 interface Props {
   widthClass: string
+  /** 글 페이지에서 넘기면, 본문 제목이 헤더 뒤로 지나간 뒤 로고와 아이콘 대신 이 제목을 보여준다. */
+  title?: string
 }
 
-const { widthClass } = Astro.props
+const { widthClass, title } = Astro.props
 const pathname = Astro.url.pathname
 const isEn = pathname.startsWith("/en")
+const swap = "transition duration-300 ease-out motion-reduce:transition-none"
 ---
 
-<div
-  aria-hidden="true"
-  class="pointer-events-none fixed inset-x-0 top-0 z-40 h-20 bg-linear-to-b from-white/50 to-transparent backdrop-blur-sm [mask-image:linear-gradient(to_bottom,black_50%,transparent)] dark:from-gray-950/50"
->
-</div>
-<header class="pointer-events-none sticky top-0 z-50 h-20">
-  <div class={`pointer-events-auto mx-auto flex h-20 items-center justify-between ${widthClass}`}>
-    <a href={isEn ? "/en" : "/"} class="flex min-h-[44px] items-center">
-      <Logo />
-    </a>
-    <HeaderNav pathname={pathname} isEn={isEn} />
+<div data-site-header class="group/header contents">
+  <div
+    aria-hidden="true"
+    class={`pointer-events-none fixed inset-x-0 top-0 z-40 h-20 bg-linear-to-b from-white/50 to-transparent backdrop-blur-sm [mask-image:linear-gradient(to_bottom,black_50%,transparent)] group-data-[compact]/header:h-24 group-data-[compact]/header:from-white group-data-[compact]/header:via-white/90 group-data-[compact]/header:[mask-image:linear-gradient(to_bottom,black_75%,transparent)] dark:from-gray-950/50 dark:group-data-[compact]/header:from-gray-950 dark:group-data-[compact]/header:via-gray-950/90 ${swap}`}
+  >
   </div>
-</header>
+  <header class="pointer-events-none sticky top-0 z-50 h-20">
+    <div class={`pointer-events-auto relative mx-auto flex h-20 items-center justify-between ${widthClass}`}>
+      <a
+        href={isEn ? "/en" : "/"}
+        class={`flex min-h-[44px] items-center group-data-[compact]/header:pointer-events-none group-data-[compact]/header:-translate-y-3 group-data-[compact]/header:opacity-0 ${swap}`}
+      >
+        <Logo />
+      </a>
+      <div
+        class={`group-data-[compact]/header:pointer-events-none group-data-[compact]/header:-translate-y-3 group-data-[compact]/header:opacity-0 ${swap}`}
+      >
+        <HeaderNav pathname={pathname} isEn={isEn} />
+      </div>
+      {
+        title && (
+          <button
+            type="button"
+            data-header-title
+            tabindex="-1"
+            title={isEn ? "Back to top" : "맨 위로"}
+            class={`pointer-events-none absolute inset-x-4 inset-y-0 flex translate-y-3 cursor-pointer items-center justify-center opacity-0 sm:inset-x-6 group-data-[compact]/header:pointer-events-auto group-data-[compact]/header:translate-y-0 group-data-[compact]/header:opacity-100 ${swap}`}
+          >
+            <span class="truncate text-base font-semibold tracking-tight text-gray-900 dark:text-gray-50">
+              {title}
+            </span>
+          </button>
+        )
+      }
+    </div>
+  </header>
+</div>
+
+<script>
+  // 본문 h1(#post-title)이 헤더(80px) 뒤로 완전히 지나가면 헤더를 제목 모드로 바꾼다.
+  const header = document.querySelector<HTMLElement>("[data-site-header]")
+  const postTitle = document.getElementById("post-title")
+  if (header && postTitle) {
+    new IntersectionObserver(
+      ([entry]) => {
+        // 관찰 영역의 위쪽 경계는 헤더 아래선이다. 제목이 그 선 위로 넘어갔을 때만 제목 모드로 바꾼다.
+        const headerBottom = entry.rootBounds?.top ?? 80
+        header.toggleAttribute("data-compact", !entry.isIntersecting && entry.boundingClientRect.top < headerBottom)
+      },
+      { rootMargin: "-80px 0px 0px 0px" },
+    ).observe(postTitle)
+    header.querySelector("[data-header-title]")?.addEventListener("click", () => {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" })
+    })
+  }
+</script>
