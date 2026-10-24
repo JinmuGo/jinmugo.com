@@ -1,6 +1,5 @@
 ---
 import Header from "@/components/app-shell/Header/Header.tsx"
-import MobileMenu from "@/components/app-shell/Header/MobileMenu.tsx"
 import BaseHead from "@/components/seo/BaseHead.astro"
 import GoogleTag from "@/components/seo/GoogleTag.astro"
 import Umami from "@/components/seo/Umami.astro"
@@ -63,6 +62,5 @@ const containerStyles = {
     <Container containerStyles={containerStyles}>
       <slot />
     </Container>
-    <MobileMenu pathname={pathname} client:load />
   </body>
 </html>

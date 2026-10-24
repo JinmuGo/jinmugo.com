@@ -76,7 +76,7 @@
 - **Approach:** Single reading column — header, home list, and article share one narrow column so the eye never re-aligns
 - **Reading column:** `max-w-3xl` (768px) with `px-4 sm:px-6`. Default for every page using `Layout.astro`
 - **Wide pages:** `<Layout wide>` keeps the 1024px (`max-w-5xl`) container for grid pages: gallery, portfolio, resume, projects, library lists
-- **Header:** small logo (96px), 14px gray nav, 20px icons. Quiet chrome; content is the loudest thing on the page
+- **Header:** flower logo (36px tall, same flower as the favicon), two 14px gray links (Posts, Gallery), search and theme icons (20px). No dropdowns or mobile menu; the same row shows on every screen size. Other pages (About, Resume, Weekly, Library, Projects, Archives, Series, Portfolio) are linked from the footer
 - **Home list:** one row per post — title (20px semibold), summary (line-clamp-2, gray-600), date (14px gray-500). Rows separated by gray-100 dividers, `py-6`, hover fades the row to 60% opacity
 - **Year nav:** on `lg+` a fixed left rail of short lines links to the first post of each year; year labels appear on hover/focus
 - **Post header:** centered title, summary, landscape banner (rounded-xl, full column width), then category · author · date. Korean headings use `break-keep` + `text-balance`
