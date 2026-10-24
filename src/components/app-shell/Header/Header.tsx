@@ -1,9 +1,9 @@
 import debounce from "lodash.debounce"
 import { useCallback, useEffect, useState } from "react"
 import type { PostMetadata, WeeklyMetadata } from "@/types/content"
+import HeaderNav from "./HeaderNav"
 import HeaderSlider from "./HeaderSlider"
 import Logo from "./Logo"
-import NavSwitch from "./NavSwitch"
 
 const BASE_LINE = 50
 
@@ -71,7 +71,7 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
           <a href={isEn ? "/en" : "/"} className="flex min-h-[44px] items-center">
             <Logo />
           </a>
-          <NavSwitch pathname={pathname} isEn={isEn} />
+          <HeaderNav pathname={pathname} isEn={isEn} />
         </section>
         {frontmatter && (
           <HeaderSlider
