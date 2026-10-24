@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "@fuma-comment/react/preset.css";
 @import "./prose.css";
 @import "tw-animate-css";
 
@@ -117,22 +116,6 @@ html[data-theme="dark"] {
   --table-hover-bg: #292524;
   --table-divider: #292524;
 
-  /* fuma-comment: preset expects `.dark`, site uses data-theme (warm stone) */
-  --color-fc-background: #1C1917;
-  --color-fc-foreground: #F5F5F0;
-  --color-fc-muted: #292524;
-  --color-fc-muted-foreground: #A8A29E;
-  --color-fc-popover: #292524;
-  --color-fc-popover-foreground: #F5F5F0;
-  --color-fc-card: #292524;
-  --color-fc-card-foreground: #F5F5F0;
-  --color-fc-border: #44403C;
-  --color-fc-primary: #F5F5F0;
-  --color-fc-primary-foreground: #1C1917;
-  --color-fc-accent: #44403C;
-  --color-fc-accent-foreground: #F5F5F0;
-  --color-fc-ring: #57534E;
-  --color-fc-danger: hsl(3 95% 64%);
 }
 
 html[data-theme="light"] {
@@ -195,8 +178,7 @@ html[data-theme="dark"] ::selection {
 /* 인쇄 스타일시트 */
 @media print {
   header, footer, nav, aside,
-  .fc-comment, .like-counter, .view-counter,
-  .series-accordion, [data-lang-switch],
+  [data-lang-switch],
   button:not(.print-visible) {
     display: none !important;
   }

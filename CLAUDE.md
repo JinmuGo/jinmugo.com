@@ -44,7 +44,7 @@ make fclean        # 모든 node_modules 삭제
 
 ### 프로젝트 구조
 - **Astro 7** 정적 사이트 (`output: "static"`)
-- **React islands**: 인터랙티브 위젯 (Comments 등). 헤더는 Astro 컴포넌트와 작은 인라인 스크립트다
+- **React islands**: MDX 안의 일부 위젯. 헤더는 Astro 컴포넌트와 작은 인라인 스크립트다. 댓글 기능은 없다
 - **Tailwind CSS v4** + **shadcn/ui** (New York 스타일, `components.json` 설정)
 - **Biome**: 린팅 및 포맷팅 (ESLint/Prettier 대체)
 - **Lefthook**: pre-commit 훅 (Biome check, type-check, 자동 번역)
@@ -78,7 +78,6 @@ make fclean        # 모든 node_modules 삭제
 - `src/components/content/`: 게시물/메모 렌더링
 - `src/components/features/`: 갤러리(PhotoSwipe)
 - `src/components/app-shell/Header/`: 꽃 로고, Posts/Gallery 아이콘, 스크롤 시 글 제목 헤더
-- `src/components/app-shell/Comment/`: Fuma 댓글 및 인증 UI
 - `src/components/og/`: OG 이미지 동적 생성 (Satori + Sharp)
 
 ### 스크립트 (`scripts/`)
@@ -94,7 +93,6 @@ make fclean        # 모든 node_modules 삭제
 ## 환경 변수 (`.env`)
 
 ```bash
-PUBLIC_API_URL=http://localhost:3001  # 외부 API 서버 URL (조회수/좋아요)
 PUBLIC_ENV=development
 DEEPL_API_KEY=...                     # 번역 스크립트용
 ```

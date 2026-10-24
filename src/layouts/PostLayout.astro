@@ -1,6 +1,5 @@
 ---
 import type { ImageMetadata, MarkdownHeading } from "astro"
-import UserSection from "@/components/app-shell/Comment/UserSection.astro"
 import PostHeader from "@/components/content/PostHeader.astro"
 import SideRail from "@/components/content/SideRail.astro"
 import Prose from "@/components/layout/Prose.astro"
@@ -46,5 +45,4 @@ const { pageSchema, breadcrumbSchema, lang } = generateContentSchemas({
       <slot />
     </Prose>
   </article>
-  <UserSection slug={slug} />
 </Layout>
