@@ -18,7 +18,7 @@ const SearchButton = ({ setOpen }: SearchButtonProps) => {
       onClick={handleClick}
     >
       <Search
-        className="hover:text-primary-500 dark:hover:text-primary-400 h-6 w-6 text-gray-900 dark:text-gray-100"
+        className="hover:text-primary-500 dark:hover:text-primary-400 h-5 w-5 text-gray-600 dark:text-gray-400"
         aria-hidden="true"
       />
     </button>

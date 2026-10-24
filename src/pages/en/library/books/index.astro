@@ -8,7 +8,7 @@ import { sortMediaByDate } from "@/utils/library/common"
 const items = sortMediaByDate(await getBookMedia("en")).filter((b) => b.cover)
 ---
 
-<Layout title="Books · Library" description="Books I've read" lang="en">
+<Layout wide title="Books · Library" description="Books I've read" lang="en">
   <div class="px-2 sm:px-4">
     <div class="space-y-2 pt-6 pb-8 md:space-y-5">
       <Title>Books</Title>

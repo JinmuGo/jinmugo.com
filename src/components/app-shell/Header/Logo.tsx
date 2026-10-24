@@ -37,7 +37,7 @@ const LogoSvg = () => (
 
 export default function Logo() {
   return (
-    <div className={"w-40 lg:w-52 bg-inherit "}>
+    <div className="w-24 bg-inherit">
       <LogoSvg />
     </div>
   )

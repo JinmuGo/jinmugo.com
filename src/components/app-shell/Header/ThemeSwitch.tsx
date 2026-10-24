@@ -41,7 +41,7 @@ const ThemeSwitch: React.FC = () => {
   }, [getButtonLabel])
 
   return (
-    <div className="hover:text-primary-500 dark:hover:text-primary-400 flex items-center justify-center">
+    <div className="text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 flex items-center justify-center">
       <button
         id="theme-switcher"
         data-testid="theme-switcher"
@@ -51,8 +51,8 @@ const ThemeSwitch: React.FC = () => {
         type="button"
         className="flex items-center justify-center min-w-[44px] min-h-[44px]"
       >
-        <Sun className="light h-6 w-6" aria-hidden="true" />
-        <Moon className="dark h-6 w-6" aria-hidden="true" />
+        <Sun className="light h-5 w-5" aria-hidden="true" />
+        <Moon className="dark h-5 w-5" aria-hidden="true" />
       </button>
     </div>
   )

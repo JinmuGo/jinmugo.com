@@ -1,7 +1,7 @@
 ---
 import { Image } from "astro:assets"
+import PostList from "@/components/content/PostList.astro"
 import Bleed from "@/components/layout/Bleed.astro"
-import ContentTimeline from "@/components/Timeline/ContentTimeline.astro"
 import Layout from "@/layouts/Layout.astro"
 import { getEnglishPosts } from "@/utils/content/posts"
 import { mergeTimelineEntries, timelineEntryToListItem } from "@/utils/content/timeline"
@@ -46,5 +46,5 @@ const jsonLd = generatePageSchema({
       data-blur-src="sea-boat-blur.webp"
     />
   </Bleed>
-  <ContentTimeline items={timelineEntries} showDescriptions={false} />
+  <PostList items={timelineEntries} />
 </Layout>

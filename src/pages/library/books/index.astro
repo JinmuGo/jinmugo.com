@@ -8,7 +8,7 @@ import { sortMediaByDate } from "@/utils/library/common"
 const items = sortMediaByDate(await getBookMedia("ko")).filter((b) => b.cover)
 ---
 
-<Layout
+<Layout wide
 	title="Books · Library"
 	description="읽은 책의 기록입니다. 한 줄 감상과 별점, 인상 깊었던 문장을 함께 남깁니다."
 	lang="ko"

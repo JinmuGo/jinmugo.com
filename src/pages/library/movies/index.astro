@@ -8,7 +8,7 @@ import { getMovieMedia } from "@/utils/library/movies"
 const items = sortMediaByDate(await getMovieMedia("ko")).filter((m) => m.cover)
 ---
 
-<Layout
+<Layout wide
 	title="Movies · Library"
 	description="본 영화의 기록입니다. 한 줄 감상과 별점, 기억에 남은 장면을 함께 남깁니다."
 	lang="ko"

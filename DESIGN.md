@@ -30,7 +30,7 @@
   - 3xl: 36px — H1 (article title)
   - 4xl: 48px — hero/display
 - **Line height:** 1.7-1.8 for body (Korean text needs more), 1.1-1.3 for headings
-- **Measure:** max-w-max for article body text
+- **Measure:** article body fills the 768px reading column (720px of text at sm+)
 
 ## Color
 - **Approach:** Restrained — one accent + warm neutrals. Color is rare and meaningful.
@@ -73,9 +73,13 @@
   - 3xl: 64px
 
 ## Layout
-- **Approach:** Grid-disciplined — clean columns, predictable alignment
-- **Grid:** Single-column content, max-w-5xl (1024px) outer container, max-w-max for article body
-- **Max content width:** 1024px for page layout, 65ch for prose
+- **Approach:** Single reading column — header, home list, and article share one narrow column so the eye never re-aligns
+- **Reading column:** `max-w-3xl` (768px) with `px-4 sm:px-6`. Default for every page using `Layout.astro`
+- **Wide pages:** `<Layout wide>` keeps the 1024px (`max-w-5xl`) container for grid pages: gallery, portfolio, resume, projects, library lists
+- **Header:** small logo (96px), 14px gray nav, 20px icons. Quiet chrome; content is the loudest thing on the page
+- **Home list:** one row per post — title (20px semibold), summary (line-clamp-2, gray-600), date (14px gray-500). Rows separated by gray-100 dividers, `py-6`, hover fades the row to 60% opacity
+- **Year nav:** on `lg+` a fixed left rail of short lines links to the first post of each year; year labels appear on hover/focus
+- **Post header:** centered title, summary, landscape banner (rounded-xl, full column width), then category · author · date. Korean headings use `break-keep` + `text-balance`
 - **Border radius hierarchy:**
   - sm: 4px — inline code, small chips
   - md: 8px — buttons, inputs, cards
@@ -107,3 +111,4 @@
 | 2026-04-03 | Warm stone over blue-gray neutrals | Deliberate departure from dev blog conventions. Feels more personal, like paper. Matches the blog's range (tech + life). |
 | 2026-04-03 | Keep Geist + Pretendard | Already working well for bilingual content. No reason to change what works. |
 | 2026-04-03 | Prose width fixed to 65ch | Was 114ch (full 1024px container). Fixed for readability. |
+| 2026-10-24 | Single 768px reading column, summary list home, centered post header | Layout structure adapted from chl.ee. Colors and fonts unchanged. Grid pages opt into `wide`. |

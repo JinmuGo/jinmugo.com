@@ -43,37 +43,35 @@ const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentS
   modifiedTime={lastmod}
 >
   <Breadcrumb items={breadcrumbItems}/>
-    <header class="space-y-1 pb-5 text-center">
-      <div class="w-11/12 mx-auto">
-        <Image
-          src={bannerImage}
-          alt={`${title} 배너`}
-          width={Math.min(bannerImage.width, 720)}
-          layout="constrained"
-          class="w-full h-auto object-contain"
-          loading="eager"
-          decoding="async"
-        />
-      </div>
-      <div id="post-title" class="pt-5">
-        <h1 class="text-xl md:text-2xl font-bold">{title}</h1>
-        <p>{summary}</p>
-        <div class="text-sm text-gray-500 dark:text-gray-300">
-          {category && (
-            <>
-              <a
-                href={getArchivePath(lang === "en" ? "/en" : "", "category", category)}
-                class="underline"
-              >
-                {category}
-              </a>
-              <span> / </span>
-            </>
-          )}
-          <ContentMetadata date={date} />
-        </div>
-      </div>
-    </header>
+  <header class="text-center">
+    <div id="post-title" class="pt-10 space-y-4">
+      <h1 class="font-bold text-2xl md:text-3xl xl:text-4xl leading-tight tracking-tight text-gray-900 dark:text-gray-50 text-balance break-keep">{title}</h1>
+      {summary && <p class="text-base md:text-lg text-gray-500 dark:text-gray-400 text-balance break-keep">{summary}</p>}
+    </div>
+    <Image
+      src={bannerImage}
+      alt={`${title} 배너`}
+      width={Math.min(bannerImage.width, 1440)}
+      layout="constrained"
+      class="mt-8 w-full h-auto rounded-xl object-cover"
+      loading="eager"
+      decoding="async"
+    />
+    <div class="mt-6 flex items-center justify-center gap-3 text-sm text-gray-600 dark:text-gray-400 flex-wrap">
+      {category && (
+        <>
+          <a
+            class="inline-flex items-center px-2.5 py-1 rounded-full bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors duration-200 font-medium"
+            href={getArchivePath(lang === "en" ? "/en" : "", "category", category)}
+          >
+            {category}
+          </a>
+          <span class="text-gray-400 dark:text-gray-500">•</span>
+        </>
+      )}
+      <ContentMetadata date={date} />
+    </div>
+  </header>
   <Prose as="article">
     <slot />
   </Prose>

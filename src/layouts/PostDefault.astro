@@ -40,10 +40,11 @@ const { pageSchema, breadcrumbSchema, breadcrumbItems, lang } = generateContentS
   modifiedTime={lastmod}
 >
   <Breadcrumb items={breadcrumbItems}/>
-  <header class="space-y-3 mb-16 md:mb-20">
-    <div id="post-title" class="pt-6 space-y-3">
-      <h1 class="font-bold text-2xl md:text-3xl xl:text-4xl leading-tight tracking-tight text-gray-900 dark:text-gray-50">{title}</h1>
-      <div class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400 flex-wrap">
+  <header class="text-center">
+    <div id="post-title" class="pt-10 space-y-4">
+      <h1 class="font-bold text-2xl md:text-3xl xl:text-4xl leading-tight tracking-tight text-gray-900 dark:text-gray-50 text-balance break-keep">{title}</h1>
+      {summary && <p class="text-base md:text-lg text-gray-500 dark:text-gray-400 text-balance break-keep">{summary}</p>}
+      <div class="flex items-center justify-center gap-3 pt-2 text-sm text-gray-600 dark:text-gray-400 flex-wrap">
         {category && (
           <>
             <a

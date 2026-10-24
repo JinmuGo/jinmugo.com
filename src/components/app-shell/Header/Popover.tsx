@@ -112,7 +112,7 @@ export default function CustomPopover({
   return (
     <Popover open={open} onOpenChange={handleRootOpenChange}>
       <PopoverTrigger
-        className="flex m-1 items-center gap-1 py-2 hover:text-primary-500 dark:hover:text-primary-400 text-gray-900 dark:text-gray-100 cursor-pointer min-h-[44px]"
+        className="flex m-1 items-center gap-1 py-2 hover:text-primary-500 dark:hover:text-primary-400 text-gray-600 dark:text-gray-400 cursor-pointer min-h-[44px]"
         onMouseEnter={handleOpen}
         onFocus={handleOpen}
         onMouseLeave={handleCloseWithDelay}

@@ -1,0 +1,48 @@
+---
+import ContentLabel from "@/components/content/ContentLabel.astro"
+import FormattedDate from "@/components/content/FormattedDate.astro"
+import YearNav from "@/components/content/YearNav.astro"
+import type { TimelineEntry } from "@/utils/content/timeline"
+
+interface Props {
+  items: TimelineEntry[]
+}
+
+const { items } = Astro.props
+
+// 연도별 첫 글에 앵커를 달아 YearNav가 그 위치로 이동하게 한다.
+const years: number[] = []
+const anchoredItems = items.map((item) => {
+  const year = item.data.date.getFullYear()
+  const isFirstOfYear = !years.includes(year)
+  if (isFirstOfYear) {
+    years.push(year)
+  }
+  return { item, anchor: isFirstOfYear ? `year-${year}` : undefined }
+})
+---
+
+<YearNav years={years} />
+<ul class="mt-12 divide-y divide-gray-100 dark:divide-gray-800/70">
+  {
+    anchoredItems.map(({ item, anchor }) => (
+      <li id={anchor} class="scroll-mt-24">
+        <a href={item.href} class="group block py-6 transition-opacity duration-150 hover:opacity-60">
+          <article>
+            <h2 class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xl font-semibold text-gray-900 dark:text-gray-50">
+              <span>{item.data.title}</span>
+              {item.type === "weekly" && <ContentLabel variant="weekly" />}
+              {item.data.draft && import.meta.env.DEV && <ContentLabel variant="draft" />}
+            </h2>
+            {item.data.summary && (
+              <p class="mt-2 line-clamp-2 text-gray-600 dark:text-gray-400">{item.data.summary}</p>
+            )}
+            <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+              <FormattedDate date={item.data.date} />
+            </p>
+          </article>
+        </a>
+      </li>
+    ))
+  }
+</ul>

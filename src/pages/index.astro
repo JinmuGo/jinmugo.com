@@ -1,7 +1,7 @@
 ---
 import { Image } from "astro:assets"
+import PostList from "@/components/content/PostList.astro"
 import Bleed from "@/components/layout/Bleed.astro"
-import ContentTimeline from "@/components/Timeline/ContentTimeline.astro"
 import Layout from "@/layouts/Layout.astro"
 import { getKoreanPosts } from "@/utils/content/posts"
 import { mergeTimelineEntries, timelineEntryToListItem } from "@/utils/content/timeline"
@@ -75,5 +75,5 @@ const jsonLd = [websiteSchema, personSchema, pageSchema]
     />
   </Bleed>
   <h1 class="sr-only">{title}</h1>
-  <ContentTimeline items={timelineEntries} showDescriptions={false} />
+  <PostList items={timelineEntries} />
 </Layout>
