@@ -1,13 +1,11 @@
 ---
-import Header from "@/components/app-shell/Header/Header.tsx"
+import Header from "@/components/app-shell/Header/Header.astro"
 import BaseHead from "@/components/seo/BaseHead.astro"
 import GoogleTag from "@/components/seo/GoogleTag.astro"
 import Umami from "@/components/seo/Umami.astro"
 import Container from "@/layouts/Container.astro"
 import type { Post } from "@/types/content"
 import StructuredData from "@/utils/structuredData.astro"
-
-const pathname = Astro.url.pathname
 
 const frontmatter = Astro.props.frontmatter as Post
 const title = Astro.props.title
@@ -21,17 +19,12 @@ const robots = Astro.props.robots
 const tags = Astro.props.tags ?? frontmatter?.tags
 const publishedTime = Astro.props.publishedTime as Date | undefined
 const modifiedTime = Astro.props.modifiedTime as Date | undefined
-// 그리드형 페이지(갤러리, 포트폴리오 등)만 넓은 폭을 쓰고 나머지는 읽기용 단일 칼럼을 쓴다.
+// 그리드형 페이지(포트폴리오, 이력서 등)만 넓은 폭을 쓰고 나머지는 읽기용 단일 칼럼을 쓴다.
 const wide = Astro.props.wide === true
 
 const width = wide
   ? "max-w-2xl lg:max-w-4xl xl:max-w-5xl px-4 sm:px-6 xl:px-0"
   : "max-w-3xl px-4 sm:px-6"
-const containerStyles = {
-  header: width,
-  headerButton: width,
-  container: width,
-}
 ---
 
 <!doctype html>
@@ -53,13 +46,8 @@ const containerStyles = {
     <Umami />
   </head>
   <body class="text-foreground font-sans dark:bg-gray-950">
-    <Header
-      frontmatter={frontmatter}
-      pathname={pathname}
-      containerStyles={containerStyles}
-      client:load
-    />
-    <Container containerStyles={containerStyles}>
+    <Header widthClass={width} />
+    <Container widthClass={width}>
       <slot />
     </Container>
   </body>

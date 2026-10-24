@@ -1,7 +1,7 @@
 ---
 import DraftLabel from "@/components/content/DraftLabel.astro"
 import FormattedDate from "@/components/content/FormattedDate.astro"
-import YearNav from "@/components/content/YearNav.astro"
+import SideRail from "@/components/content/SideRail.astro"
 import type { TimelineEntry } from "@/utils/content/timeline"
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 
 const { items } = Astro.props
 
-// 연도별 첫 글에 앵커를 달아 YearNav가 그 위치로 이동하게 한다.
+// 연도별 첫 글에 앵커를 달아 연도 레일이 그 위치로 이동하게 한다.
 const years: number[] = []
 const anchoredItems = items.map((item) => {
   const year = item.data.date.getFullYear()
@@ -22,7 +22,7 @@ const anchoredItems = items.map((item) => {
 })
 ---
 
-<YearNav years={years} />
+<SideRail label="Year navigation" items={years.map((year) => ({ href: `#year-${year}`, text: String(year) }))} />
 <ul class="mt-8 divide-y divide-gray-100 dark:divide-gray-800/70">
   {
     anchoredItems.map(({ item, anchor }) => (

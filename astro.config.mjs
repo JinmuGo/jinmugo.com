@@ -7,6 +7,7 @@ import pkg from "./package.json";
 
 import mdx from "@astrojs/mdx";
 
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
 import removeConsole from 'vite-plugin-remove-console';
 
@@ -73,6 +74,15 @@ export default defineConfig({
     },
     rehypePlugins: [
       rehypeSlug,
+      [
+        rehypeAutolinkHeadings,
+        {
+          behavior: "prepend",
+          test: ["h2", "h3"],
+          properties: { className: ["heading-anchor"], ariaHidden: "true", tabIndex: -1 },
+          content: { type: "text", value: "#" },
+        },
+      ],
     ],
     remarkPlugins: [
       remarkGfm,

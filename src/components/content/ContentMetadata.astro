@@ -10,8 +10,10 @@ const { date } = Astro.props
 const aboutPath = Astro.url.pathname.startsWith("/en/") ? "/en/about/" : "/about/"
 ---
 
-<span class="inline-flex items-center">
-  <a href={aboutPath} rel="author" class="underline underline-offset-2">{pkg.author}</a>
-  {" · "}
+<div class="flex items-center justify-center text-sm text-gray-500 dark:text-gray-400">
+  <a href={aboutPath} rel="author" class="font-medium text-gray-700 hover:underline dark:text-gray-300">
+    {pkg.author}
+  </a>
+  <span class="mx-2" aria-hidden="true">·</span>
   <FormattedDate date={date} />
-</span>
+</div>

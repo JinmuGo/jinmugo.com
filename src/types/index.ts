@@ -20,4 +20,4 @@ export type {
 } from "./schema"
 
 // Utility types
-export type { ClassifyType, ContentType, Lang, PostLayoutType } from "./utils"
+export type { ClassifyType, ContentType, Lang } from "./utils"

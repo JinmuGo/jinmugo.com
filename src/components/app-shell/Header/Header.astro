@@ -1,0 +1,26 @@
+---
+import HeaderNav from "./HeaderNav"
+import Logo from "./Logo"
+
+interface Props {
+  widthClass: string
+}
+
+const { widthClass } = Astro.props
+const pathname = Astro.url.pathname
+const isEn = pathname.startsWith("/en")
+---
+
+<div
+  aria-hidden="true"
+  class="pointer-events-none fixed inset-x-0 top-0 z-40 h-20 bg-linear-to-b from-white/50 to-transparent backdrop-blur-sm [mask-image:linear-gradient(to_bottom,black_50%,transparent)] dark:from-gray-950/50"
+>
+</div>
+<header class="pointer-events-none sticky top-0 z-50 h-20">
+  <div class={`pointer-events-auto mx-auto flex h-20 items-center justify-between ${widthClass}`}>
+    <a href={isEn ? "/en" : "/"} class="flex min-h-[44px] items-center">
+      <Logo />
+    </a>
+    <HeaderNav pathname={pathname} isEn={isEn} />
+  </div>
+</header>

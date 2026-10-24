@@ -1,8 +1,7 @@
 @layer components {
 	.prose-custom {
 		@apply prose dark:prose-invert;
-		@apply max-w-max;
-		@apply mt-14;
+		@apply max-w-none;
 
 		/* ===== Typography: 17px body, 1.8 line height, semibold headings (DESIGN.md) ===== */
 
@@ -12,50 +11,61 @@
 		/* Headings — Geist loads 300/400/600, so headings stay at 600 */
 		@apply prose-headings:font-semibold;
 		@apply prose-h1:text-3xl prose-h1:leading-[1.25] prose-h1:tracking-[-0.025em];
-		@apply prose-h2:text-2xl prose-h2:leading-[1.35] prose-h2:tracking-[-0.025em];
+		@apply prose-h2:text-2xl prose-h2:leading-8 prose-h2:tracking-[-0.025em];
 		@apply prose-h3:text-xl prose-h3:leading-[1.4] prose-h3:tracking-[-0.02em];
 		@apply prose-h4:text-lg prose-h4:leading-[1.5];
 		@apply prose-h5:text-base prose-h5:leading-[1.5];
 		@apply prose-h6:text-sm prose-h6:leading-[1.5];
 		@apply prose-h2:mt-10 prose-h2:mb-4 prose-h3:mt-8 prose-h3:mb-3 prose-h4:mt-6 prose-h4:mb-2;
+		@apply prose-headings:scroll-mt-20;
+		@apply prose-h2:relative prose-h3:relative;
 
 		@apply prose-strong:font-semibold;
 
 		/* Paragraph / list spacing */
 		@apply prose-p:mt-0 prose-p:mb-6;
-		@apply prose-li:my-2;
-		@apply prose-ul:my-6 prose-ol:my-6;
+		@apply prose-li:my-1;
+		@apply prose-ul:my-4 prose-ol:my-4 prose-ul:pl-6 prose-ol:pl-6;
+		@apply [&_li>p]:my-0;
+		@apply prose-hr:my-12 prose-hr:border-gray-200 dark:prose-hr:border-gray-800;
 
 		/* Inline code */
 		@apply [&_code:not(pre_code)]:text-gray-800 dark:[&_code:not(pre_code)]:text-gray-200;
 		@apply [&_code:not(pre_code)]:bg-gray-100 dark:[&_code:not(pre_code)]:bg-gray-800;
 		@apply [&_code:not(pre_code)]:px-1.5 [&_code:not(pre_code)]:py-0.5;
-		@apply [&_code:not(pre_code)]:rounded-md;
-		@apply [&_code:not(pre_code)]:text-sm;
+		@apply [&_code:not(pre_code)]:rounded-lg;
+		@apply [&_code:not(pre_code)]:text-[90%];
 		@apply [&_code:not(pre_code)]:font-medium;
 
-		/* Links — brand orange */
-		@apply [&_a]:text-primary-500 dark:[&_a]:text-primary-400;
-		@apply [&_a]:underline [&_a]:underline-offset-2;
-		@apply [&_a:hover]:text-primary-600 dark:[&_a:hover]:text-primary-300;
-		@apply [&_a]:transition-colors [&_a]:duration-200;
+		/* Links — brand orange text, faint underline that darkens on hover */
+		@apply [&_a]:text-primary-600 dark:[&_a]:text-primary-400;
+		@apply [&_a]:underline [&_a]:underline-offset-[3px];
+		@apply [&_a]:decoration-primary-200 dark:[&_a]:decoration-primary-900;
+		@apply [&_a:hover]:decoration-primary-400 dark:[&_a:hover]:decoration-primary-600;
+		@apply [&_a]:transition-colors [&_a]:duration-150;
 		@apply prose-a:font-medium;
 
-		/* Image styling */
-		@apply [&_img]:mx-auto [&_img]:rounded-lg [&_img]:shadow-md;
+		/* Heading anchor — `#` in the left gutter, shown on hover */
+		@apply [&_.heading-anchor]:absolute [&_.heading-anchor]:top-0 [&_.heading-anchor]:-left-6;
+		@apply [&_.heading-anchor]:no-underline [&_.heading-anchor]:[font-weight:inherit];
+		@apply [&_.heading-anchor]:text-gray-300 dark:[&_.heading-anchor]:text-gray-600;
+		@apply [&_.heading-anchor]:opacity-0 [&_.heading-anchor]:transition-opacity;
+		@apply [&_.heading-anchor:hover]:text-gray-500;
+		@apply [&_h2:hover_.heading-anchor]:opacity-100 [&_h3:hover_.heading-anchor]:opacity-100;
+
+		/* Images — rounded, no shadow */
+		@apply [&_img]:mx-auto [&_img]:rounded-xl;
 		@apply [&_img]:my-8;
 
-		/* Blockquote */
-		@apply prose-blockquote:border-l-4 prose-blockquote:border-primary-500;
-		@apply prose-blockquote:bg-gray-50 dark:prose-blockquote:bg-gray-900/50;
-		@apply prose-blockquote:py-3 prose-blockquote:px-6;
-		@apply prose-blockquote:my-6;
-		@apply prose-blockquote:rounded-r-lg;
-		@apply prose-blockquote:font-normal prose-blockquote:leading-[1.7];
+		/* Blockquote — thin gray rule, muted text, no quote marks */
+		@apply prose-blockquote:border-l-2 prose-blockquote:border-gray-200 dark:prose-blockquote:border-gray-700;
+		@apply prose-blockquote:pl-5 prose-blockquote:my-6;
+		@apply prose-blockquote:font-normal prose-blockquote:not-italic;
+		@apply prose-blockquote:text-gray-500 dark:prose-blockquote:text-gray-400;
+		@apply [&_blockquote_p:first-of-type]:before:content-none [&_blockquote_p:last-of-type]:after:content-none;
 
-		/* Pre/Code block styling */
-		@apply [&_pre]:my-6 [&_pre]:rounded-lg;
-		@apply [&_pre]:shadow-md;
+		/* Code blocks */
+		@apply [&_pre]:my-6 [&_pre]:rounded-lg [&_pre]:p-5;
 
 		/* Warm stone text (DESIGN.md) + brand orange links */
 		--tw-prose-body: #292524;     /* gray-800 */
