@@ -118,4 +118,4 @@
 | 2026-04-03 | Prose width fixed to 65ch | Was 114ch (full 1024px container). Fixed for readability. |
 | 2026-10-24 | Single 768px reading column, summary list home, centered post header | Layout structure adapted from chl.ee. Colors and fonts unchanged. Grid pages opt into `wide`. |
 | 2026-10-24 | Asta Sans + JetBrains Mono, titles 30px | Font matched to chl.ee and the existing OG images. 36px titles felt too large, so H1 is 30px (24px mobile). |
-| 2026-10-24 | Posts and gallery only, no footer | About, resume, weekly, library, projects, archives, series, and portfolio pages were removed. Career content moved to the brain vault. |
+| 2026-10-24 | Posts and gallery only, no footer | About, resume, projects, archives, series, and portfolio pages were removed; career content moved to the brain vault. Weekly, book, and movie entries became ordinary posts, and their old URLs redirect to `/posts/<slug>/`. |

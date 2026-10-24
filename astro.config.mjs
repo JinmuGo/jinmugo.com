@@ -19,6 +19,22 @@ import remarkGfm from "remark-gfm";
 
 import { transformerNotationDiff, transformerNotationHighlight } from "@shikijs/transformers";
 
+// Weekly, 책, 영화는 글로 합쳤다. 예전 주소는 같은 글로 보낸다.
+const movedPosts = {
+  weekly: ["2026-W21", "2026-W22", "2026-W23"],
+  "library/books": ["if-snow-is-silence-falling-from-the-sky", "process-economy", "where-are-we-now"],
+  "library/movies": ["coffee-and-cigarettes", "midsommar", "rashomon"],
+}
+const movedPostRedirects = Object.fromEntries(
+  ["", "/en"].flatMap((lang) => [
+    ...Object.keys(movedPosts).map((section) => [`${lang}/${section}/`, `${lang}/`]),
+    [`${lang}/library/`, `${lang}/`],
+    ...Object.entries(movedPosts).flatMap(([section, slugs]) =>
+      slugs.map((slug) => [`${lang}/${section}/${slug}/`, `${lang}/posts/${slug}/`]),
+    ),
+  ]),
+)
+
 // https://astro.build/config
 export default defineConfig({
   site: process.env.NODE_ENV === "development" ? "http://localhost:4322" : pkg.homepage,
@@ -28,6 +44,7 @@ export default defineConfig({
   },
   trailingSlash: "always",
   redirects: {
+    ...movedPostRedirects,
     "/memos/": "/posts/",
     "/en/memos/": "/en/posts/",
     "/en/posts/leetcode-208-trie/": "/en/posts/trie-feat-leetcode-208/",
