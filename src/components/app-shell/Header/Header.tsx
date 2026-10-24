@@ -1,12 +1,9 @@
 import debounce from "lodash.debounce"
 import { useCallback, useEffect, useState } from "react"
-import CommandPalette from "@/components/search/CommandPalette"
 import type { PostMetadata, WeeklyMetadata } from "@/types/content"
 import HeaderSlider from "./HeaderSlider"
-import headerNavLinks from "./headerNavLinks"
 import Logo from "./Logo"
-import SearchButton from "./SearchButton"
-import ThemeSwitch from "./ThemeSwitch"
+import NavSwitch from "./NavSwitch"
 
 const BASE_LINE = 50
 
@@ -23,7 +20,6 @@ interface HeaderProps {
 const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
   const [isSlideOpen, setIsSlideOpen] = useState<boolean>(false)
   const [isEndofContent, setIsEndofContent] = useState<boolean>(false)
-  const [open, setOpen] = useState<boolean>(false)
   const handleScroll = useCallback(() => {
     const target = document.querySelector("#post-title, #memo-title, #weekly-title")
     const rect = target?.getBoundingClientRect()
@@ -65,7 +61,6 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
   }, [debouncedHandleScroll, debouncedHandleLastScroll])
 
   const isEn = pathname.includes("/en")
-  const lang = isEn ? "en" : "ko"
 
   return (
     <header className="w-full py-5 backdrop-blur-sm backdrop-saturate-180 sticky top-0 z-50">
@@ -76,21 +71,7 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
           <a href={isEn ? "/en" : "/"} className="flex min-h-[44px] items-center">
             <Logo />
           </a>
-          <div className="flex items-center space-x-2 leading-5 -mr-3 text-sm">
-            <nav aria-label="Main navigation" className="flex items-center gap-x-1">
-              {headerNavLinks.map((link) => (
-                <a
-                  key={link.title}
-                  href={isEn ? `/en${link.href}` : link.href}
-                  className="hover:text-primary-500 dark:hover:text-primary-400 px-2 py-2 text-gray-600 dark:text-gray-400 min-h-[44px] flex items-center"
-                >
-                  {link.title}
-                </a>
-              ))}
-            </nav>
-            <SearchButton setOpen={setOpen} />
-            <ThemeSwitch />
-          </div>
+          <NavSwitch pathname={pathname} isEn={isEn} />
         </section>
         {frontmatter && (
           <HeaderSlider
@@ -102,7 +83,6 @@ const Header = ({ frontmatter, pathname, containerStyles }: HeaderProps) => {
           />
         )}
       </div>
-      <CommandPalette lang={lang} open={open} setOpen={setOpen} />
     </header>
   )
 }

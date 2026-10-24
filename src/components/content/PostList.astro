@@ -1,5 +1,5 @@
 ---
-import ContentLabel from "@/components/content/ContentLabel.astro"
+import DraftLabel from "@/components/content/DraftLabel.astro"
 import FormattedDate from "@/components/content/FormattedDate.astro"
 import YearNav from "@/components/content/YearNav.astro"
 import type { TimelineEntry } from "@/utils/content/timeline"
@@ -23,7 +23,7 @@ const anchoredItems = items.map((item) => {
 ---
 
 <YearNav years={years} />
-<ul class="mt-12 divide-y divide-gray-100 dark:divide-gray-800/70">
+<ul class="mt-8 divide-y divide-gray-100 dark:divide-gray-800/70">
   {
     anchoredItems.map(({ item, anchor }) => (
       <li id={anchor} class="scroll-mt-24">
@@ -31,8 +31,7 @@ const anchoredItems = items.map((item) => {
           <article>
             <h2 class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xl font-semibold text-gray-900 dark:text-gray-50">
               <span>{item.data.title}</span>
-              {item.type === "weekly" && <ContentLabel variant="weekly" />}
-              {item.data.draft && import.meta.env.DEV && <ContentLabel variant="draft" />}
+              {item.data.draft && import.meta.env.DEV && <DraftLabel />}
             </h2>
             {item.data.summary && (
               <p class="mt-2 line-clamp-2 text-gray-600 dark:text-gray-400">{item.data.summary}</p>

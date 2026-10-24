@@ -1,7 +1,6 @@
 ---
 import { Image } from "astro:assets"
 import PostList from "@/components/content/PostList.astro"
-import Bleed from "@/components/layout/Bleed.astro"
 import Layout from "@/layouts/Layout.astro"
 import { getEnglishPosts } from "@/utils/content/posts"
 import { mergeTimelineEntries, timelineEntryToListItem } from "@/utils/content/timeline"
@@ -36,15 +35,15 @@ const jsonLd = generatePageSchema({
   jsonLd={jsonLd}
   type="website"
 >
-  <Bleed>
-    <Image
-      src={HeroImageSrc}
-      alt="boat"
-      class="object-cover w-full h-full"
-      loading="eager"
-      fetchpriority="high"
-      data-blur-src="sea-boat-blur.webp"
-    />
-  </Bleed>
+  <Image
+    src={HeroImageSrc}
+    alt="boat"
+    width={1440}
+    layout="constrained"
+    class="mt-2 w-full h-auto rounded-xl object-cover"
+    loading="eager"
+    fetchpriority="high"
+    data-blur-src="sea-boat-blur.webp"
+  />
   <PostList items={timelineEntries} />
 </Layout>

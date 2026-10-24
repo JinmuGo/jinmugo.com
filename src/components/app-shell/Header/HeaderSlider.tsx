@@ -90,7 +90,7 @@ export default function HeaderSlider({
           className={`w-full mx-auto flex md:items-center flex-col md:flex-row justify-between ${containerStyles.header}`}
         >
           <p
-            className="text-xl md:text-2xl font-bold whitespace-pre text-ellipsis overflow-hidden"
+            className="text-xl md:text-2xl font-semibold whitespace-pre text-ellipsis overflow-hidden"
             aria-hidden="true"
           >
             {title}

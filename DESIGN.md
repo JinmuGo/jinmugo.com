@@ -13,7 +13,7 @@
 - **Risk #2:** Orange accent in a sea of blue/purple. Every dev blog does blue. Orange signals warmth, energy, personal identity.
 
 ## Typography
-- **Display/Hero:** Geist (700) — clean, geometric, distinctive. Good Latin rendering.
+- **Display/Hero:** Geist (600) — clean, geometric, distinctive. Good Latin rendering. Geist is loaded at 300/400/600 only, so never use 700+ (it renders as faux bold)
 - **Body:** Pretendard (300/400/600) — excellent Korean readability, designed for screens, good Latin fallback
 - **UI/Labels:** Pretendard (same as body)
 - **Data/Tables:** Geist with `font-variant-numeric: tabular-nums`
@@ -23,13 +23,14 @@
   - xs: 12px — captions, timestamps
   - sm: 14px — metadata, labels, small text
   - base: 16px — UI text, navigation
-  - md: 18px — body text (article content)
+  - md: 17px — body text (article content)
   - lg: 20px — large body, intro text
-  - xl: 24px — H3
-  - 2xl: 30px — H2
-  - 3xl: 36px — H1 (article title)
+  - xl: 20px — H3
+  - 2xl: 24px — H2
+  - 3xl: 36px — H1 (article title, 30px on mobile)
   - 4xl: 48px — hero/display
-- **Line height:** 1.7-1.8 for body (Korean text needs more), 1.1-1.3 for headings
+- **Line height:** 1.8 for body (Korean text needs more), 1.25-1.4 for headings
+- **Prose color:** body gray-800 `#292524`, headings gray-900 `#1C1917`; dark body gray-200, headings gray-100. No letter-spacing on body text
 - **Measure:** article body fills the 768px reading column (720px of text at sm+)
 
 ## Color
@@ -57,7 +58,7 @@
   - 800: #292524 (primary text)
   - 900: #1C1917 (dark background)
 - **Semantic:** success #16A34A, warning #D97706, error #DC2626, info #2563EB
-- **Dark mode strategy:** Surface inversion using stone scale. Reduce primary saturation slightly (#F59E0B in dark). Text off-white (#F5F5F0), not pure white. `color-scheme: light dark` on html.
+- **Dark mode strategy:** Follows the OS setting (`prefers-color-scheme`) only; there is no theme toggle. Surface inversion using stone scale. Reduce primary saturation slightly (#F59E0B in dark). Text off-white (#F5F5F0), not pure white. `color-scheme: light dark` on html.
 
 ## Spacing
 - **Base unit:** 8px
@@ -76,8 +77,9 @@
 - **Approach:** Single reading column — header, home list, and article share one narrow column so the eye never re-aligns
 - **Reading column:** `max-w-3xl` (768px) with `px-4 sm:px-6`. Default for every page using `Layout.astro`
 - **Wide pages:** `<Layout wide>` keeps the 1024px (`max-w-5xl`) container for grid pages: gallery, portfolio, resume, projects, library lists
-- **Header:** flower logo (36px tall, same flower as the favicon), two 14px gray links (Posts, Gallery), search and theme icons (20px). No dropdowns or mobile menu; the same row shows on every screen size. Other pages (About, Resume, Weekly, Library, Projects, Archives, Series, Portfolio) are linked from the footer
-- **Home list:** one row per post — title (20px semibold), summary (line-clamp-2, gray-600), date (14px gray-500). Rows separated by gray-100 dividers, `py-6`, hover fades the row to 60% opacity
+- **Header:** flower logo (36px tall, same flower as the favicon) and a Posts/Gallery segmented switch (gray-100 track, white sliding pill, 14px). Posts links to the home list. No search, theme toggle, dropdowns, or mobile menu; the same row shows on every screen size. Other pages (About, Resume, Weekly, Library, Projects, Archives, Series, Portfolio) are linked from the footer
+- **Home hero:** photo fills the reading column (rounded-xl), aligned with the list below
+- **Home list:** one row per post, no type badges (weekly and posts look the same) — title (20px semibold), summary (line-clamp-2, gray-600), date (14px gray-500). Rows separated by gray-100 dividers, `py-6`, hover fades the row to 60% opacity
 - **Year nav:** on `lg+` a fixed left rail of short lines links to the first post of each year; year labels appear on hover/focus
 - **Post header:** centered title, summary, landscape banner (rounded-xl, full column width), then category · author · date. Korean headings use `break-keep` + `text-balance`
 - **Border radius hierarchy:**

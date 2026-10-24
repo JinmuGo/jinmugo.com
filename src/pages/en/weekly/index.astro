@@ -60,7 +60,7 @@ const jsonLd = generatePostsPageSchema({
               <FormattedDate date={latestWeekly.data.date} />
             </div>
             <div class="space-y-3">
-              <h2 class="text-2xl font-bold tracking-tight text-gray-900 group-hover:text-primary-600 dark:text-gray-50 dark:group-hover:text-primary-400 md:text-3xl">
+              <h2 class="text-2xl font-semibold tracking-tight text-gray-900 group-hover:text-primary-600 dark:text-gray-50 dark:group-hover:text-primary-400 md:text-3xl">
                 {latestWeekly.data.title}
               </h2>
               <p class="text-base leading-7 text-gray-600 dark:text-gray-300">
@@ -92,10 +92,8 @@ const jsonLd = generatePostsPageSchema({
           ...weekly.data,
           slug: weekly.slug,
         }))}
-        title={title}
         postType="weekly"
         lang="en"
-        showSearch={false}
       />
     </div>
   </section>
