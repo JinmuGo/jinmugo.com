@@ -13,21 +13,21 @@
 - **Risk #2:** Orange accent in a sea of blue/purple. Every dev blog does blue. Orange signals warmth, energy, personal identity.
 
 ## Typography
-- **Display/Hero:** Geist (600) — clean, geometric, distinctive. Good Latin rendering. Geist is loaded at 300/400/600 only, so never use 700+ (it renders as faux bold)
-- **Body:** Pretendard (300/400/600) — excellent Korean readability, designed for screens, good Latin fallback
-- **UI/Labels:** Pretendard (same as body)
-- **Data/Tables:** Geist with `font-variant-numeric: tabular-nums`
-- **Code:** Geist Mono
-- **Loading:** Geist via Next.js font optimization (already configured). Pretendard self-hosted with `font-display: swap`.
+- **Display/Hero:** Asta Sans (600). Headings never go above 600
+- **Body:** Asta Sans (400) — one family for Korean and Latin, same as chl.ee and the OG images
+- **UI/Labels:** Asta Sans (same as body)
+- **Data/Tables:** Asta Sans with `font-variant-numeric: tabular-nums`
+- **Code:** JetBrains Mono
+- **Loading:** Astro Fonts API with the Google provider (`astro.config.mjs`), variable weight 300–700. Asta Sans ships about 93 unicode-range slices; only the Latin slice is preloaded
 - **Scale (Major Third 1.25):**
   - xs: 12px — captions, timestamps
   - sm: 14px — metadata, labels, small text
   - base: 16px — UI text, navigation
   - md: 17px — body text (article content)
-  - lg: 20px — large body, intro text
-  - xl: 20px — H3
+  - lg: 18px — post summary, intro text
+  - xl: 20px — H3, H2 on mobile
   - 2xl: 24px — H2
-  - 3xl: 36px — H1 (article title, 30px on mobile)
+  - 3xl: 30px — H1 (article and page titles, 24px on mobile)
   - 4xl: 48px — hero/display
 - **Line height:** 1.8 for body (Korean text needs more), 1.25-1.4 for headings
 - **Prose color:** body gray-800 `#292524`, headings gray-900 `#1C1917`; dark body gray-200, headings gray-100. No letter-spacing on body text
@@ -82,7 +82,7 @@
 - **Home list:** one row per post, no type badges (weekly and posts look the same) — title (20px semibold), summary (line-clamp-2, gray-600), date (14px gray-500). Rows separated by gray-100 dividers, `py-6`, hover fades the row to 60% opacity
 - **Year nav:** on `lg+` a fixed left rail (`SideRail.astro`) of short lines links to the first post of each year; year labels appear on hover/focus
 - **Post page:** one layout (`PostLayout.astro`) for posts, books, and movies; weekly uses the same `PostHeader`. No breadcrumb or category chip on screen (breadcrumb stays in JSON-LD)
-- **Post header:** centered title (36px/600, 30px on mobile), summary (18px gray-500), image, then author · date (14px). Landscape images are cropped to 2:1 at full column width (rounded-2xl); portrait images (book covers) stay uncropped at 192px wide. Korean headings use `break-keep` + `text-balance`
+- **Post header:** centered title (30px/600, 24px on mobile), summary (18px gray-500), image, then author · date (14px). Landscape images are cropped to 2:1 at full column width (rounded-2xl); portrait images (book covers) stay uncropped at 192px wide. Korean headings use `break-keep` + `text-balance`
 - **Table of contents:** on `lg+` the same left rail as the home year nav lists the post's h2 headings; labels appear on hover/focus
 - **Heading anchors:** h2/h3 get a `#` link in the left gutter (`rehype-autolink-headings`), visible on hover
 - **Prose details:** links are brand orange with a faint primary-200 underline (offset 3px) that darkens on hover; images rounded-xl with no shadow; blockquote is a 2px gray-200 rule with gray-500 text; inline code 90% size on gray-100
@@ -114,6 +114,7 @@
 |------|----------|-----------|
 | 2026-04-03 | Initial design system created | Built from existing site analysis + competitive research (leerob.io, rauno.me, paco.me, brianlovin.com). Codified warm orange accent + stone neutrals as brand identity. |
 | 2026-04-03 | Warm stone over blue-gray neutrals | Deliberate departure from dev blog conventions. Feels more personal, like paper. Matches the blog's range (tech + life). |
-| 2026-04-03 | Keep Geist + Pretendard | Already working well for bilingual content. No reason to change what works. |
+| 2026-04-03 | Keep Geist + Pretendard (replaced 2026-10-24) | Already working well for bilingual content. No reason to change what works. |
 | 2026-04-03 | Prose width fixed to 65ch | Was 114ch (full 1024px container). Fixed for readability. |
 | 2026-10-24 | Single 768px reading column, summary list home, centered post header | Layout structure adapted from chl.ee. Colors and fonts unchanged. Grid pages opt into `wide`. |
+| 2026-10-24 | Asta Sans + JetBrains Mono, titles 30px | Font matched to chl.ee and the existing OG images. 36px titles felt too large, so H1 is 30px (24px mobile). |

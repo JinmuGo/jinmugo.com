@@ -41,10 +41,19 @@ export default defineConfig({
   fonts: [
     {
       provider: fontProviders.google(),
-      name: "Geist",
-      cssVariable: "--font-geist",
-      fallbacks: ["Pretendard Variable", "Pretendard"],
-      weights: [300, 400, 600]
+      name: "Asta Sans",
+      cssVariable: "--font-asta-sans",
+      fallbacks: ["system-ui", "sans-serif"],
+      weights: ["300 700"],
+      subsets: ["latin", "korean"],
+    },
+    {
+      provider: fontProviders.google(),
+      name: "JetBrains Mono",
+      cssVariable: "--font-jetbrains-mono",
+      fallbacks: ["ui-monospace", "monospace"],
+      weights: ["400 700"],
+      subsets: ["latin"],
     },
   ],
   devToolbar: {

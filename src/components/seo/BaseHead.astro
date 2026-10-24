@@ -103,7 +103,8 @@ const resolvedOgImage = ogImage ?? getOpenGraphImageSource(image) ?? FallbackIma
 ---
 
 <title>{title.includes("Jinmu Go") ? title : `${title} | Jinmu Go`}</title>
-<Font cssVariable="--font-geist" />
+<Font cssVariable="--font-asta-sans" preload={[{ subset: "latin" }]} />
+<Font cssVariable="--font-jetbrains-mono" />
 
 <script is:inline>
   // 테마는 시스템 설정만 따른다. 브라우저에 남아 있는 theme 선택값은 지운다.
