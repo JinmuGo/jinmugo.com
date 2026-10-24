@@ -80,7 +80,7 @@
 - **Home hero:** photo fills the reading column (rounded-xl), aligned with the list below
 - **Home list:** one row per post — title (20px semibold), summary (line-clamp-2, gray-600), date (14px gray-500). Rows separated by gray-100 dividers, `py-6`, hover fades the row to 60% opacity
 - **Year nav:** on `lg+` a fixed left rail (`SideRail.astro`) of short lines links to the first post of each year; year labels appear on hover/focus
-- **Post page:** one layout (`PostLayout.astro`). No breadcrumb or category chip on screen (breadcrumb stays in JSON-LD)
+- **Post page:** one layout (`PostLayout.astro`). No breadcrumb or category chip on screen (breadcrumb stays in JSON-LD). Below the body there are only comments; no related-post or previous/next cards
 - **Post header:** centered title (30px/600, 24px on mobile), summary (18px gray-500), image, then the date (14px). No author name on screen; the author stays in JSON-LD. Landscape images are cropped to 2:1 at full column width (rounded-2xl); portrait images stay uncropped at 192px wide. Korean headings use `break-keep` + `text-balance`
 - **Table of contents:** on `lg+` the same left rail as the home year nav lists the post's h2 headings; labels appear on hover/focus
 - **Heading anchors:** h2/h3 get a `#` link in the left gutter (`rehype-autolink-headings`), visible on hover

@@ -1,17 +1,13 @@
 ---
-import RelatedPosts from "@/components/content/RelatedPosts.astro"
-import type { PostMetadata } from "@/types/content"
 import { FumaComments } from "./FumaComments"
 
 interface Props {
   slug: string
-  frontmatter?: PostMetadata
 }
 
-const { slug, frontmatter } = Astro.props
+const { slug } = Astro.props
 ---
 
-<section class="flex flex-col gap-8 mt-28 mb-12 text md:text-lg">
+<section class="mt-28 mb-12">
 	<FumaComments client:visible slug={slug} />
-	{frontmatter && <RelatedPosts current={{ slug, data: frontmatter, type: "post" }} />}
 </section>
