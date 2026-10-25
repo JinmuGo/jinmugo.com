@@ -1,4 +1,5 @@
 ---
+import Title from "@/components/layout/Title"
 import Layout from "@/layouts/Layout.astro"
 import ListLayouts from "@/layouts/ListLayouts"
 import { getKoreanPosts, sortPostsByDate } from "@/utils/content/posts"
@@ -37,14 +38,14 @@ const jsonLd = generatePostsPageSchema({
   jsonLd={jsonLd}
   type="website"
 >
-  <ListLayouts
-    posts={sortedPosts.map((post) => ({
-      ...post.data,
-      slug: post.slug,
-    }))}
-    title={title}
-    postType="post"
-    lang="ko"
-    client:load
-  />
+  <section class="space-y-10 pt-6 pb-12">
+    <Title>{title}</Title>
+    <ListLayouts
+      posts={sortedPosts.map((post) => ({
+        ...post.data,
+        slug: post.slug,
+      }))}
+      lang="ko"
+    />
+  </section>
 </Layout>

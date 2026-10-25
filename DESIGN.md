@@ -1,7 +1,7 @@
 # Design System — jinmu.me
 
 ## Product Context
-- **What this is:** Bilingual (Korean/English) personal developer blog with technical deep-dives, running logs, movie reviews, and philosophical essays
+- **What this is:** Bilingual (Korean/English) personal developer blog with technical deep-dives, running logs, and essays. The site has only posts and a gallery
 - **Who it's for:** Fellow developers, Korean tech community, anyone who finds the posts via search
 - **Space/industry:** Personal developer blog. Peers: leerob.io, rauno.me, paco.me, brianlovin.com
 - **Project type:** Static editorial site (Astro 6 + max-w-maxx
@@ -13,24 +13,25 @@
 - **Risk #2:** Orange accent in a sea of blue/purple. Every dev blog does blue. Orange signals warmth, energy, personal identity.
 
 ## Typography
-- **Display/Hero:** Geist (700) — clean, geometric, distinctive. Good Latin rendering.
-- **Body:** Pretendard (300/400/600) — excellent Korean readability, designed for screens, good Latin fallback
-- **UI/Labels:** Pretendard (same as body)
-- **Data/Tables:** Geist with `font-variant-numeric: tabular-nums`
-- **Code:** Geist Mono
-- **Loading:** Geist via Next.js font optimization (already configured). Pretendard self-hosted with `font-display: swap`.
+- **Display/Hero:** Asta Sans (600). Headings never go above 600
+- **Body:** Asta Sans (400) — one family for Korean and Latin, same as chl.ee and the OG images
+- **UI/Labels:** Asta Sans (same as body)
+- **Data/Tables:** Asta Sans with `font-variant-numeric: tabular-nums`
+- **Code:** JetBrains Mono
+- **Loading:** Astro Fonts API with the Google provider (`astro.config.mjs`), variable weight 300–700. Asta Sans ships about 93 unicode-range slices; only the Latin slice is preloaded
 - **Scale (Major Third 1.25):**
   - xs: 12px — captions, timestamps
   - sm: 14px — metadata, labels, small text
   - base: 16px — UI text, navigation
-  - md: 18px — body text (article content)
-  - lg: 20px — large body, intro text
-  - xl: 24px — H3
-  - 2xl: 30px — H2
-  - 3xl: 36px — H1 (article title)
+  - md: 17px — body text (article content)
+  - lg: 18px — post summary, intro text
+  - xl: 20px — H3, H2 on mobile
+  - 2xl: 24px — H2
+  - 3xl: 30px — H1 (article and page titles, 24px on mobile)
   - 4xl: 48px — hero/display
-- **Line height:** 1.7-1.8 for body (Korean text needs more), 1.1-1.3 for headings
-- **Measure:** max-w-max for article body text
+- **Line height:** 1.8 for body (Korean text needs more), 1.25-1.4 for headings
+- **Prose color:** body gray-800 `#292524`, headings gray-900 `#1C1917`; dark body gray-200, headings gray-100. No letter-spacing on body text
+- **Measure:** article body fills the 768px reading column (720px of text at sm+)
 
 ## Color
 - **Approach:** Restrained — one accent + warm neutrals. Color is rare and meaningful.
@@ -57,7 +58,7 @@
   - 800: #292524 (primary text)
   - 900: #1C1917 (dark background)
 - **Semantic:** success #16A34A, warning #D97706, error #DC2626, info #2563EB
-- **Dark mode strategy:** Surface inversion using stone scale. Reduce primary saturation slightly (#F59E0B in dark). Text off-white (#F5F5F0), not pure white. `color-scheme: light dark` on html.
+- **Dark mode strategy:** Follows the OS setting (`prefers-color-scheme`) only; there is no theme toggle. Surface inversion using stone scale. Reduce primary saturation slightly (#F59E0B in dark). Text off-white (#F5F5F0), not pure white. `color-scheme: light dark` on html.
 
 ## Spacing
 - **Base unit:** 8px
@@ -73,9 +74,17 @@
   - 3xl: 64px
 
 ## Layout
-- **Approach:** Grid-disciplined — clean columns, predictable alignment
-- **Grid:** Single-column content, max-w-5xl (1024px) outer container, max-w-max for article body
-- **Max content width:** 1024px for page layout, 65ch for prose
+- **Approach:** Single reading column — header, home list, and article share one narrow column so the eye never re-aligns
+- **Reading column:** `max-w-3xl` (768px) with `px-4 sm:px-6`. Every page uses it
+- **Header:** flower logo (36px tall, same flower as the favicon) and one 20px gray-500 line icon with no text that points to the other view: on the gallery it is Posts (`AlignLeft`, links to the home list), everywhere else it is Gallery (`Image`). The icon carries `aria-label` and `title`. The header is sticky, 80px tall, over a blurred white fade. On post pages, once the page's h1 (`#post-title`) passes under the header, the logo and icon fade up and out and the post title (16px/600, centered, truncated) fades up in over a denser fade (300ms ease-out, off under reduced motion). Clicking that title scrolls to the top. No search, theme toggle, dropdowns, or mobile menu; the same row shows on every screen size. There is no footer
+- **Home hero:** photo fills the reading column (rounded-xl), aligned with the list below
+- **Home list:** one row per post — title (20px semibold), summary (line-clamp-2, gray-600), date (14px gray-500). Rows separated by gray-100 dividers, `py-6`, hover fades the row to 60% opacity
+- **Year nav:** on `lg+` a fixed left rail (`SideRail.astro`) of short lines links to the first post of each year; year labels appear on hover/focus
+- **Post page:** one layout (`PostLayout.astro`). No breadcrumb or category chip on screen (breadcrumb stays in JSON-LD). Nothing follows the body: no comments, related-post, or previous/next cards
+- **Post header:** centered title (30px/600, 24px on mobile), summary (18px gray-500), image, then the date (14px). No author name on screen; the author stays in JSON-LD. Landscape images are cropped to 2:1 at full column width (rounded-2xl); portrait images stay uncropped at 192px wide. Korean headings use `break-keep` + `text-balance`
+- **Table of contents:** on `lg+` the same left rail as the home year nav lists the post's h2 headings; labels appear on hover/focus
+- **Heading anchors:** h2/h3 get a `#` link in the left gutter (`rehype-autolink-headings`), visible on hover
+- **Prose details:** links are brand orange with a faint primary-200 underline (offset 3px) that darkens on hover; images rounded-xl with no shadow; blockquote is a 2px gray-200 rule with gray-500 text; inline code 90% size on gray-100
 - **Border radius hierarchy:**
   - sm: 4px — inline code, small chips
   - md: 8px — buttons, inputs, cards
@@ -90,7 +99,7 @@
   - Only animate `transform` and `opacity` (never layout properties)
   - Respect `prefers-reduced-motion`
   - No scroll-triggered entrance animations
-  - Header slider animation is the one exception: intentional UX for scroll-to-top
+  - The post-title header swap is the one scroll-triggered transition: it keeps the reader's place visible
 
 ## Accessibility
 - **Focus:** 2px solid primary-500 outline with 2px offset on all focusable elements
@@ -105,5 +114,8 @@
 |------|----------|-----------|
 | 2026-04-03 | Initial design system created | Built from existing site analysis + competitive research (leerob.io, rauno.me, paco.me, brianlovin.com). Codified warm orange accent + stone neutrals as brand identity. |
 | 2026-04-03 | Warm stone over blue-gray neutrals | Deliberate departure from dev blog conventions. Feels more personal, like paper. Matches the blog's range (tech + life). |
-| 2026-04-03 | Keep Geist + Pretendard | Already working well for bilingual content. No reason to change what works. |
+| 2026-04-03 | Keep Geist + Pretendard (replaced 2026-10-24) | Already working well for bilingual content. No reason to change what works. |
 | 2026-04-03 | Prose width fixed to 65ch | Was 114ch (full 1024px container). Fixed for readability. |
+| 2026-10-24 | Single 768px reading column, summary list home, centered post header | Layout structure adapted from chl.ee. Colors and fonts unchanged. Grid pages opt into `wide`. |
+| 2026-10-24 | Asta Sans + JetBrains Mono, titles 30px | Font matched to chl.ee and the existing OG images. 36px titles felt too large, so H1 is 30px (24px mobile). |
+| 2026-10-24 | Posts and gallery only, no footer | About, resume, projects, archives, series, and portfolio pages were removed; career content moved to the brain vault. Weekly, book, and movie entries became ordinary posts, and their old URLs redirect to `/posts/<slug>/`. |

@@ -4,10 +4,7 @@
  */
 
 // Content types
-export type { Post, PostMetadata, Series } from "./content"
-
-// Library types
-export type { BookMedia, BookWithSlug, MediaItem, MovieMedia, MovieWithSlug } from "./library"
+export type { Post, PostMetadata } from "./content"
 
 // Schema types
 export type {
@@ -20,4 +17,4 @@ export type {
 } from "./schema"
 
 // Utility types
-export type { ClassifyType, ContentType, Lang, PostLayoutType } from "./utils"
+export type { ClassifyType, Lang } from "./utils"

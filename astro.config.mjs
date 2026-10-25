@@ -7,6 +7,7 @@ import pkg from "./package.json";
 
 import mdx from "@astrojs/mdx";
 
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
 import removeConsole from 'vite-plugin-remove-console';
 
@@ -18,6 +19,22 @@ import remarkGfm from "remark-gfm";
 
 import { transformerNotationDiff, transformerNotationHighlight } from "@shikijs/transformers";
 
+// Weekly, 책, 영화는 글로 합쳤다. 예전 주소는 같은 글로 보낸다.
+const movedPosts = {
+  weekly: ["2026-W21", "2026-W22", "2026-W23"],
+  "library/books": ["if-snow-is-silence-falling-from-the-sky", "process-economy", "where-are-we-now"],
+  "library/movies": ["coffee-and-cigarettes", "midsommar", "rashomon"],
+}
+const movedPostRedirects = Object.fromEntries(
+  ["", "/en"].flatMap((lang) => [
+    ...Object.keys(movedPosts).map((section) => [`${lang}/${section}/`, `${lang}/`]),
+    [`${lang}/library/`, `${lang}/`],
+    ...Object.entries(movedPosts).flatMap(([section, slugs]) =>
+      slugs.map((slug) => [`${lang}/${section}/${slug}/`, `${lang}/posts/${slug}/`]),
+    ),
+  ]),
+)
+
 // https://astro.build/config
 export default defineConfig({
   site: process.env.NODE_ENV === "development" ? "http://localhost:4322" : pkg.homepage,
@@ -27,23 +44,30 @@ export default defineConfig({
   },
   trailingSlash: "always",
   redirects: {
+    ...movedPostRedirects,
     "/memos/": "/posts/",
     "/en/memos/": "/en/posts/",
-    "/posts/process-economy/": "/library/books/process-economy/",
-    "/posts/where-are-we-now/": "/library/books/where-are-we-now/",
-    "/posts/if-snow-is-silence-falling-from-the-sky/": "/library/books/if-snow-is-silence-falling-from-the-sky/",
-    "/en/posts/process-economy/": "/en/library/books/process-economy/",
-    "/en/posts/where-are-we-now/": "/en/library/books/where-are-we-now/",
-    "/en/posts/if-snow-is-silence-falling-from-the-sky/": "/en/library/books/if-snow-is-silence-falling-from-the-sky/",
     "/en/posts/leetcode-208-trie/": "/en/posts/trie-feat-leetcode-208/",
+    // 예전 글 본문의 시리즈 링크를 DNS 시리즈 첫 글로 보낸다.
+    "/series/": "/posts/dns-deepdive-1/",
+    "/en/series/": "/en/posts/dns-deepdive-1/",
   },
   fonts: [
     {
       provider: fontProviders.google(),
-      name: "Geist",
-      cssVariable: "--font-geist",
-      fallbacks: ["Pretendard Variable", "Pretendard"],
-      weights: [300, 400, 600]
+      name: "Asta Sans",
+      cssVariable: "--font-asta-sans",
+      fallbacks: ["system-ui", "sans-serif"],
+      weights: ["300 700"],
+      subsets: ["latin", "korean"],
+    },
+    {
+      provider: fontProviders.google(),
+      name: "JetBrains Mono",
+      cssVariable: "--font-jetbrains-mono",
+      fallbacks: ["ui-monospace", "monospace"],
+      weights: ["400 700"],
+      subsets: ["latin"],
     },
   ],
   devToolbar: {
@@ -73,6 +97,15 @@ export default defineConfig({
     },
     rehypePlugins: [
       rehypeSlug,
+      [
+        rehypeAutolinkHeadings,
+        {
+          behavior: "prepend",
+          test: ["h2", "h3"],
+          properties: { className: ["heading-anchor"], ariaHidden: "true", tabIndex: -1 },
+          content: { type: "text", value: "#" },
+        },
+      ],
     ],
     remarkPlugins: [
       remarkGfm,

@@ -19,6 +19,7 @@ export function sanitizeForRss(text: string | undefined | null): string {
     .join("")
 }
 
-export function renderRssContent(body: string, parser: MarkdownIt): string {
-  return sanitizeForRss(sanitizeHtml(parser.render(body)))
+// 본문 없이 사진만 있는 글은 body가 비어 있다.
+export function renderRssContent(body: string | undefined, parser: MarkdownIt): string {
+  return sanitizeForRss(sanitizeHtml(parser.render(body ?? "")))
 }

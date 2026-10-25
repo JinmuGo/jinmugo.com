@@ -1,19 +1,15 @@
 ---
 import { Image } from "astro:assets"
-import Bleed from "@/components/layout/Bleed.astro"
-import ContentTimeline from "@/components/Timeline/ContentTimeline.astro"
+import PostList from "@/components/content/PostList.astro"
 import Layout from "@/layouts/Layout.astro"
-import { getEnglishPosts } from "@/utils/content/posts"
-import { mergeTimelineEntries, timelineEntryToListItem } from "@/utils/content/timeline"
-import { getEnglishWeeklies } from "@/utils/content/weekly"
+import { postToListItem } from "@/utils/content/listItem"
+import { getEnglishPosts, sortPostsByDate } from "@/utils/content/posts"
 import { generatePageSchema } from "@/utils/structuredData"
 import pkg from "~/package.json"
 import HeroImageSrc from "~/public/sea-boat.webp"
 
-const posts = await getEnglishPosts()
-const weeklies = await getEnglishWeeklies()
-const timelineEntries = mergeTimelineEntries(posts, weeklies)
-const recentEntries = timelineEntries.slice(0, 5)
+const posts = sortPostsByDate(await getEnglishPosts())
+const recentPosts = posts.slice(0, 5)
 
 const title = "Jinmu Go"
 const description = pkg.description
@@ -22,9 +18,9 @@ const jsonLd = generatePageSchema({
   title,
   description,
   url,
-  keywords: "blog, posts, weekly, timeline",
+  keywords: "blog, posts",
   inLanguage: "en",
-  itemListElements: recentEntries.map((entry, index) => timelineEntryToListItem(entry, index + 1)),
+  itemListElements: recentPosts.map((post, index) => postToListItem(post, index + 1)),
 })
 ---
 
@@ -36,15 +32,15 @@ const jsonLd = generatePageSchema({
   jsonLd={jsonLd}
   type="website"
 >
-  <Bleed>
-    <Image
-      src={HeroImageSrc}
-      alt="boat"
-      class="object-cover w-full h-full"
-      loading="eager"
-      fetchpriority="high"
-      data-blur-src="sea-boat-blur.webp"
-    />
-  </Bleed>
-  <ContentTimeline items={timelineEntries} showDescriptions={false} />
+  <Image
+    src={HeroImageSrc}
+    alt="boat"
+    width={1440}
+    layout="constrained"
+    class="mt-2 w-full h-auto rounded-xl object-cover"
+    loading="eager"
+    fetchpriority="high"
+    data-blur-src="sea-boat-blur.webp"
+  />
+  <PostList items={posts} />
 </Layout>

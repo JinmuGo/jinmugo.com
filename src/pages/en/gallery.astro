@@ -64,7 +64,6 @@ const description = "Jinmu's gallery"
 const breadcrumbItems = generateBreadcrumbItems({
   pathname: "/en/gallery",
   origin: pkg.homepage,
-  lang: "en",
   title: "Gallery",
 })
 
@@ -80,7 +79,7 @@ const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems)
 const jsonLd = [pageSchema, breadcrumbSchema]
 ---
 
-<Layout 
+<Layout
   title={title} 
   description={description}
   lang="en"
@@ -90,7 +89,7 @@ const jsonLd = [pageSchema, breadcrumbSchema]
   <Breadcrumb items={breadcrumbItems} />
   <div class="space-y-2 pt-6 pb-8 md:space-y-5">
     <h1
-      class="text-3xl font-extrabold tracking-tight leading-9 text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14"
+      class="text-2xl leading-tight font-semibold tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl"
     >
       {title}
     </h1>
@@ -127,7 +126,7 @@ const jsonLd = [pageSchema, breadcrumbSchema]
                 loading={index < 6 ? "eager" : "lazy"}
                 decoding="async"
                 fetchpriority={index === 0 ? "high" : undefined}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 360px, 240px"
                 class="rounded-lg shadow-md w-full h-auto object-cover"
               />
             </a>

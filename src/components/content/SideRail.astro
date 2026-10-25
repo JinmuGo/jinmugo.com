@@ -1,0 +1,29 @@
+---
+interface Props {
+  label: string
+  items: { href: string; text: string }[]
+}
+
+const { label, items } = Astro.props
+---
+
+{
+  items.length > 0 && (
+    <nav
+      aria-label={label}
+      class="group/rail fixed left-0 top-1/2 z-20 hidden -translate-y-1/2 flex-col pl-6 lg:flex"
+    >
+      {items.map(({ href, text }) => (
+        <a
+          href={href}
+          class="flex min-h-8 items-center gap-2 text-xs font-medium tabular-nums text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-200"
+        >
+          <span aria-hidden="true" class="h-0.5 w-3 shrink-0 rounded-full bg-gray-300 dark:bg-gray-600" />
+          <span class="max-w-40 -translate-x-2 truncate opacity-0 transition duration-150 ease-out group-hover/rail:translate-x-0 group-hover/rail:opacity-100 group-focus-within/rail:translate-x-0 group-focus-within/rail:opacity-100 motion-reduce:transition-none">
+            {text}
+          </span>
+        </a>
+      ))}
+    </nav>
+  )
+}

@@ -11,7 +11,7 @@ export const repoRoot = path.resolve(__dirname, "..")
 export const scriptsDir = __dirname
 export const targetContentDir = path.join(repoRoot, "src/content")
 export const cacheContentExportDir = path.join(repoRoot, ".cache/content-export")
-export const contentCollectionDirs = ["app", "post", "weekly", "book", "movie"]
+export const contentCollectionDirs = ["post"]
 
 dotenv.config({ path: path.join(repoRoot, ".env"), quiet: true })
 

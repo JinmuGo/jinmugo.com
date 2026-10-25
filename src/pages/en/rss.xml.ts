@@ -1,9 +1,8 @@
 import rss from "@astrojs/rss"
 import type { APIRoute } from "astro"
 import MarkdownIt from "markdown-it"
-import type { Post, Weekly } from "@/types/content"
+import type { Post } from "@/types/content"
 import { getEnglishPosts } from "@/utils/content/posts"
-import { getEnglishWeeklies } from "@/utils/content/weekly"
 import { renderRssContent, sanitizeForRss } from "@/utils/rss"
 import pkg from "~/package.json"
 
@@ -19,22 +18,11 @@ export const GET: APIRoute = async (context) => {
     categories: post.data.tags,
     author: pkg.author,
   }))
-  const weeklies = (await getEnglishWeeklies()).map((weekly: Weekly) => ({
-    link: `/en/weekly/${weekly.slug}`,
-    title: sanitizeForRss(weekly.data.title),
-    pubDate: weekly.data.date,
-    description: weekly.data.summary ? sanitizeForRss(weekly.data.summary) : undefined,
-    content: renderRssContent(weekly.body, parser),
-    categories: weekly.data.tags,
-    author: pkg.author,
-  }))
-
-  const items = [...posts, ...weeklies]
 
   return rss({
     title: pkg.title,
     description: pkg.description,
     site: context.site ?? pkg.homepage,
-    items,
+    items: posts,
   })
 }

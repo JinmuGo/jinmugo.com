@@ -1,0 +1,48 @@
+---
+import type { ImageMetadata, MarkdownHeading } from "astro"
+import PostHeader from "@/components/content/PostHeader.astro"
+import SideRail from "@/components/content/SideRail.astro"
+import Prose from "@/components/layout/Prose.astro"
+import Layout from "@/layouts/Layout.astro"
+import type { PostMetadata } from "@/types/content"
+import { generateContentSchemas } from "@/utils/contentSchemas"
+import { buildContentOgImagePath } from "@/utils/openGraphMeta"
+import { tocItems } from "@/utils/toc"
+
+interface Props {
+  frontmatter: PostMetadata
+  bannerImage?: ImageMetadata
+  headings?: MarkdownHeading[]
+}
+
+const { frontmatter, bannerImage, headings = [] } = Astro.props
+const { title, date, lastmod, summary, slug, tags } = frontmatter
+
+const { pageSchema, breadcrumbSchema, lang } = generateContentSchemas({
+  frontmatter,
+  pathname: Astro.url.pathname,
+  origin: Astro.url.origin,
+  imageUrl: bannerImage ? `${Astro.url.origin}${bannerImage.src}` : undefined,
+})
+---
+
+<Layout
+  frontmatter={frontmatter}
+  title={title}
+  description={summary || title}
+  lang={lang}
+  jsonLd={[pageSchema, breadcrumbSchema]}
+  ogImage={buildContentOgImagePath({ slug, pathname: Astro.url.pathname })}
+  type="article"
+  tags={tags}
+  publishedTime={date}
+  modifiedTime={lastmod}
+>
+  <SideRail label="Table of contents" items={tocItems(headings)} />
+  <article>
+    <PostHeader title={title} summary={summary} date={date} image={bannerImage} imageAlt={`${title} 배너`} />
+    <Prose>
+      <slot />
+    </Prose>
+  </article>
+</Layout>

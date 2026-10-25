@@ -1,14 +1,11 @@
 ---
-import Header from "@/components/app-shell/Header/Header.tsx"
-import MobileMenu from "@/components/app-shell/Header/MobileMenu.tsx"
+import Header from "@/components/app-shell/Header/Header.astro"
 import BaseHead from "@/components/seo/BaseHead.astro"
 import GoogleTag from "@/components/seo/GoogleTag.astro"
 import Umami from "@/components/seo/Umami.astro"
 import Container from "@/layouts/Container.astro"
 import type { Post } from "@/types/content"
 import StructuredData from "@/utils/structuredData.astro"
-
-const pathname = Astro.url.pathname
 
 const frontmatter = Astro.props.frontmatter as Post
 const title = Astro.props.title
@@ -22,13 +19,7 @@ const robots = Astro.props.robots
 const tags = Astro.props.tags ?? frontmatter?.tags
 const publishedTime = Astro.props.publishedTime as Date | undefined
 const modifiedTime = Astro.props.modifiedTime as Date | undefined
-
-// 공통 컨테이너 스타일 정의
-const containerStyles = {
-  header: "max-w-2xl lg:max-w-4xl xl:max-w-5xl px-4 sm:px-6 xl:px-0",
-  headerButton: "max-w-3xl lg:max-w-4xl xl:max-w-5xl px-4 sm:px-6 xl:px-0",
-  container: "max-w-2xl lg:max-w-4xl xl:max-w-5xl px-4 sm:px-6 xl:px-0",
-}
+const width = "max-w-3xl px-4 sm:px-6"
 ---
 
 <!doctype html>
@@ -50,15 +41,9 @@ const containerStyles = {
     <Umami />
   </head>
   <body class="text-foreground font-sans dark:bg-gray-950">
-    <Header
-      frontmatter={frontmatter}
-      pathname={pathname}
-      containerStyles={containerStyles}
-      client:load
-    />
-    <Container containerStyles={containerStyles}>
+    <Header widthClass={width} title={type === "article" ? title : undefined} />
+    <Container widthClass={width}>
       <slot />
     </Container>
-    <MobileMenu pathname={pathname} client:load />
   </body>
 </html>

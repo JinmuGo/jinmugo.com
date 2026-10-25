@@ -8,16 +8,6 @@
 export type Lang = "ko" | "en"
 
 /**
- * Types of content collections
- */
-export type ContentType = "post" | "weekly" | "book" | "movie"
-
-/**
- * Available post layout variants based on banner image orientation
- */
-export type PostLayoutType = "PostDefault" | "PostBannerX" | "PostBannerY"
-
-/**
  * Classification types for content organization
  */
 export type ClassifyType = "category" | "tag" | "year"
