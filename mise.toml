@@ -1,11 +1,10 @@
 [tools]
-node = "22.23.2"
+node = "22.23.4"
 pnpm = "10.13.1"
 
 # Local tasks must not connect to production services, even when .env contains them.
 [env]
 PUBLIC_ENV = "development"
-PUBLIC_COMMENT_API_URL = "http://localhost:3001"
 DISABLE_REMOTE_GALLERY = "true"
 OBSIDIAN_VAULT_PATH = ""
 
