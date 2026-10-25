@@ -26,6 +26,9 @@ pnpm lint:fix      # 자동 수정
 pnpm format        # 코드 포맷팅
 pnpm check         # lint + format 통합 검사
 
+# push 전 CI와 같은 검사 (lefthook pre-push가 자동 실행, 건너뛰기: LEFTHOOK=0 git push)
+pnpm ci:local
+
 # 테스트 (Vitest)
 pnpm test              # 한 번 실행
 pnpm test:watch        # Watch 모드

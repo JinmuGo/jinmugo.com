@@ -29,6 +29,7 @@
 		"content:preview": "pnpm prebuild && pnpm astro build",
 		"content:publish": "node scripts/content-publish.js",
 		"verify:links": "node scripts/verify-links.js",
+		"ci:local": "bash scripts/ci-local.sh",
 		"verify:tables": "node scripts/verify-tables.js",
 		"format": "biome format --write .",
 		"lint": "biome lint .",
