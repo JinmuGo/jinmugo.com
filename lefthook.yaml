@@ -19,3 +19,9 @@ pre-commit:
           echo "➕ 번역된 파일 스테이징..."
           find obsidian -name '*.en.md' -print0 | xargs -0 git add --
         fi
+
+# CI(.github/workflows/ci.yaml)와 같은 검사. 1~2분 걸린다. 건너뛰려면 LEFTHOOK=0 git push
+pre-push:
+  commands:
+    ci:
+      run: bash scripts/ci-local.sh
