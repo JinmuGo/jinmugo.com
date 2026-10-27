@@ -121,12 +121,14 @@ const jsonLd = [pageSchema, breadcrumbSchema]
               <Image
                 src={img.src}
                 alt={img.key}
-                width={img.width}
-                height={img.height}
-                loading={index < 6 ? "eager" : "lazy"}
+                width={Math.min(img.width, 640)}
+                height={Math.round(img.height * Math.min(img.width, 640) / img.width)}
+                widths={[320, 640, 960, 1280].filter((width) => width < img.width).concat(Math.min(img.width, 1280))}
+                format="webp"
+                loading={index === 0 ? "eager" : "lazy"}
                 decoding="async"
                 fetchpriority={index === 0 ? "high" : undefined}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 360px, 240px"
+                sizes="(min-width: 1024px) 230px, (min-width: 768px) 352px, (min-width: 640px) calc(50vw - 32px), calc(100vw - 32px)"
                 class="rounded-lg shadow-md w-full h-auto object-cover"
               />
             </a>

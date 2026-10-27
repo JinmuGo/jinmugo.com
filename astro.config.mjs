@@ -39,6 +39,9 @@ const movedPostRedirects = Object.fromEntries(
 export default defineConfig({
   site: process.env.NODE_ENV === "development" ? "http://localhost:4322" : pkg.homepage,
   output: "static",
+  image: {
+    remotePatterns: [{ protocol: "https", hostname: "cdn.jinmugo.com", pathname: "/jinmu.me/**" }],
+  },
   server: {
     port: 4322,
   },
