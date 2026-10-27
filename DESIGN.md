@@ -77,7 +77,7 @@
 - **Approach:** Single reading column — header, home list, and article share one narrow column so the eye never re-aligns
 - **Reading column:** `max-w-3xl` (768px) with `px-4 sm:px-6`. Every page uses it
 - **Header:** flower logo (36px tall, same flower as the favicon) and one 20px gray-500 line icon with no text that points to the other view: on the gallery it is Posts (`AlignLeft`, links to the home list), everywhere else it is Gallery (`Image`). The icon carries `aria-label` and `title`. The header is sticky, 80px tall, over a blurred white fade. On post pages, once the page's h1 (`#post-title`) passes under the header, the logo and icon fade up and out and the post title (16px/600, centered, truncated) fades up in over a denser fade (300ms ease-out, off under reduced motion). Clicking that title scrolls to the top. No search, theme toggle, dropdowns, or mobile menu; the same row shows on every screen size
-- **Footer:** one row under every page's content, above a gray-100 top border: `© <year> Jinmu Go` on the left, GitHub, RSS (the page language's feed), and Email text links on the right (14px gray-500, hover gray-800). It wraps on narrow screens. No icons and no page links
+- **Footer:** centered under every page's content with no border: a tight row of 20px gray-500 icons (filled GitHub mark, lucide `rss` for the page language's feed, lucide `mail`), each with `aria-label` and `title`, then `© <year> Jinmu Go` (14px gray-500) below. No page links
 - **Home hero:** photo fills the reading column (rounded-xl), aligned with the list below
 - **Home list:** one row per post — title (20px semibold), summary (line-clamp-2, gray-600), date (14px gray-500). Rows separated by gray-100 dividers, `py-6`, hover fades the row to 60% opacity
 - **Year nav:** on `lg+` a fixed left rail (`SideRail.astro`) of short lines links to the first post of each year; year labels appear on hover/focus
@@ -120,4 +120,4 @@
 | 2026-10-24 | Single 768px reading column, summary list home, centered post header | Layout structure adapted from chl.ee. Colors and fonts unchanged. Grid pages opt into `wide`. |
 | 2026-10-24 | Asta Sans + JetBrains Mono, titles 30px | Font matched to chl.ee and the existing OG images. 36px titles felt too large, so H1 is 30px (24px mobile). |
 | 2026-10-24 | Posts and gallery only, no footer | About, resume, projects, archives, series, and portfolio pages were removed; career content moved to the brain vault. Weekly, book, and movie entries became ordinary posts, and their old URLs redirect to `/posts/<slug>/`. |
-| 2026-10-27 | One-row text footer | Pages ended with no signal and no place for the feed or contact. The footer holds only the copyright and three outbound links, so it adds no navigation. |
+| 2026-10-27 | Small centered icon footer | Pages ended with no signal and no place for the feed or contact. The footer holds only the copyright and three outbound links, so it adds no navigation. |
