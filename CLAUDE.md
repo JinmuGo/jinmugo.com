@@ -67,7 +67,7 @@ make fclean        # 모든 node_modules 삭제
 - 영어 콘텐츠는 `obsidian/`에서 `*.en.md` 파일로 관리
 
 ### 레이아웃 시스템 (`src/layouts/`)
-- `Layout.astro` → `Container.astro`: 기본 레이아웃 (768px 단일 칼럼, 푸터 없음)
+- `Layout.astro` → `Container.astro`: 기본 레이아웃 (768px 단일 칼럼, 본문 아래 한 줄 푸터)
 - `PostLayout.astro`: 게시물 레이아웃. 머리말은 `components/content/PostHeader.astro`, 목차 레일은 `SideRail.astro`
 
 ### Markdown 파이프라인 (`astro.config.mjs`)
@@ -81,6 +81,7 @@ make fclean        # 모든 node_modules 삭제
 - `src/components/content/`: 게시물/메모 렌더링
 - `src/components/features/`: 갤러리(PhotoSwipe)
 - `src/components/app-shell/Header/`: 꽃 로고, Posts/Gallery 아이콘, 스크롤 시 글 제목 헤더
+- `src/components/app-shell/Footer/`: 저작권 표기와 GitHub·RSS·Email 링크
 - `src/components/og/`: OG 이미지 동적 생성 (Satori + Sharp)
 
 ### 스크립트 (`scripts/`)

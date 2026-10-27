@@ -1,0 +1,18 @@
+---
+import pkg from "~/package.json"
+
+const isEn = Astro.url.pathname.startsWith("/en")
+const link =
+  "inline-flex min-h-[44px] items-center transition-colors hover:text-gray-800 dark:hover:text-gray-200"
+---
+
+<footer
+  class="mt-16 flex flex-wrap items-center justify-between gap-x-6 border-t border-gray-100 py-4 text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400"
+>
+  <p>© {new Date().getFullYear()} Jinmu Go</p>
+  <nav aria-label={isEn ? "Links" : "링크"} class="flex gap-5">
+    <a href={pkg.social.github} target="_blank" rel="noopener noreferrer" class={link}>GitHub</a>
+    <a href={isEn ? "/en/rss.xml" : "/rss.xml"} class={link}>RSS</a>
+    <a href={`mailto:${pkg.email}`} class={link}>Email</a>
+  </nav>
+</footer>
