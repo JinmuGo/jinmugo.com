@@ -75,7 +75,8 @@
 
 ## Layout
 - **Approach:** Single reading column — header, home list, and article share one narrow column so the eye never re-aligns
-- **Reading column:** `max-w-3xl` (768px) with `px-4 sm:px-6`. Every page uses it
+- **Reading column:** `max-w-3xl` (768px) with `px-4 sm:px-6`. Headers, titles, footers, and article content use it
+- **Gallery:** 사진 영역만 화면 폭으로 확장하고 좌우 여백은 16px로 둔다. 768px 미만은 2열, 768px 이상은 3열, 1024px 이상은 5열이다. 사진은 원본 비율대로 열 안에 쌓고 가로와 세로 간격은 2px로 둔다. 고정 높이, 크롭, 둥근 모서리, 그림자는 쓰지 않는다. 헤더와 푸터는 읽기 칼럼을 유지한다. 화면에 제목이나 소개 문구를 표시하지 않고 헤더 아래 24px 간격으로 사진을 시작한다. 접근성용 h1은 화면에서만 숨긴다. 사진을 누르면 원본을 확대한다.
 - **Header:** flower logo (36px tall, same flower as the favicon) and one 20px gray-500 line icon with no text that points to the other view: on the gallery it is Posts (`AlignLeft`, links to the home list), everywhere else it is Gallery (`Image`). The icon carries `aria-label` and `title`. The header is sticky, 80px tall, over a blurred white fade. On post pages, once the page's h1 (`#post-title`) passes under the header, the logo and icon fade up and out and the post title (16px/600, centered, truncated) fades up in over a denser fade (300ms ease-out, off under reduced motion). Clicking that title scrolls to the top. No search, theme toggle, dropdowns, or mobile menu; the same row shows on every screen size
 - **Footer:** centered under every page's content with no border: a tight row of 20px gray-500 icons (filled GitHub mark, lucide `rss` for the page language's feed, lucide `mail`), each with `aria-label` and `title`, then `© <year> Jinmu Go` (14px gray-500) below. No page links
 - **Home hero:** photo fills the reading column (rounded-xl), aligned with the list below

@@ -5,6 +5,7 @@ import {
   ListObjectsV2Command,
   S3Client,
 } from "@aws-sdk/client-s3"
+import { excludeGalleryDuplicates } from "./galleryDuplicates"
 
 const DEFAULT_GALLERY_PREFIX = "jinmu.me/"
 const MANIFEST_FILENAME = "gallery-manifest.json"
@@ -136,15 +137,17 @@ export const getGalleryImagesFromR2 = async ({
     logPrefix,
   )
 
-  if (manifest) {
-    const images = manifest.items
-      .filter((item) => item.key && isRenderableGalleryKey(item.key))
-      .map((item) => buildGalleryImageFromManifestItem(item, cdnUrl))
-    console.info(`${logPrefix} fetched ${images.length} images from gallery manifest`)
-    return images
-  }
+  const images = manifest
+    ? manifest.items
+        .filter((item) => item.key && isRenderableGalleryKey(item.key))
+        .map((item) => buildGalleryImageFromManifestItem(item, cdnUrl))
+    : await listGalleryImagesFromR2({ s3Client, bucketName, cdnUrl, prefix, logPrefix })
 
-  return await listGalleryImagesFromR2({ s3Client, bucketName, cdnUrl, prefix, logPrefix })
+  const uniqueImages = excludeGalleryDuplicates(images)
+  console.info(
+    `${logPrefix} displaying ${uniqueImages.length}/${images.length} images after duplicate filtering`,
+  )
+  return uniqueImages
 }
 
 const formatTakenAt = (
