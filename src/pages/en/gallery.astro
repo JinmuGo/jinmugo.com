@@ -1,6 +1,5 @@
 ---
 import { Image } from "astro:assets"
-import Breadcrumb from "@/components/seo/Breadcrumb.astro"
 import Layout from "@/layouts/Layout.astro"
 import { buildGalleryCaption, type GalleryImage, getGalleryImagesFromR2 } from "@/lib/gallery"
 import { generateBreadcrumbItems } from "@/utils/breadcrumbUtils"
@@ -85,20 +84,13 @@ const jsonLd = [pageSchema, breadcrumbSchema]
   lang="en"
   jsonLd={jsonLd}
   type="website"
+  wide
 >
-  <Breadcrumb items={breadcrumbItems} />
-  <div class="space-y-2 pt-6 pb-8 md:space-y-5">
-    <h1
-      class="text-2xl leading-tight font-semibold tracking-tight text-gray-900 dark:text-gray-100 sm:text-3xl"
-    >
-      {title}
-    </h1>
-    <p class="text-lg text-gray-600 dark:text-gray-300">{description}</p>
-  </div>
-  <div class="columns-1 sm:columns-2 lg:columns-3 gap-4" id="gallery">
+  <h1 class="sr-only">{title}</h1>
+  <div class="columns-2 md:columns-3 lg:columns-5 gap-0.5 px-4 mt-6" id="gallery">
     {
       images.length === 0 ? (
-        <p class="text-sm text-gray-500 dark:text-gray-400">
+        <p class="[column-span:all] text-sm text-gray-500 dark:text-gray-400">
           Images could not be loaded right now. Please try again later.
         </p>
       ) : (
@@ -115,19 +107,22 @@ const jsonLd = [pageSchema, breadcrumbSchema]
                 locationLabel: img.locationLabel,
                 locale: "en",
               })}
-              class="break-inside-avoid mb-4 block cursor-zoom-in"
+              class="break-inside-avoid mb-0.5 block cursor-zoom-in focus-visible:outline-offset-[-2px]"
               target="_blank"
             >
               <Image
                 src={img.src}
                 alt={img.key}
-                width={img.width}
-                height={img.height}
-                loading={index < 6 ? "eager" : "lazy"}
+                width={Math.min(img.width, 640)}
+                height={Math.round(img.height * Math.min(img.width, 640) / img.width)}
+                widths={[320, 640, 960, 1280].filter((width) => width < img.width).concat(Math.min(img.width, 1280))}
+                format="webp"
+                fit="inside"
+                loading={index === 0 ? "eager" : "lazy"}
                 decoding="async"
                 fetchpriority={index === 0 ? "high" : undefined}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 360px, 240px"
-                class="rounded-lg shadow-md w-full h-auto object-cover"
+                sizes="(min-width: 1024px) calc(20vw - 8px), (min-width: 768px) calc(33.333333vw - 12px), calc(50vw - 17px)"
+                class="block w-full h-auto"
               />
             </a>
           ),

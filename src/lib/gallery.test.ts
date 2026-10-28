@@ -5,8 +5,53 @@ import {
   encodeCdnKey,
   isRenderableGalleryKey,
 } from "./gallery"
+import { excludeGalleryDuplicates } from "./galleryDuplicates"
 
 describe("gallery utils", () => {
+  describe("excludeGalleryDuplicates", () => {
+    it("keeps the preferred photo and its metadata regardless of list order", () => {
+      const preferred = { key: "jinmu.me/IMG_3329.JPG", takenAt: "2026-05-08" }
+      const other = { key: "jinmu.me/BLUE_ROSE.JPG" }
+      expect(
+        excludeGalleryDuplicates([
+          { key: "jinmu.me/IMG_3329.jpg" },
+          other,
+          { key: "jinmu.me/IMG_3329-1842483.JPG" },
+          preferred,
+        ]),
+      ).toEqual([other, preferred])
+    })
+
+    it("retains an available copy when the preferred file is absent", () => {
+      expect(
+        excludeGalleryDuplicates([
+          { key: "jinmu.me/IMG_3329.jpg" },
+          { key: "jinmu.me/IMG_3329-1842483.JPG" },
+        ]),
+      ).toEqual([{ key: "jinmu.me/IMG_3329-1842483.JPG" }])
+      expect(excludeGalleryDuplicates([{ key: "jinmu.me/IMG_3329.jpg" }])).toEqual([
+        { key: "jinmu.me/IMG_3329.jpg" },
+      ])
+    })
+
+    it("preserves unverified names and photos from other directories", () => {
+      const images = [
+        { key: "jinmu.me/IMG_9999.JPG" },
+        { key: "jinmu.me/IMG_9999.jpg" },
+        { key: "jinmu.me/IMG_3329-123.JPG" },
+        { key: "jinmu.me/another-album/IMG_3329.jpg" },
+      ]
+      expect(excludeGalleryDuplicates(images)).toEqual(images)
+    })
+
+    it("removes repeated identical keys and supports an empty gallery", () => {
+      expect(excludeGalleryDuplicates([{ key: "a.JPG" }, { key: "a.JPG" }])).toEqual([
+        { key: "a.JPG" },
+      ])
+      expect(excludeGalleryDuplicates([])).toEqual([])
+    })
+  })
+
   describe("encodeCdnKey", () => {
     it("encodes each path segment without escaping slashes", () => {
       expect(encodeCdnKey("jinmu.me/서울 사진/IMG 001.jpeg")).toBe(

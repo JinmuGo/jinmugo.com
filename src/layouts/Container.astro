@@ -5,19 +5,23 @@ import { cn } from "@/utils/cn"
 export interface Props {
   class?: string
   widthClass: string
+  wide?: boolean
 }
 
-const { class: className, widthClass } = Astro.props
+const { class: className, widthClass, wide = false } = Astro.props
 ---
 
 <main
   class={cn(
-    `mx-auto min-h-screen divide-gray-200 dark:divide-gray-800 flex flex-col justify-between ${widthClass}`,
+    "mx-auto min-h-screen divide-gray-200 dark:divide-gray-800 flex flex-col justify-between",
+    wide ? "w-full" : widthClass,
     className,
   )}
 >
   <section class="flex-1">
     <slot />
   </section>
-  <Footer />
+  <div class={wide ? cn("mx-auto w-full", widthClass) : "contents"}>
+    <Footer />
+  </div>
 </main>
