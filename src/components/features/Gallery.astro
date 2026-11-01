@@ -1,0 +1,173 @@
+---
+import { Image } from "astro:assets"
+import { buildGalleryCaption, type GalleryImage, getGalleryImagesFromR2 } from "@/lib/gallery"
+import pkg from "~/package.json"
+
+interface Props {
+  locale: "ko" | "en"
+}
+
+const { locale } = Astro.props
+const logPrefix = locale === "ko" ? "[gallery]" : "[gallery/en]"
+const emptyMessage =
+  locale === "ko"
+    ? "이미지를 불러오지 못했습니다. 잠시 후 다시 시도해주세요."
+    : "Images could not be loaded right now. Please try again later."
+
+const GALLERY_PREFIX = "jinmu.me/"
+const bucketName = import.meta.env.R2_BUCKET_NAME
+const accessKeyId = import.meta.env.R2_ACCESS_KEY_ID
+const secretAccessKey = import.meta.env.R2_SECRET_ACCESS_KEY
+const accountId = import.meta.env.R2_ACCOUNT_ID
+const isForcedDisabled =
+  (import.meta.env.DISABLE_REMOTE_GALLERY ?? process.env.DISABLE_REMOTE_GALLERY) === "true"
+
+const disableReasons = [
+  isForcedDisabled && "DISABLE_REMOTE_GALLERY=true",
+  !bucketName && "missing R2_BUCKET_NAME",
+  !accessKeyId && "missing R2_ACCESS_KEY_ID",
+  !secretAccessKey && "missing R2_SECRET_ACCESS_KEY",
+  !accountId && "missing R2_ACCOUNT_ID",
+].filter(Boolean)
+
+let images: GalleryImage[] = []
+
+if (isForcedDisabled || !bucketName || !accessKeyId || !secretAccessKey || !accountId) {
+  console.warn(`${logPrefix} remote gallery disabled: ${disableReasons.join(", ")}`)
+} else {
+  try {
+    images = await getGalleryImagesFromR2({
+      bucketName,
+      accessKeyId,
+      secretAccessKey,
+      accountId,
+      cdnUrl: pkg.cdnUrl,
+      prefix: GALLERY_PREFIX,
+      logPrefix,
+    })
+  } catch (error) {
+    console.error(`${logPrefix} failed to fetch images from R2:`, error)
+  }
+}
+---
+
+<div class="columns-2 md:columns-3 gap-0.5 mt-6" id="gallery">
+  {
+    images.length === 0 ? (
+      <p class="[column-span:all] text-sm text-gray-500 dark:text-gray-400">
+        {emptyMessage}
+      </p>
+    ) : (
+      images.map(
+        (img: GalleryImage, index: number) => (
+          <a
+            href={img.src}
+            data-pswp-width={img.width}
+            data-pswp-height={img.height}
+            data-taken-at={img.takenAt}
+            data-location-label={img.locationLabel}
+            data-gallery-caption={buildGalleryCaption({
+              takenAt: img.takenAt,
+              locationLabel: img.locationLabel,
+              locale,
+            })}
+            class="break-inside-avoid mb-0.5 block cursor-zoom-in focus-visible:outline-offset-[-2px]"
+            target="_blank"
+          >
+            <Image
+              src={img.src}
+              alt={img.key}
+              width={Math.min(img.width, 640)}
+              height={Math.round(img.height * Math.min(img.width, 640) / img.width)}
+              widths={[320, 640, 960, 1280].filter((width) => width < img.width).concat(Math.min(img.width, 1280))}
+              format="webp"
+              fit="inside"
+              loading={index === 0 ? "eager" : "lazy"}
+              decoding="async"
+              fetchpriority={index === 0 ? "high" : undefined}
+              sizes="(min-width: 768px) 240px, calc(50vw - 17px)"
+              class="block w-full h-auto"
+            />
+          </a>
+        ),
+      )
+    )
+  }
+</div>
+
+<script>
+  import type PhotoSwipe from "photoswipe";
+  import PhotoSwipeLightbox from "photoswipe/lightbox";
+  import "photoswipe/style.css";
+
+  const lightbox = new PhotoSwipeLightbox({
+    gallery: "#gallery",
+    children: "a",
+    pswpModule: () => import("photoswipe"),
+    bgOpacity: 0.85,
+    escKey: true,
+    pinchToClose: true,
+  });
+
+  lightbox.on("uiRegister", () => {
+    lightbox.pswp?.ui?.registerElement({
+      name: "gallery-caption",
+      order: 9,
+      isButton: false,
+      appendTo: "root",
+      html: '<div class="gallery-pswp-caption"><span data-gallery-caption-text></span></div>',
+      onInit: (captionEl: HTMLElement, pswp: PhotoSwipe) => {
+        const captionTextEl = captionEl.querySelector<HTMLElement>("[data-gallery-caption-text]");
+        const updateCaption = () => {
+          const slideElement = pswp.currSlide?.data?.element;
+          const caption = slideElement instanceof HTMLElement ? slideElement.dataset.galleryCaption : "";
+
+          if (!captionTextEl || !caption) {
+            captionEl.hidden = true;
+            return;
+          }
+
+          captionTextEl.textContent = caption;
+          captionEl.hidden = false;
+        };
+
+        pswp.on("change", updateCaption);
+        pswp.on("afterInit", updateCaption);
+        updateCaption();
+      },
+    });
+  });
+
+  lightbox.init();
+</script>
+
+<style is:global>
+  .gallery-pswp-caption {
+    position: absolute;
+    right: 0;
+    bottom: 2rem;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    padding: 0 1rem;
+    pointer-events: none;
+  }
+
+  .gallery-pswp-caption[hidden] {
+    display: none;
+  }
+
+  .gallery-pswp-caption [data-gallery-caption-text] {
+    max-width: min(40rem, calc(100vw - 2rem));
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #fafaf8;
+    text-align: center;
+    background: rgba(28, 25, 23, 0.72);
+    border: 1px solid rgba(245, 245, 240, 0.14);
+    border-radius: 9999px;
+    backdrop-filter: blur(12px);
+  }
+</style>
