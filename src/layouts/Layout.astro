@@ -42,7 +42,7 @@ const width = "max-w-3xl px-4 sm:px-6"
   </head>
   <body class="text-foreground font-sans dark:bg-gray-950">
     <Header widthClass={width} title={type === "article" ? title : undefined} />
-    <Container widthClass={width} wide={Astro.props.wide ?? false}>
+    <Container widthClass={width}>
       <slot />
     </Container>
   </body>
