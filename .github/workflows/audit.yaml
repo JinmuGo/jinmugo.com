@@ -1,0 +1,41 @@
+# 의존성 취약점 검사. 새 advisory가 의존성과 무관한 push나 글 배포를 막지 않도록 CI와 분리한다.
+# 의존성을 바꾼 변경은 여기서 걸리고, 그 밖에 새로 공개된 취약점은 주간 실행이 실패 메일로 알린다.
+name: Audit
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+  pull_request:
+    branches: ["main"]
+    paths:
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+  schedule:
+    # 매주 월요일 09:00 KST
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Setup Environment
+        uses: ./.github/actions/common-steps
+
+      - name: Security Audit
+        run: pnpm audit

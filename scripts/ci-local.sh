@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# .github/workflows/ci.yaml의 세 job(Lint & Audit, Test, Content, Types & Build)을 push 전에 그대로 돌린다.
+# .github/workflows/ci.yaml의 세 job(Lint, Test, Content, Types & Build)을 push 전에 그대로 돌린다.
+# 의존성 취약점 검사는 .github/workflows/audit.yaml이 따로 맡는다.
 # lefthook pre-push가 부른다. 급할 때는 `LEFTHOOK=0 git push`로 건너뛴다.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -22,9 +23,8 @@ fi
 step "pnpm install --frozen-lockfile"
 pnpm install --frozen-lockfile --prefer-offline >/dev/null
 
-step "Lint & Audit"
+step "Lint"
 pnpm check
-pnpm audit
 
 step "Test"
 pnpm test
