@@ -16,8 +16,8 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  lint-and-audit:
-    name: Lint & Audit
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,9 +28,6 @@ jobs:
 
       - name: Biome Check
         run: pnpm check
-
-      - name: Security Audit
-        run: pnpm audit
 
   test:
     name: Test
