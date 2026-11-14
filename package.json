@@ -94,7 +94,7 @@
 		"@types/unist": "^3.0.3",
 		"@vitest/coverage-v8": "^4.1.12",
 		"chokidar": "^5.0.0",
-		"concurrently": "^9.2.5",
+		"concurrently": "^10.0.7",
 		"dotenv": "^17.4.0",
 		"google-auth-library": "^10.6.2",
 		"jsdom": "^29.1.1",
