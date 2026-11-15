@@ -88,7 +88,6 @@ make fclean        # 모든 node_modules 삭제
 - `build-content.js`: Obsidian → src/content/ 동기화 (OS별 `obsidian-export` 바이너리 실행, diff 기반 sync, .md→.mdx 변환). `obsidian/memo/*` → `src/content/post/*`로 리매핑됨
 - `watch-obsidian.js`: 개발 시 obsidian 변경 감시 → 자동 rebuild
 - `translate.js`: DeepL API로 한국어→영어 자동 번역 (`*.en.md` 생성)
-- `submit-to-gsc.js`, `submit-urls-to-gsc.js`: Google Search Console 사이트맵/URL 제출
 
 ### 디자인 토큰
 - `design-tokens/tokens.json`: 중앙화된 디자인 토큰
