@@ -28,7 +28,7 @@
   --color-text-light: #292524;
   --color-text-dark: #F5F5F0;
 
-  /* ===== Neutral Gray → Warm Stone (DESIGN.md) ===== */
+  /* ===== Neutral Gray → Warm Stone ===== */
   --color-gray-50: #FAFAF8;
   --color-gray-100: #F5F5F0;
   --color-gray-200: #E7E5E0;
@@ -68,7 +68,7 @@
 
 /* ===== Semantic Color Tokens (theme-aware, warm stone) ===== */
 :root {
-  /* Surface (warm stone from DESIGN.md) */
+  /* Surface (warm stone) */
   --surface-primary: #ffffff;
   --surface-secondary: #F5F5F0;
   --surface-tertiary: #FAFAF8;
@@ -78,7 +78,7 @@
   --border-default: #E7E5E0;
   --border-muted: #D6D3CC;
 
-  /* Text (warm stone from DESIGN.md) */
+  /* Text (warm stone) */
   --text-primary: #292524;
   --text-secondary: #57534E;
   --text-tertiary: #78716C;
@@ -93,7 +93,7 @@
 }
 
 html[data-theme="dark"] {
-  /* Surface (warm stone dark from DESIGN.md) */
+  /* Surface (warm stone dark) */
   --surface-primary: #1C1917;
   --surface-secondary: #292524;
   --surface-tertiary: #44403C;
@@ -103,7 +103,7 @@ html[data-theme="dark"] {
   --border-default: #44403C;
   --border-muted: #57534E;
 
-  /* Text (warm stone dark — off-white per DESIGN.md) */
+  /* Text (warm stone dark) */
   --text-primary: #F5F5F0;
   --text-secondary: #D6D3CC;
   --text-tertiary: #A8A29E;
