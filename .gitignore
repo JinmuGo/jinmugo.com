@@ -3,9 +3,19 @@ node_modules/
 
 # environment variables
 .env
-.env.production
-.env.local
+.env.*
+!.env.example
 client_secret_*.apps.googleusercontent.com.json
+
+# local data and credentials
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+*.pem
+*.key
 
 # build output
 dist/
@@ -30,6 +40,8 @@ pnpm-debug.log*
 src/content/banner
 src/content/memo
 src/content/post/
+src/content/app/
+src/content/weekly/
 
 # turbo (legacy)
 .turbo/

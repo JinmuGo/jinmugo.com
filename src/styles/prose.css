@@ -3,7 +3,7 @@
 		@apply prose dark:prose-invert;
 		@apply max-w-none;
 
-		/* ===== Typography: 17px body, 1.8 line height, semibold headings (DESIGN.md) ===== */
+		/* ===== Typography: 17px body, 1.8 line height, semibold headings ===== */
 
 		/* Body */
 		@apply text-[17px] leading-[1.8];
@@ -66,7 +66,7 @@
 		/* Code blocks */
 		@apply [&_pre]:my-6 [&_pre]:rounded-lg [&_pre]:p-5;
 
-		/* Warm stone text (DESIGN.md) + brand orange links */
+		/* Warm stone text + brand orange links */
 		--tw-prose-body: #292524;     /* gray-800 */
 		--tw-prose-headings: #1C1917; /* gray-900 */
 		--tw-prose-bold: #1C1917;
