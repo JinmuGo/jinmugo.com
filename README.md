@@ -12,7 +12,7 @@ src/
 ├── pages/            # Astro 라우트
 ├── styles/           # 글로벌 CSS, prose 스타일
 └── utils/            # 유틸리티 함수
-scripts/              # 콘텐츠 빌드, 번역, GSC 제출 스크립트
+scripts/              # 콘텐츠 빌드, 번역 스크립트
 obsidian/             # Obsidian 마크다운 (repo에 통합된 로컬 콘텐츠)
 ```
 
