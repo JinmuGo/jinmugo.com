@@ -25,6 +25,8 @@
 		"translate:dry-run": "node scripts/translate.js --dry-run",
 		"gallery:manifest": "node --env-file=.env scripts/build-gallery-manifest.js",
 		"content:doctor": "node scripts/content-doctor.js",
+		"content:pkm-import": "node scripts/pkm-sync.js import",
+		"content:pkm-export": "node scripts/pkm-sync.js export",
 		"content:preview": "pnpm prebuild && pnpm astro build",
 		"content:publish": "node scripts/content-publish.js",
 		"verify:links": "node scripts/verify-links.js",

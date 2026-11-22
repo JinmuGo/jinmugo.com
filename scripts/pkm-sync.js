@@ -1,0 +1,108 @@
+#!/usr/bin/env node
+// 글의 원본은 pkm vault(`PKM_BLOG_DIR`)이고 repo의 `obsidian/post`는 CI 배포용 사본이다.
+//   import: repo obsidian/post -> vault. 처음 이관할 때 한 번 쓴다. vault에 있는 글은 덮어쓰지 않는다.
+//   export: vault -> repo obsidian/post. vault에 없는 글은 --prune을 줄 때만 repo에서 지운다.
+// 기본은 dry-run이고 --apply를 주면 실제로 복사한다.
+import fs from "node:fs"
+import os from "node:os"
+import path from "node:path"
+import { fileURLToPath } from "node:url"
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
+
+const DEFAULT_VAULT_POST = path.join(os.homedir(), "brain/3.Resource/BlogPost/post")
+const IGNORED = new Set([".DS_Store"])
+
+const args = process.argv.slice(2)
+const mode = args[0]
+const apply = args.includes("--apply")
+const prune = args.includes("--prune")
+
+function option(name, fallback) {
+  const index = args.indexOf(name)
+  return index >= 0 && args[index + 1] ? path.resolve(args[index + 1]) : fallback
+}
+
+if (mode !== "import" && mode !== "export") {
+  console.error(
+    "usage: node scripts/pkm-sync.js <import|export> [--apply] [--prune] [--vault DIR] [--repo DIR]",
+  )
+  process.exit(1)
+}
+
+const vaultPost = option("--vault", process.env.PKM_BLOG_DIR?.trim() || DEFAULT_VAULT_POST)
+const repoPost = option("--repo", path.join(repoRoot, "obsidian/post"))
+const [from, to] = mode === "import" ? [repoPost, vaultPost] : [vaultPost, repoPost]
+
+function listFiles(root) {
+  const files = new Map()
+  if (!fs.existsSync(root)) {
+    return files
+  }
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (IGNORED.has(entry.name)) {
+        continue
+      }
+      const full = path.join(dir, entry.name)
+      if (entry.isDirectory()) {
+        walk(full)
+      } else if (entry.isFile()) {
+        files.set(path.relative(root, full), full)
+      }
+    }
+  }
+  walk(root)
+  return files
+}
+
+if (!fs.existsSync(from)) {
+  console.error(`source does not exist: ${from}`)
+  process.exit(1)
+}
+
+const src = listFiles(from)
+const dst = listFiles(to)
+const plan = { add: [], update: [], skip: [], remove: [] }
+
+for (const [rel, srcPath] of src) {
+  if (!dst.has(rel)) {
+    plan.add.push(rel)
+  } else if (!fs.readFileSync(srcPath).equals(fs.readFileSync(dst.get(rel)))) {
+    // import는 vault 원본을 덮어쓰지 않는다.
+    ;(mode === "import" ? plan.skip : plan.update).push(rel)
+  }
+}
+if (mode === "export" && prune) {
+  for (const rel of dst.keys()) {
+    if (!src.has(rel)) {
+      plan.remove.push(rel)
+    }
+  }
+}
+
+console.info(`${mode}: ${from} -> ${to}${apply ? "" : "  (dry-run)"}`)
+for (const [kind, list] of Object.entries(plan)) {
+  console.info(`  ${kind}: ${list.length}`)
+  for (const rel of list.slice(0, 200)) {
+    console.info(`    ${kind === "skip" ? "! " : ""}${rel}`)
+  }
+}
+if (plan.skip.length) {
+  console.info("  ! = vault 쪽이 달라서 덮어쓰지 않음")
+}
+
+if (!apply) {
+  console.info("\n실제로 반영하려면 --apply를 붙인다.")
+  process.exit(0)
+}
+
+for (const rel of [...plan.add, ...plan.update]) {
+  const target = path.join(to, rel)
+  fs.mkdirSync(path.dirname(target), { recursive: true })
+  fs.copyFileSync(src.get(rel), target)
+}
+for (const rel of plan.remove) {
+  fs.rmSync(path.join(to, rel))
+}
+console.info("done")
