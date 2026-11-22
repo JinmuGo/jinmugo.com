@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // 글의 원본은 pkm vault(`PKM_BLOG_DIR`)이고 repo의 `obsidian/post`는 CI 배포용 사본이다.
 //   import: repo obsidian/post -> vault. 처음 이관할 때 한 번 쓴다. vault에 있는 글은 덮어쓰지 않는다.
-//   export: vault -> repo obsidian/post. vault에 없는 글은 --prune을 줄 때만 repo에서 지운다.
+//   export: vault -> repo obsidian/post. draft: true 글은 복사하지 않는다.
+//           vault에 없거나 draft인 글은 --prune을 줄 때만 repo에서 지운다.
 // 기본은 dry-run이고 --apply를 주면 실제로 복사한다.
 import fs from "node:fs"
 import os from "node:os"
@@ -62,6 +63,27 @@ if (!fs.existsSync(from)) {
 }
 
 const src = listFiles(from)
+
+function isDraft(file) {
+  const frontmatter = fs.readFileSync(file, "utf8").match(/^---\r?\n([\s\S]*?)\r?\n---/)
+  return frontmatter ? /^draft:\s*true\s*$/m.test(frontmatter[1]) : false
+}
+
+// export는 공개 대상만 복사한다. 글 폴더의 대표 파일(<slug>/<slug>.md)이 draft면 폴더 전체를 뺀다.
+const draftSlugs = []
+if (mode === "export") {
+  for (const [rel, file] of src) {
+    const parts = rel.split(path.sep)
+    if (parts.length === 2 && parts[1] === `${parts[0]}.md` && isDraft(file)) {
+      draftSlugs.push(parts[0])
+    }
+  }
+  for (const rel of [...src.keys()]) {
+    if (draftSlugs.includes(rel.split(path.sep)[0])) {
+      src.delete(rel)
+    }
+  }
+}
 const dst = listFiles(to)
 const plan = { add: [], update: [], skip: [], remove: [] }
 
@@ -82,6 +104,9 @@ if (mode === "export" && prune) {
 }
 
 console.info(`${mode}: ${from} -> ${to}${apply ? "" : "  (dry-run)"}`)
+if (draftSlugs.length) {
+  console.info(`  draft 제외: ${draftSlugs.length} (${draftSlugs.join(", ")})`)
+}
 for (const [kind, list] of Object.entries(plan)) {
   console.info(`  ${kind}: ${list.length}`)
   for (const rel of list.slice(0, 200)) {
