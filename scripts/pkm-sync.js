@@ -66,7 +66,7 @@ const src = listFiles(from)
 
 function isDraft(file) {
   const frontmatter = fs.readFileSync(file, "utf8").match(/^---\r?\n([\s\S]*?)\r?\n---/)
-  return frontmatter ? /^draft:\s*true\s*$/m.test(frontmatter[1]) : false
+  return frontmatter ? /^draft:\s*(?:true|True|TRUE)\s*(?:#.*)?$/m.test(frontmatter[1]) : false
 }
 
 // export는 공개 대상만 복사한다. 글 폴더의 대표 파일(<slug>/<slug>.md)이 draft면 폴더 전체를 뺀다.
