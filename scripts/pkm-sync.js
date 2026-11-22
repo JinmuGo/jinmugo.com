@@ -100,7 +100,16 @@ if (!apply) {
 for (const rel of [...plan.add, ...plan.update]) {
   const target = path.join(to, rel)
   fs.mkdirSync(path.dirname(target), { recursive: true })
-  fs.copyFileSync(src.get(rel), target)
+  // import는 복사 시점에도 기존 파일을 덮어쓰지 않는다.
+  const flags = mode === "import" ? fs.constants.COPYFILE_EXCL : 0
+  try {
+    fs.copyFileSync(src.get(rel), target, flags)
+  } catch (error) {
+    if (error.code !== "EEXIST") {
+      throw error
+    }
+    console.error(`! 이미 있어서 건너뜀: ${rel}`)
+  }
 }
 for (const rel of plan.remove) {
   fs.rmSync(path.join(to, rel))
