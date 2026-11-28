@@ -93,7 +93,7 @@
 		"@types/sanitize-html": "^2.16.2",
 		"@types/unist": "^3.0.3",
 		"@vitest/coverage-v8": "^4.1.12",
-		"chokidar": "^5.0.0",
+		"chokidar": "^6.0.0",
 		"concurrently": "^10.0.7",
 		"dotenv": "^17.4.0",
 		"jsdom": "^31.0.1",
