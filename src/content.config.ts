@@ -25,7 +25,8 @@ const postCollection = defineCollection({
     generateId: stripExtension,
   }),
   schema: z.object({
-    title: z.string(),
+    // 빈 초안은 title이 null이다. 빈 문자열로 받는다.
+    title: z.preprocess((v: unknown) => v ?? "", z.string()),
     date: z.coerce.date(),
     // null 허용 + 기본값 []
     tags: z.preprocess((v: unknown) => v ?? undefined, z.array(z.string()).optional().default([])),
